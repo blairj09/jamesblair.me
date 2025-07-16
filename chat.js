@@ -9,6 +9,8 @@ class JamesChat {
         this.messageHistory = [];
         this.maxRetries = 3;
         this.retryDelay = 1000;
+        this.availableModels = [];
+        this.currentModel = null;
         
         // DOM elements
         this.chatMessages = document.getElementById('chat-messages');
@@ -16,8 +18,11 @@ class JamesChat {
         this.sendButton = document.getElementById('send-message');
         this.chatLoading = document.getElementById('chat-loading');
         this.loadingText = document.querySelector('.loading-text');
+        this.modelSelect = document.getElementById('model-select');
+        this.switchModelBtn = document.getElementById('switch-model');
         
         this.initializeEventListeners();
+        this.initializeModelSelection();
     }
 
     initializeEventListeners() {
@@ -41,6 +46,152 @@ class JamesChat {
                 this.updateSendButton();
             });
         }
+
+        // Model switch button
+        if (this.switchModelBtn) {
+            this.switchModelBtn.addEventListener('click', () => this.switchModel());
+        }
+    }
+
+    async initializeModelSelection() {
+        try {
+            // Wait for webllm to be available
+            if (!window.webllm) {
+                setTimeout(() => this.initializeModelSelection(), 1000);
+                return;
+            }
+
+            // Get available models
+            this.availableModels = window.webllm.prebuiltAppConfig.model_list;
+            
+            // Populate model dropdown
+            this.populateModelDropdown();
+            
+            // Set default model (prefer Llama-3)
+            const defaultModel = this.availableModels.find(model => 
+                model.model_id.includes('Llama-3') && model.model_id.includes('8B') && model.model_id.includes('Instruct')
+            ) || this.availableModels[0];
+            
+            this.currentModel = defaultModel;
+            
+            if (this.modelSelect) {
+                this.modelSelect.value = defaultModel.model_id;
+            }
+            
+        } catch (error) {
+            console.error('Failed to initialize model selection:', error);
+        }
+    }
+
+    populateModelDropdown() {
+        if (!this.modelSelect) return;
+        
+        // Clear existing options
+        this.modelSelect.innerHTML = '';
+        
+        // Group models by type for better UX
+        const modelGroups = this.groupModelsByType();
+        
+        Object.entries(modelGroups).forEach(([groupName, models]) => {
+            if (models.length > 0) {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = groupName;
+                
+                models.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model.model_id;
+                    option.textContent = this.formatModelName(model.model_id);
+                    optgroup.appendChild(option);
+                });
+                
+                this.modelSelect.appendChild(optgroup);
+            }
+        });
+    }
+
+    groupModelsByType() {
+        const groups = {
+            'Llama 3': [],
+            'Llama 2': [],
+            'Phi': [],
+            'Mistral': [],
+            'Gemma': [],
+            'Qwen': [],
+            'Other': []
+        };
+        
+        this.availableModels.forEach(model => {
+            const modelId = model.model_id;
+            if (modelId.includes('Llama-3')) {
+                groups['Llama 3'].push(model);
+            } else if (modelId.includes('Llama-2')) {
+                groups['Llama 2'].push(model);
+            } else if (modelId.includes('Phi') || modelId.includes('phi')) {
+                groups['Phi'].push(model);
+            } else if (modelId.includes('Mistral')) {
+                groups['Mistral'].push(model);
+            } else if (modelId.includes('gemma')) {
+                groups['Gemma'].push(model);
+            } else if (modelId.includes('Qwen')) {
+                groups['Qwen'].push(model);
+            } else {
+                groups['Other'].push(model);
+            }
+        });
+        
+        return groups;
+    }
+
+    formatModelName(modelId) {
+        // Convert model ID to more readable format
+        return modelId
+            .replace(/-/g, ' ')
+            .replace(/q4f16_1/g, '(4-bit)')
+            .replace(/q4f32_1/g, '(4-bit float)')
+            .replace(/MLC/g, '')
+            .replace(/1k/g, '1K context')
+            .trim();
+    }
+
+    async switchModel() {
+        if (!this.modelSelect || !this.switchModelBtn) return;
+        
+        const selectedModelId = this.modelSelect.value;
+        const selectedModel = this.availableModels.find(model => model.model_id === selectedModelId);
+        
+        if (!selectedModel || selectedModel.model_id === this.currentModel?.model_id) {
+            return;
+        }
+        
+        // Disable switch button during transition
+        this.switchModelBtn.disabled = true;
+        this.switchModelBtn.textContent = 'Switching...';
+        
+        try {
+            // Clean up current engine
+            if (this.engine) {
+                this.engine = null;
+            }
+            
+            // Reset state
+            this.isInitialized = false;
+            this.isInitializing = false;
+            this.currentModel = selectedModel;
+            
+            // Add model switch message
+            this.addMessage('ai', `Switching to ${this.formatModelName(selectedModel.model_id)}. Please wait...`);
+            
+            // Initialize with new model
+            await this.initialize();
+            
+        } catch (error) {
+            console.error('Failed to switch model:', error);
+            this.addMessage('ai', `Failed to switch to ${this.formatModelName(selectedModel.model_id)}. Please try again or contact James directly.`);
+        } finally {
+            // Re-enable switch button
+            this.switchModelBtn.disabled = false;
+            this.switchModelBtn.textContent = 'Switch Model';
+        }
     }
 
     async initialize() {
@@ -58,23 +209,21 @@ class JamesChat {
 
             this.showLoading('Initializing AI chat...');
             
-            // Get available models from web-llm
-            const availableModels = window.webllm.prebuiltAppConfig.model_list.map(model => model.model_id);
-            console.log('Available models:', availableModels);
-            
-            // Use a smaller, more compatible model
-            const selectedModel = availableModels.find(model => 
-                model.includes('Llama-3') && model.includes('8B') && model.includes('Instruct')
-            ) || availableModels[0];
+            // Use the currently selected model or fall back to default
+            const selectedModel = this.currentModel?.model_id || this.availableModels.find(model => 
+                model.model_id.includes('Llama-3') && model.model_id.includes('8B') && model.model_id.includes('Instruct')
+            )?.model_id || this.availableModels[0]?.model_id;
             
             console.log('Selected model:', selectedModel);
             
-            // Initialize the engine with progress callback
+            // Initialize the engine with progress callback and increased context window
             this.engine = await window.webllm.CreateMLCEngine(selectedModel, {
                 initProgressCallback: (progress) => {
                     const percentage = Math.round(progress.progress * 100);
                     this.showLoading(`Loading AI model: ${percentage}%`);
-                }
+                },
+                context_window_size: 4096, // Increased from default 1024
+                sliding_window_size: 2048   // Enable sliding window for longer conversations
             });
             
             // Initialize message history with system prompt
@@ -84,8 +233,9 @@ class JamesChat {
             this.isInitializing = false;
             this.hideLoading();
             
-            // Show success message
-            this.addMessage('ai', 'AI chat is ready! Ask me anything about James\'s background, experience, or interests.');
+            // Show success message with model info
+            const modelName = this.formatModelName(selectedModel);
+            this.addMessage('ai', `AI chat is ready using ${modelName}! Ask me anything about James's background, experience, or interests.`);
             
         } catch (error) {
             console.error('Failed to initialize chat:', error);
@@ -163,7 +313,7 @@ class JamesChat {
             const response = await this.engine.chat.completions.create({
                 messages: this.messageHistory,
                 temperature: 0.7,
-                max_tokens: 500,
+                max_tokens: 800,
                 stream: false
             });
             
@@ -172,10 +322,10 @@ class JamesChat {
             // Add AI response to history
             this.messageHistory.push({ role: 'assistant', content: aiResponse });
             
-            // Keep history manageable (last 10 messages + system prompt)
-            if (this.messageHistory.length > 11) {
+            // Keep history manageable (last 20 messages + system prompt for 4K context)
+            if (this.messageHistory.length > 21) {
                 const systemPrompt = this.messageHistory[0]; // Preserve system prompt
-                this.messageHistory = [systemPrompt, ...this.messageHistory.slice(-10)];
+                this.messageHistory = [systemPrompt, ...this.messageHistory.slice(-20)];
             }
             
             return aiResponse;
@@ -293,10 +443,10 @@ class JamesChat {
     clearHistory() {
         this.messageHistory = [{ role: "system", content: window.JAMES_CONTEXT }];
         
-        // Clear visual messages except the first welcome message
+        // Clear visual messages except the first two (disclaimer and welcome)
         const messages = this.chatMessages.querySelectorAll('.message');
         messages.forEach((message, index) => {
-            if (index > 0) { // Keep the first welcome message
+            if (index > 1) { // Keep the first two messages (disclaimer and welcome)
                 message.remove();
             }
         });
