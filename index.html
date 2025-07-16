@@ -197,6 +197,9 @@
                                 <option value="">Loading models...</option>
                             </select>
                             <button id="switch-model" class="switch-model-btn">Switch Model</button>
+                            <div class="model-selection-note">
+                                <small>Only models with sufficient context window are shown</small>
+                            </div>
                         </div>
                     </div>
                     <div class="chat-widget-embedded" role="dialog" aria-labelledby="chat-title">
@@ -219,6 +222,10 @@
                         <div id="chat-loading" class="chat-loading hidden" aria-live="polite" role="status">
                             <div class="loading-spinner"></div>
                             <span class="loading-text">AI is thinking...</span>
+                        </div>
+                        <div id="chat-status" class="chat-status hidden" aria-live="polite" role="status">
+                            <div class="status-indicator"></div>
+                            <span class="status-text">James is available</span>
                         </div>
                     </div>
                 </div>
@@ -262,7 +269,6 @@
 
 
     <script src="script.js"></script>
-    <script src="james-context.js"></script>
     <script src="chat.js"></script>
 </body>
 </html>
