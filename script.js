@@ -144,8 +144,9 @@ function initializeAccessibility() {
     // Add keyboard navigation support
     document.addEventListener('keydown', function(event) {
         // Handle tab navigation in chat widget
-        if (!document.getElementById('chat-widget').classList.contains('hidden')) {
-            const chatElements = document.querySelectorAll('#chat-widget button, #chat-widget input');
+        const chatWidget = document.querySelector('.chat-widget-embedded');
+        if (chatWidget && !chatWidget.classList.contains('hidden')) {
+            const chatElements = document.querySelectorAll('.chat-widget-embedded button, .chat-widget-embedded input');
             const firstElement = chatElements[0];
             const lastElement = chatElements[chatElements.length - 1];
             

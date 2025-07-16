@@ -58,8 +58,16 @@ class JamesChat {
 
             this.showLoading('Initializing AI chat...');
             
-            // Configuration for the model
-            const selectedModel = "Llama-3.1-8B-Instruct-q4f16_1-MLC";
+            // Get available models from web-llm
+            const availableModels = window.webllm.prebuiltAppConfig.model_list.map(model => model.model_id);
+            console.log('Available models:', availableModels);
+            
+            // Use a smaller, more compatible model
+            const selectedModel = availableModels.find(model => 
+                model.includes('Llama-3') && model.includes('8B') && model.includes('Instruct')
+            ) || availableModels[0];
+            
+            console.log('Selected model:', selectedModel);
             
             // Initialize the engine with progress callback
             this.engine = await window.webllm.CreateMLCEngine(selectedModel, {
@@ -69,10 +77,8 @@ class JamesChat {
                 }
             });
             
-            // Reload the engine with system prompt
-            await this.engine.reload(selectedModel, undefined, {
-                systemPrompt: window.JAMES_CONTEXT
-            });
+            // Initialize message history with system prompt
+            this.messageHistory = [{ role: "system", content: window.JAMES_CONTEXT }];
             
             this.isInitialized = true;
             this.isInitializing = false;
@@ -166,9 +172,10 @@ class JamesChat {
             // Add AI response to history
             this.messageHistory.push({ role: 'assistant', content: aiResponse });
             
-            // Keep history manageable (last 10 messages)
-            if (this.messageHistory.length > 10) {
-                this.messageHistory = this.messageHistory.slice(-10);
+            // Keep history manageable (last 10 messages + system prompt)
+            if (this.messageHistory.length > 11) {
+                const systemPrompt = this.messageHistory[0]; // Preserve system prompt
+                this.messageHistory = [systemPrompt, ...this.messageHistory.slice(-10)];
             }
             
             return aiResponse;
@@ -284,7 +291,7 @@ class JamesChat {
 
     // Public method to clear chat history
     clearHistory() {
-        this.messageHistory = [];
+        this.messageHistory = [{ role: "system", content: window.JAMES_CONTEXT }];
         
         // Clear visual messages except the first welcome message
         const messages = this.chatMessages.querySelectorAll('.message');
