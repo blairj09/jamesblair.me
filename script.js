@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeChatWidget();
     initializeSmoothScrolling();
     initializeAccessibility();
+    initializeThemeToggle();
+    initializeTabs();
 });
 
 // Navigation functionality
@@ -270,6 +272,130 @@ function showNotification(message, type = 'info') {
             }
         }, 300);
     }, 5000);
+}
+
+// Theme toggle functionality
+function initializeThemeToggle() {
+    const themeSwitch = document.getElementById('theme-switch');
+    const themeToggle = document.querySelector('.theme-toggle');
+    const themeIcon = document.querySelector('.theme-icon');
+    
+    // Check for saved theme preference or default to light mode
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+    
+    // Apply initial theme
+    setTheme(initialTheme);
+    
+    // Theme switch change handler
+    if (themeSwitch) {
+        themeSwitch.addEventListener('change', function() {
+            const newTheme = this.checked ? 'dark' : 'light';
+            setTheme(newTheme);
+        });
+    }
+    
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('theme')) {
+            setTheme(e.matches ? 'dark' : 'light');
+        }
+    });
+    
+    function setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        
+        // Update switch state
+        if (themeSwitch) {
+            themeSwitch.checked = theme === 'dark';
+        }
+        
+        // Update theme icon
+        if (themeIcon) {
+            themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+        
+        // Update theme toggle aria-label
+        if (themeToggle) {
+            themeToggle.setAttribute('aria-label', 
+                theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+            );
+        }
+    }
+}
+
+// Tabs functionality
+function initializeTabs() {
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+    
+    if (!tabButtons.length || !tabPanels.length) return;
+    
+    // Tab button click handlers
+    tabButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            const targetTab = button.getAttribute('data-tab');
+            showTab(targetTab);
+        });
+    });
+    
+    // Keyboard navigation for tabs
+    document.addEventListener('keydown', (e) => {
+        if (e.target.closest('.tab-navigation')) {
+            const currentTab = document.querySelector('.tab-btn.active');
+            const currentIndex = Array.from(tabButtons).indexOf(currentTab);
+            
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                const prevIndex = currentIndex > 0 ? currentIndex - 1 : tabButtons.length - 1;
+                tabButtons[prevIndex].click();
+                tabButtons[prevIndex].focus();
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                const nextIndex = currentIndex < tabButtons.length - 1 ? currentIndex + 1 : 0;
+                tabButtons[nextIndex].click();
+                tabButtons[nextIndex].focus();
+            }
+        }
+    });
+    
+    function showTab(targetTab) {
+        // Update tab buttons
+        tabButtons.forEach((button) => {
+            const isActive = button.getAttribute('data-tab') === targetTab;
+            button.classList.toggle('active', isActive);
+            button.setAttribute('aria-selected', isActive);
+        });
+        
+        // Update tab panels
+        tabPanels.forEach((panel) => {
+            const isActive = panel.id === `${targetTab}-panel`;
+            panel.classList.toggle('active', isActive);
+            panel.setAttribute('aria-hidden', !isActive);
+        });
+        
+        // Announce tab change to screen readers
+        announceTabChange(targetTab);
+    }
+    
+    function announceTabChange(tabName) {
+        const announcement = document.createElement('div');
+        announcement.setAttribute('aria-live', 'polite');
+        announcement.setAttribute('aria-atomic', 'true');
+        announcement.style.position = 'absolute';
+        announcement.style.left = '-10000px';
+        announcement.textContent = `Now showing: ${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`;
+        
+        document.body.appendChild(announcement);
+        
+        setTimeout(() => {
+            if (announcement.parentNode) {
+                announcement.parentNode.removeChild(announcement);
+            }
+        }, 1000);
+    }
 }
 
 // Expose utilities globally for other scripts

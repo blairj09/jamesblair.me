@@ -29,18 +29,28 @@
                 <div class="logo">
                     <a href="#home" aria-label="James Blair - Home">James Blair</a>
                 </div>
-                <ul class="nav-menu" role="menubar">
-                    <li role="none"><a href="#home" role="menuitem">Home</a></li>
-                    <li role="none"><a href="#about" role="menuitem">About</a></li>
-                    <li role="none"><a href="#skills" role="menuitem">Skills</a></li>
-                    <li role="none"><a href="#chat" role="menuitem">Chat</a></li>
-                    <li role="none"><a href="#contact" role="menuitem">Contact</a></li>
-                </ul>
-                <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
-                    <span class="hamburger"></span>
-                    <span class="hamburger"></span>
-                    <span class="hamburger"></span>
-                </button>
+                <div class="nav-right">
+                    <ul class="nav-menu" role="menubar">
+                        <li role="none"><a href="#home" role="menuitem">Home</a></li>
+                        <li role="none"><a href="#about" role="menuitem">About</a></li>
+                        <li role="none"><a href="#skills" role="menuitem">Skills</a></li>
+                        <li role="none"><a href="#chat" role="menuitem">Chat</a></li>
+                        <li role="none"><a href="#contact" role="menuitem">Contact</a></li>
+                    </ul>
+                    <label class="theme-toggle" for="theme-switch" aria-label="Toggle dark mode">
+                        <input type="checkbox" id="theme-switch" class="theme-switch-input" />
+                        <span class="theme-switch-slider">
+                            <span class="theme-switch-handle">
+                                <span class="theme-icon">🌙</span>
+                            </span>
+                        </span>
+                    </label>
+                    <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                        <span class="hamburger"></span>
+                        <span class="hamburger"></span>
+                        <span class="hamburger"></span>
+                    </button>
+                </div>
             </div>
         </nav>
     </header>
@@ -75,12 +85,58 @@
                         <p>
                             I'm a Senior Product Manager at Posit (formerly RStudio) with over 10 years of experience in data science and AI. My passion lies at the intersection of technology and business value, where I help organizations harness the power of data science and artificial intelligence to drive real-world impact.
                         </p>
-                        <p>
-                            Throughout my career, I've driven $20M+ in annual revenue through strategic cloud platform partnerships with AWS, Azure, and GCP. I've built agentic AI systems that reduced demo preparation time by 90%, and I maintain deep customer relationships through 200+ annual customer calls to ensure our products meet enterprise needs.
-                        </p>
-                        <p>
-                            As a keynote speaker at major tech conferences, I've had the privilege of sharing insights about data science and AI with audiences of 2,000+ professionals. When I'm not working on product strategy or speaking at conferences, you can find me cycling the beautiful Utah roads, experimenting with new recipes (especially anything involving funnel cakes), or tending to my garden with a special focus on Bird of Paradise plants.
-                        </p>
+                    </div>
+                    
+                    <div class="about-tabs">
+                        <div class="tab-navigation" role="tablist">
+                            <button class="tab-btn active" data-tab="work" role="tab" aria-selected="true" aria-controls="work-panel" id="work-tab">Work</button>
+                            <button class="tab-btn" data-tab="home" role="tab" aria-selected="false" aria-controls="home-panel" id="home-tab">Home</button>
+                            <button class="tab-btn" data-tab="hobbies" role="tab" aria-selected="false" aria-controls="hobbies-panel" id="hobbies-tab">Hobbies</button>
+                        </div>
+                        
+                        <div class="tab-content">
+                            <div class="tab-panel active" id="work-panel" role="tabpanel" aria-labelledby="work-tab">
+                                <div class="tab-panel-content">
+                                    <div class="panel-image">
+                                        <img src="images/work-placeholder.jpg" alt="James at work" loading="lazy">
+                                    </div>
+                                    <div class="panel-text">
+                                        <h3>Work</h3>
+                                        <p>
+                                            Throughout my career, I've driven $20M+ in annual revenue through strategic cloud platform partnerships with AWS, Azure, and GCP. I've built agentic AI systems that reduced demo preparation time by 90%, and I maintain deep customer relationships through 200+ annual customer calls to ensure our products meet enterprise needs.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-panel" id="home-panel" role="tabpanel" aria-labelledby="home-tab">
+                                <div class="tab-panel-content">
+                                    <div class="panel-image">
+                                        <img src="images/home-placeholder.jpg" alt="James at home" loading="lazy">
+                                    </div>
+                                    <div class="panel-text">
+                                        <h3>Home</h3>
+                                        <p>
+                                            Living in beautiful Eagle Mountain, Utah, I enjoy spending time with my family and tending to my garden with a special focus on Bird of Paradise plants. I love experimenting with new recipes in the kitchen, especially anything involving funnel cakes, and creating a warm, welcoming home environment.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-panel" id="hobbies-panel" role="tabpanel" aria-labelledby="hobbies-tab">
+                                <div class="tab-panel-content">
+                                    <div class="panel-image">
+                                        <img src="images/hobbies-placeholder.jpg" alt="James cycling" loading="lazy">
+                                    </div>
+                                    <div class="panel-text">
+                                        <h3>Hobbies</h3>
+                                        <p>
+                                            When I'm not working on product strategy or speaking at conferences, you can find me cycling the beautiful Utah roads on my road, mountain, or gravel bike. I'm also passionate about keynote speaking and technical workshops, sharing insights about data science and AI with diverse audiences worldwide.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -97,15 +153,17 @@
                             <li>Customer Research</li>
                             <li>Product Led Growth</li>
                             <li>Go-to-Market Strategy</li>
+                            <li>Cross-functional Collaboration</li>
                         </ul>
                     </div>
                     <div class="skill-category">
-                        <h3>Technical Leadership</h3>
+                        <h3>Technical Expertise</h3>
                         <ul>
-                            <li>Data Science</li>
+                            <li>Data Science & Analytics</li>
                             <li>Python & R Programming</li>
-                            <li>SQL & Database Systems</li>
-                            <li>Open Source Development</li>
+                            <li>Artificial Intelligence</li>
+                            <li>Agentic Systems & LLMs</li>
+                            <li>Cloud Platforms (AWS, Azure, GCP)</li>
                         </ul>
                     </div>
                     <div class="skill-category">
@@ -114,16 +172,8 @@
                             <li>Public Speaking</li>
                             <li>Keynote Presentations</li>
                             <li>Technical Writing</li>
-                            <li>Cross-functional Collaboration</li>
-                        </ul>
-                    </div>
-                    <div class="skill-category">
-                        <h3>Emerging Technologies</h3>
-                        <ul>
-                            <li>Artificial Intelligence</li>
-                            <li>Agentic Systems</li>
-                            <li>Large Language Models</li>
-                            <li>RAG (Retrieval Augmented Generation)</li>
+                            <li>Teaching & Mentoring</li>
+                            <li>Open Source Advocacy</li>
                         </ul>
                     </div>
                 </div>
@@ -167,18 +217,18 @@
                             I'm always interested in meaningful professional connections, speaking opportunities, and interesting collaborations. Whether you're looking for insights on data science, AI implementation, or cloud platform partnerships, I'd love to hear from you!
                         </p>
                         <div class="contact-methods">
-                            <div class="contact-method">
-                                <strong>Email:</strong>
-                                <a href="mailto:james.m.blair@icloud.com" aria-label="Send email to James">james.m.blair@icloud.com</a>
-                            </div>
-                            <div class="contact-method">
-                                <strong>LinkedIn:</strong>
-                                <a href="https://www.linkedin.com/in/blairjm" target="_blank" rel="noopener noreferrer" aria-label="Visit James's LinkedIn profile">linkedin.com/in/blairjm</a>
-                            </div>
-                            <div class="contact-method">
-                                <strong>GitHub:</strong>
-                                <a href="https://github.com/blairj09" target="_blank" rel="noopener noreferrer" aria-label="Visit James's GitHub profile">github.com/blairj09</a>
-                            </div>
+                            <a href="mailto:james.m.blair@icloud.com" class="social-icon email-icon" aria-label="Send email to James">
+                                <img src="images/email-icon.png" alt="Email" class="icon-img">
+                            </a>
+                            <a href="https://www.linkedin.com/in/blairjm" target="_blank" rel="noopener noreferrer" class="social-icon linkedin-icon" aria-label="Visit James's LinkedIn profile">
+                                <img src="images/linked-in.svg" alt="LinkedIn" class="icon-img">
+                            </a>
+                            <a href="https://github.com/blairj09" target="_blank" rel="noopener noreferrer" class="social-icon github-icon" aria-label="Visit James's GitHub profile">
+                                <img src="images/github-mark/github-mark.png" alt="GitHub" class="icon-img">
+                            </a>
+                            <a href="https://www.strava.com/athletes/114569653" target="_blank" rel="noopener noreferrer" class="social-icon strava-icon" aria-label="Visit James's Strava profile">
+                                <img src="images/strava.png" alt="Strava" class="icon-img">
+                            </a>
                         </div>
                     </div>
                 </div>
