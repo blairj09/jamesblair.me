@@ -893,10 +893,13 @@ Remember to:
         if ('serviceWorker' in navigator && 'caches' in window) {
             try {
                 const registration = await navigator.serviceWorker.register('/sw.js');
-                console.log('Service Worker registered for model caching');
+                console.log('Service Worker registered for enhanced caching');
                 return registration;
             } catch (error) {
-                console.log('Service Worker registration failed (this is normal):', error);
+                // Only log if it's not a 404 (missing sw.js file)
+                if (!error.message.includes('404') && !error.message.includes('bad HTTP response')) {
+                    console.warn('Service Worker registration failed:', error);
+                }
             }
         }
         return null;
