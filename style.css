@@ -427,6 +427,88 @@ a:focus {
     color: var(--text-light);
     line-height: 1.7;
     margin: 0;
+}
+
+/* Focus Management */
+.focused {
+    outline: 2px solid var(--secondary-color);
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    cursor: not-allowed;
+    position: relative;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin-top: -8px;
+    margin-left: -8px;
+    border: 2px solid var(--border-color);
+    border-top: 2px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Notification System */
+.notification {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-lg);
+    z-index: 1001;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    max-width: 300px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.notification-info {
+    background-color: #10b981;
+    color: white;
+}
+
+.notification-error {
+    background-color: #ef4444;
+    color: white;
+}
+
+.notification:not([style*="translateX(100%)"]) {
+    transform: translateX(0);
+}
+
+/* Hamburger Menu Animation */
+.hamburger {
+    transition: var(--transition);
+    transform-origin: center;
+}
+
+.hamburger.active {
+    background-color: var(--primary-color);
+}
+
+.nav-toggle .hamburger:first-child.active {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.nav-toggle .hamburger:nth-child(2).active {
+    opacity: 0;
+}
+
+.nav-toggle .hamburger:nth-child(3).active {
+    transform: rotate(-45deg) translate(7px, -6px);
 }/* Header */
 .header {
     background-color: var(--background-white);
@@ -1042,6 +1124,110 @@ a:focus {
     opacity: 0.8;
 }
 
+/* Mobile Chat Notice */
+.mobile-chat-notice {
+    display: none;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background-color: var(--background-white);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    border: 2px solid var(--border-color);
+}
+
+.mobile-notice-content h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.mobile-notice-content p {
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.mobile-notice-content p:last-child {
+    margin-bottom: 0;
+}
+
+.mobile-notice-content a {
+    color: var(--primary-color);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: var(--transition);
+}
+
+.mobile-notice-content a:hover {
+    border-bottom-color: var(--primary-color);
+}
+
+/* Model Drawer */
+.model-drawer {
+    background-color: var(--background-light);
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.drawer-header:hover {
+    background-color: var(--background-white);
+}
+
+.drawer-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.drawer-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 50%;
+    transition: var(--transition);
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drawer-toggle:hover {
+    background-color: var(--border-color);
+    color: var(--text-dark);
+}
+
+.drawer-toggle svg {
+    transition: transform 0.3s ease;
+}
+
+.drawer-toggle[aria-expanded="true"] svg {
+    transform: rotate(45deg);
+}
+
+.drawer-content {
+    padding: 0 1.5rem 1.5rem;
+    max-height: 200px;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.drawer-content.collapsed {
+    max-height: 0;
+    padding: 0 1.5rem;
+}
+
 /* Enhanced AI Widget with Living Light Effect */
 .chat-widget-embedded {
     background-color: var(--background-white);
@@ -1551,6 +1737,14 @@ a:focus {
 
     .chat-container {
         padding: 0 1rem;
+    }
+
+    .mobile-chat-notice {
+        display: block;
+    }
+
+    .chat-widget-wrapper {
+        display: none;
     }
 
     .chat-widget-embedded {

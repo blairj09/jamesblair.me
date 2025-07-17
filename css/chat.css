@@ -205,6 +205,110 @@
     opacity: 0.8;
 }
 
+/* Mobile Chat Notice */
+.mobile-chat-notice {
+    display: none;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background-color: var(--background-white);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    border: 2px solid var(--border-color);
+}
+
+.mobile-notice-content h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.mobile-notice-content p {
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.mobile-notice-content p:last-child {
+    margin-bottom: 0;
+}
+
+.mobile-notice-content a {
+    color: var(--primary-color);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: var(--transition);
+}
+
+.mobile-notice-content a:hover {
+    border-bottom-color: var(--primary-color);
+}
+
+/* Model Drawer */
+.model-drawer {
+    background-color: var(--background-light);
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.drawer-header:hover {
+    background-color: var(--background-white);
+}
+
+.drawer-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.drawer-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 50%;
+    transition: var(--transition);
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drawer-toggle:hover {
+    background-color: var(--border-color);
+    color: var(--text-dark);
+}
+
+.drawer-toggle svg {
+    transition: transform 0.3s ease;
+}
+
+.drawer-toggle[aria-expanded="true"] svg {
+    transform: rotate(45deg);
+}
+
+.drawer-content {
+    padding: 0 1.5rem 1.5rem;
+    max-height: 200px;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.drawer-content.collapsed {
+    max-height: 0;
+    padding: 0 1.5rem;
+}
+
 /* Enhanced AI Widget with Living Light Effect */
 .chat-widget-embedded {
     background-color: var(--background-white);

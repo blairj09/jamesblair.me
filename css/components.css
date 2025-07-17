@@ -326,3 +326,85 @@
     line-height: 1.7;
     margin: 0;
 }
+
+/* Focus Management */
+.focused {
+    outline: 2px solid var(--secondary-color);
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    cursor: not-allowed;
+    position: relative;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin-top: -8px;
+    margin-left: -8px;
+    border: 2px solid var(--border-color);
+    border-top: 2px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Notification System */
+.notification {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-lg);
+    z-index: 1001;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    max-width: 300px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.notification-info {
+    background-color: #10b981;
+    color: white;
+}
+
+.notification-error {
+    background-color: #ef4444;
+    color: white;
+}
+
+.notification:not([style*="translateX(100%)"]) {
+    transform: translateX(0);
+}
+
+/* Hamburger Menu Animation */
+.hamburger {
+    transition: var(--transition);
+    transform-origin: center;
+}
+
+.hamburger.active {
+    background-color: var(--primary-color);
+}
+
+.nav-toggle .hamburger:first-child.active {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.nav-toggle .hamburger:nth-child(2).active {
+    opacity: 0;
+}
+
+.nav-toggle .hamburger:nth-child(3).active {
+    transform: rotate(-45deg) translate(7px, -6px);
+}

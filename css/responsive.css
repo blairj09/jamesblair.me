@@ -95,6 +95,14 @@
         padding: 0 1rem;
     }
 
+    .mobile-chat-notice {
+        display: block;
+    }
+
+    .chat-widget-wrapper {
+        display: none;
+    }
+
     .chat-widget-embedded {
         min-height: 400px;
         max-height: 500px;
