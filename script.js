@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeThemeToggle();
     initializeTabs();
     initializeAIContextCallout();
+    initializeModelDrawer();
 });
 
 // Navigation functionality
@@ -274,6 +275,45 @@ function showNotification(message, type = 'info') {
             }
         }, 300);
     }, 5000);
+}
+
+// Model Drawer functionality
+function initializeModelDrawer() {
+    const drawerToggle = document.getElementById('drawer-toggle');
+    const drawerContent = document.getElementById('drawer-content');
+    const drawerHeader = document.querySelector('.drawer-header');
+    
+    if (drawerToggle && drawerContent && drawerHeader) {
+        // Click handler for both the button and header
+        function toggleDrawer() {
+            const isExpanded = drawerToggle.getAttribute('aria-expanded') === 'true';
+            const newState = !isExpanded;
+            
+            // Update ARIA attribute
+            drawerToggle.setAttribute('aria-expanded', newState);
+            
+            // Toggle content visibility
+            if (newState) {
+                drawerContent.classList.remove('collapsed');
+                drawerContent.style.maxHeight = drawerContent.scrollHeight + 'px';
+            } else {
+                drawerContent.classList.add('collapsed');
+                drawerContent.style.maxHeight = '0px';
+            }
+        }
+        
+        // Add click listeners
+        drawerToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleDrawer();
+        });
+        
+        drawerHeader.addEventListener('click', toggleDrawer);
+        
+        // Set initial state - collapsed by default
+        drawerContent.classList.add('collapsed');
+        drawerContent.style.maxHeight = '0px';
+    }
 }
 
 // Theme toggle functionality

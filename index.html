@@ -101,7 +101,7 @@
                             <div class="tab-panel active" id="work-panel" role="tabpanel" aria-labelledby="work-tab">
                                 <div class="tab-panel-content">
                                     <div class="panel-image">
-                                        <img src="images/work-placeholder.jpg" alt="James at work" loading="lazy">
+                                        <img src="images/speaking.jpg" alt="James speaking at a conference" loading="lazy">
                                     </div>
                                     <div class="panel-text">
                                         <h3>Work</h3>
@@ -170,16 +170,6 @@
                         </ul>
                     </div>
                     <div class="skill-category">
-                        <h3>Cloud & Data Platforms</h3>
-                        <ul>
-                            <li>AWS, Azure & GCP</li>
-                            <li>Amazon SageMaker</li>
-                            <li>Google Cloud Workstations</li>
-                            <li>Microsoft Azure ML</li>
-                            <li>Databricks & Snowflake</li>
-                        </ul>
-                    </div>
-                    <div class="skill-category">
                         <h3>Leadership & Communication</h3>
                         <ul>
                             <li>Public Speaking</li>
@@ -219,19 +209,31 @@
                     <div class="chat-intro">
                         <p>Ask anything about my background, experience, or interests! This AI is prompted to give you personalized responses.</p>
                     </div>
-                    <div class="chat-controls">
-                        <div class="model-selection">
-                            <label for="model-select">AI Model:</label>
-                            <select id="model-select" class="model-select">
-                                <option value="">Loading models...</option>
-                            </select>
-                            <button id="switch-model" class="switch-model-btn">Switch Model</button>
-                            <div class="model-selection-note">
-                                <small>Only models with sufficient context window are shown</small>
+                    <div class="chat-widget-wrapper">
+                        <div class="chat-widget-embedded" role="dialog" aria-labelledby="chat-title">
+                            <!-- Model Selector Drawer -->
+                            <div class="model-drawer" id="model-drawer">
+                                <div class="drawer-header">
+                                    <span class="drawer-title">AI Model Settings</span>
+                                    <button class="drawer-toggle" id="drawer-toggle" aria-expanded="false" aria-controls="drawer-content">
+                                        <span class="sr-only">Toggle model settings</span>
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                            <path d="M8 4.5a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 .5-.5z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="drawer-content collapsed" id="drawer-content">
+                                    <div class="model-selection">
+                                        <select id="model-select" class="model-select">
+                                            <option value="">Loading models...</option>
+                                        </select>
+                                        <button id="switch-model" class="switch-model-btn">Switch Model</button>
+                                        <div class="model-selection-note">
+                                            <small>Only models with sufficient context window are shown</small>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="chat-widget-embedded" role="dialog" aria-labelledby="chat-title">
                         <div id="chat-messages" class="chat-messages" role="log" aria-live="polite" aria-label="Chat messages">
                             <div class="message ai-message disclaimer-message" role="article" aria-label="AI message">
                                 <div class="message-content">
@@ -255,6 +257,7 @@
                         <div id="chat-status" class="chat-status hidden" aria-live="polite" role="status">
                             <div class="status-indicator"></div>
                             <span class="status-text">AI is available</span>
+                        </div>
                         </div>
                     </div>
                 </div>

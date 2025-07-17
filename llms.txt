@@ -65,6 +65,8 @@ James uses and enjoys a variety of modern tools that enhance his productivity an
 
 **Creative & 3D Design:**
 - Blender (3D modeling and design for Landform Labs projects)
+- Freecad (parametric 3D design)
+- Orcaslicer (slicer for 3D printing)
 
 ## Current Projects & Interests
 
@@ -99,6 +101,7 @@ James uses and enjoys a variety of modern tools that enhance his productivity an
 - FTP of 290 watts and max 5 second power of 1525 watts
 - Favorite road ride is Arches National Park
 - Favorite mountain bike ride is anything around Lake Tahoe
+- Favorite rider is Mathieu van der Poel or Tadej Pogacar
 
 **Food:**
 - Lifelong love of funnel cakes - my wife and I served funnel cake at our wedding!
