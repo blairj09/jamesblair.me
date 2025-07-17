@@ -1,0 +1,183 @@
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav-menu {
+        position: fixed;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: var(--background-white);
+        flex-direction: column;
+        padding: 1rem;
+        box-shadow: var(--shadow-md);
+        transform: translateY(-100%);
+        transition: var(--transition);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .nav-menu.active {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .nav-toggle {
+        display: flex;
+    }
+
+    .nav-right {
+        align-items: center;
+    }
+
+    .theme-toggle {
+        order: 2;
+    }
+
+    .theme-switch-slider {
+        width: 50px;
+        height: 25px;
+        border-radius: 12.5px;
+    }
+
+    .theme-switch-handle {
+        width: 21px;
+        height: 21px;
+        top: 2px;
+        left: 2px;
+    }
+
+    .theme-switch-input:checked + .theme-switch-slider .theme-switch-handle {
+        transform: translateX(25px);
+    }
+
+    .theme-icon {
+        font-size: 0.7rem;
+    }
+
+    .nav-toggle {
+        order: 3;
+    }
+
+    .hero-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-image img {
+        width: 250px;
+        height: 250px;
+    }
+
+    .hero-cta {
+        justify-content: center;
+    }
+
+    .contact-methods {
+        gap: 1.5rem;
+    }
+
+    .social-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .social-icon .icon-img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .chat-container {
+        padding: 0 1rem;
+    }
+
+    .chat-widget-embedded {
+        min-height: 400px;
+        max-height: 500px;
+    }
+
+    .chat-messages {
+        padding: 1rem;
+    }
+
+    .chat-input-container {
+        padding: 1rem;
+    }
+    
+    .model-selection {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+    
+    .model-select {
+        min-width: unset;
+    }
+
+    .tab-navigation {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .tab-btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .tab-panel-content {
+        flex-direction: column;
+        gap: 2rem;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .panel-image {
+        max-width: 250px;
+    }
+
+    .panel-image img {
+        height: 250px;
+    }
+
+    .panel-text {
+        text-align: left;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero {
+        padding: 4rem 0;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .about,
+    .skills,
+    .chat-section,
+    .contact {
+        padding: 4rem 0;
+    }
+
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+}

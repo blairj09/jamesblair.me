@@ -1,0 +1,14 @@
+{
+  "name": "jamesblair-me",
+  "version": "1.0.0",
+  "description": "Personal website for James Blair with AI chat functionality",
+  "scripts": {
+    "build:css": "cat css/base.css css/components.css css/layout.css css/chat.css css/responsive.css > style.css",
+    "watch:css": "npm run build:css && echo 'CSS built successfully'",
+    "dev": "npm run build:css && python3 -m http.server 8000",
+    "build": "npm run build:css"
+  },
+  "keywords": ["personal-website", "ai-chat", "web-llm", "data-science"],
+  "author": "James Blair",
+  "license": "MIT"
+}
