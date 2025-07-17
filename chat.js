@@ -21,6 +21,10 @@ class JamesChat {
         this.sendButton = document.getElementById('send-message');
         this.chatLoading = document.getElementById('chat-loading');
         this.loadingText = document.querySelector('.loading-text');
+        this.progressContainer = document.querySelector('.progress-container');
+        this.progressFill = document.querySelector('.progress-fill');
+        this.progressText = document.querySelector('.progress-text');
+        this.progressPercentage = document.querySelector('.progress-percentage');
         this.chatStatus = document.getElementById('chat-status');
         this.statusText = document.querySelector('.status-text');
         this.modelSelect = document.getElementById('model-select');
@@ -311,14 +315,9 @@ Remember to:
             this.engine = await window.webllm.CreateMLCEngine(selectedModel, {
                 initProgressCallback: (progress) => {
                     const percentage = Math.round(progress.progress * 100);
-                    let progressText = `Loading AI model: ${percentage}%`;
+                    let progressText = this.getCleanProgressMessage(progress, percentage);
                     
-                    // Show more detailed progress information
-                    if (progress.text) {
-                        progressText = `${progress.text}: ${percentage}%`;
-                    }
-                    
-                    this.showLoading(progressText);
+                    this.showLoadingWithProgress(progressText, percentage);
                     
                     // Log detailed progress for debugging
                     console.log('Model loading progress:', {
@@ -529,6 +528,45 @@ Remember to:
             this.chatLoading.classList.remove('hidden');
         }
         
+        // Hide progress bar when showing simple loading
+        if (this.progressContainer) {
+            this.progressContainer.classList.add('hidden');
+        }
+        
+        // Hide status when showing loading
+        this.hideStatus();
+        
+        this.updateSendButton(true);
+    }
+
+    showLoadingWithProgress(text, percentage) {
+        // Show the main loading container
+        if (this.chatLoading) {
+            this.chatLoading.classList.remove('hidden');
+        }
+        
+        // Hide the simple loading spinner and text
+        if (this.loadingText) {
+            this.loadingText.style.display = 'none';
+        }
+        
+        // Show and update progress bar
+        if (this.progressContainer) {
+            this.progressContainer.classList.remove('hidden');
+            
+            if (this.progressFill) {
+                this.progressFill.style.width = `${percentage}%`;
+            }
+            
+            if (this.progressText) {
+                this.progressText.textContent = text;
+            }
+            
+            if (this.progressPercentage) {
+                this.progressPercentage.textContent = `${percentage}%`;
+            }
+        }
+        
         // Hide status when showing loading
         this.hideStatus();
         
@@ -538,6 +576,16 @@ Remember to:
     hideLoading() {
         if (this.chatLoading) {
             this.chatLoading.classList.add('hidden');
+        }
+        
+        // Reset progress bar
+        if (this.progressContainer) {
+            this.progressContainer.classList.add('hidden');
+        }
+        
+        // Reset loading text display
+        if (this.loadingText) {
+            this.loadingText.style.display = '';
         }
         
         // Don't update send button if we're hiding loading during initialization
@@ -779,6 +827,42 @@ Remember to:
             console.log(`Cleared ${keysToRemove.length} expired cache entries`);
         } catch (e) {
             console.warn('Error clearing expired cache:', e);
+        }
+    }
+
+    // Clean up verbose progress messages into user-friendly text
+    getCleanProgressMessage(progress, percentage) {
+        // If we have specific progress text, try to clean it up
+        if (progress.text) {
+            const text = progress.text.toLowerCase();
+            
+            // Handle different types of progress messages
+            if (text.includes('fetching param cache') || text.includes('loading') || text.includes('fetch')) {
+                if (percentage < 25) {
+                    return 'Downloading model files';
+                } else if (percentage < 75) {
+                    return 'Loading model into memory';
+                } else {
+                    return 'Finalizing setup';
+                }
+            } else if (text.includes('compil') || text.includes('preprocess')) {
+                return 'Preparing model';
+            } else if (text.includes('init') || text.includes('setting up')) {
+                return 'Initializing';
+            }
+        }
+        
+        // Default fallback based on percentage ranges with cleaner messages
+        if (percentage < 10) {
+            return 'Starting download';
+        } else if (percentage < 30) {
+            return 'Downloading model files';
+        } else if (percentage < 70) {
+            return 'Loading into memory';
+        } else if (percentage < 95) {
+            return 'Finalizing setup';
+        } else {
+            return 'Almost ready';
         }
     }
 
