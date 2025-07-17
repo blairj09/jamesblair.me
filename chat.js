@@ -193,33 +193,35 @@ class JamesChat {
         if (!this.modelSelect || !this.switchModelBtn) return;
         
         const selectedModelId = this.modelSelect.value;
+        const selectedModel = this.availableModels.find(model => model.model_id === selectedModelId);
         
-        if (!selectedModelId || selectedModelId === this.currentModel?.model_id) {
+        if (!selectedModel || selectedModel.model_id === this.currentModel?.model_id) {
             return;
         }
         
         // Disable switch button during transition
         this.switchModelBtn.disabled = true;
         this.switchModelBtn.textContent = 'Switching...';
+        this.hideStatus();
         
         try {
             // Add model switch message
             const modelName = this.formatModelName(selectedModelId);
             this.addMessage('ai', `Switching to ${modelName}. Please wait...`);
             
-            // Use the optimized switchModel method
-            const success = await this.switchModelOptimized(selectedModelId);
+            // Clean up current state
+            this.engine = null;
+            this.isInitialized = false;
+            this.isInitializing = false;
+            this.currentModel = selectedModel;
             
-            if (!success) {
-                this.addMessage('ai', `Failed to switch to ${modelName}. Please try again or contact James directly.`);
-                // Revert dropdown to current model
-                this.modelSelect.value = this.currentModel?.model_id || '';
-            }
+            // Re-initialize with new model
+            await this.initialize();
             
         } catch (error) {
             console.error('Failed to switch model:', error);
             const modelName = this.formatModelName(selectedModelId);
-            this.addMessage('ai', `Failed to switch to ${modelName}. Please try again or contact James directly.`);
+            this.addMessage('ai', `Failed to switch to ${modelName}. Error: ${error.message || 'Unknown error'}. Please try again or contact James directly.`);
             // Revert dropdown to current model
             this.modelSelect.value = this.currentModel?.model_id || '';
         } finally {
@@ -356,7 +358,7 @@ Remember to:
             
             // Show success message with model info
             const modelName = this.formatModelName(selectedModel);
-            this.addMessage('ai', `AI chat is ready using ${modelName}! Ask me anything about James's background, experience, or interests.`);
+            this.addMessage('ai', `Chat ready using ${modelName}! Ask me anything about James's background, experience, or interests.`);
             
         } catch (error) {
             console.error('Failed to initialize chat:', error);
@@ -369,7 +371,7 @@ Remember to:
         this.hideLoading();
         this.hideStatus();
         
-        let errorMessage = 'AI chat is temporarily unavailable. ';
+        let errorMessage = 'Chat is temporarily unavailable. ';
         
         if (error.message.includes('network') || error.message.includes('connection')) {
             errorMessage += 'Please check your internet connection and try again.';
@@ -410,7 +412,7 @@ Remember to:
         }
 
         // Show loading state only when generating response
-        this.showLoading('AI is thinking...');
+        this.showLoading('Thinking...');
         this.hideStatus();
 
         try {
@@ -557,13 +559,13 @@ Remember to:
         if (this.statusText) {
             switch(status) {
                 case 'available':
-                    this.statusText.textContent = 'AI is available';
+                    this.statusText.textContent = 'Ready';
                     break;
                 case 'initializing':
                     this.statusText.textContent = 'Initializing chat...';
                     break;
                 default:
-                    this.statusText.textContent = 'AI is available';
+                    this.statusText.textContent = 'Ready';
             }
         }
     }
@@ -816,48 +818,6 @@ Remember to:
         return null;
     }
 
-    // Optimize model switching without full page reload
-    async switchModelOptimized(newModelId) {
-        if (this.isInitializing || !this.isInitialized) {
-            console.log('Cannot switch models while chat is initializing');
-            return false;
-        }
-
-        if (this.currentModel?.model_id === newModelId) {
-            console.log('Model already loaded');
-            return true;
-        }
-
-        this.showLoading('Switching AI model...');
-        
-        try {
-            // Clean up current engine
-            if (this.engine) {
-                await this.engine.unload();
-            }
-
-            // Reset state
-            this.isInitialized = false;
-            this.engine = null;
-
-            // Update current model
-            const newModel = this.availableModels.find(m => m.model_id === newModelId);
-            if (newModel) {
-                this.currentModel = newModel;
-                
-                // Re-initialize with new model
-                await this.initialize();
-                return true;
-            } else {
-                throw new Error(`Model ${newModelId} not found in available models`);
-            }
-        } catch (error) {
-            console.error('Failed to switch model:', error);
-            this.hideLoading();
-            this.showStatus('error');
-            return false;
-        }
-    }
 }
 
 // Initialize chat when DOM is ready
