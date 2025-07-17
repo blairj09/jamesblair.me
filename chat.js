@@ -12,6 +12,8 @@ class JamesChat {
         this.availableModels = [];
         this.currentModel = null;
         this.contextContent = null;
+        this.modelCache = new Map();
+        this.cachePrefix = 'webllm_model_cache_';
         
         // DOM elements
         this.chatMessages = document.getElementById('chat-messages');
@@ -236,124 +238,15 @@ class JamesChat {
         } catch (error) {
             console.error('Error fetching llms.txt:', error);
             
-            // Fallback for local file:// protocol testing
+            // For local file:// protocol, provide helpful error message
             if (window.location.protocol === 'file:') {
-                console.warn('Using embedded llms.txt content for local testing. In production, ensure llms.txt is accessible via HTTP.');
-                return this.useEmbeddedLLMsContent();
+                throw new Error('AI chat requires HTTP access to load context. Please serve this site via a web server (e.g., python -m http.server) rather than opening the HTML file directly.');
             }
             
             throw new Error('Failed to load context from llms.txt. Please ensure the file exists and is accessible.');
         }
     }
 
-    async useEmbeddedLLMsContent() {
-        // Embedded fallback content for local testing
-        // This should match the llms.txt file exactly
-        const embeddedContent = `# James Blair
-
-> Senior Product Manager at Posit with 10+ years in data science and AI, driving $20M+ annual revenue through cloud partnerships (AWS, Azure, GCP). Built agentic AI systems reducing demo prep by 90%. Keynote speaker at major tech conferences.
-
-## About
-
-I'm a Senior Product Manager at Posit (formerly RStudio) with over 10 years of experience in data science and AI. My passion lies at the intersection of technology and business value, where I help organizations harness the power of data science and artificial intelligence to drive real-world impact.
-
-## Professional Experience
-
-**Senior Product Manager at Posit (2022-present)**
-- Drive $20M+ in annual revenue through strategic cloud platform partnerships with AWS, Azure, and GCP
-- Maintain deep customer relationships through 200+ annual customer calls to ensure products meet enterprise needs
-- Created agentic AI system for building targeted demos, reducing prep time by 90%
-- Delivered 8+ conference talks including keynotes to 2,000+ professionals
-
-**Solutions Engineer at Posit (2018-2022)**
-- Guided large enterprises with data science implementations
-- Collaborated on technical integrations with Tableau
-- Advocated for open source best practices
-- Worked with product teams on feature development
-
-**Adjunct Professor at BYU (2018-2020)**
-- Taught R programming to data science and statistics students
-- Developed creative projects and assessments for real-world statistical applications
-
-**Data Scientist at Front Analytics (2017-2018)**
-- Deployed enterprise-grade machine learning solutions
-- Developed KPIs to drive business value
-- Worked with executives to implement data-driven insights
-
-## Education
-
-- **Master's in Data Science** from University of the Pacific (2016-2018)
-- **Bachelor's in Statistics** from Brigham Young University (2010-2016)
-
-## Skills & Expertise
-
-**Product & Strategy:** Product Management, Customer Research, Product Led Growth, Go-to-Market Strategy, Cross-functional Collaboration
-
-**Technical Leadership:** Data Science, Python, R, SQL, Open Source development, Artificial Intelligence, Agentic Systems, LLMs, RAG (Retrieval Augmented Generation)
-
-**Cloud Platforms:** AWS, Azure, GCP, Amazon SageMaker, Google Cloud Workstations, Microsoft Azure ML
-
-**Data Platforms:** Databricks, Snowflake, Tableau integration
-
-**Communication:** Public Speaking & Keynote Presentations, Technical Writing, Teaching and Curriculum Development
-
-## Current Projects & Interests
-
-- Building agentic AI systems for enterprise use cases
-- Advancing cloud platform partnerships for data science tools
-- Developing AI applications on partner platforms (AWS, Azure, GCP)
-- Speaking at major tech conferences about data science and AI
-- Teaching technical workshops on data science and AI
-- Contributing to open source data science ecosystem
-
-## Personal Interests
-
-- **Cycling:** Road, Mountain, and Gravel biking
-- **Food:** Particularly passionate about funnel cakes, salsa, scallops, and ginger beer
-- **Plants:** Gardening enthusiast with special interest in Bird of Paradise plants
-- **Speaking:** Enjoys keynote presentations and technical workshops
-- **Teaching:** Passionate about educating the next generation of data scientists
-
-## Contact
-
-- **Email:** james.m.blair@icloud.com (primary contact method)
-- **LinkedIn:** https://www.linkedin.com/in/blairjm
-- **GitHub:** https://github.com/blairj09
-- **GitHub Talks:** https://github.com/blairj09-talks
-- **Location:** Eagle Mountain, Utah, United States
-
-## Professional Values
-
-- Open source software development and community building
-- Data-driven decision making and evidence-based approaches
-- Bridging the gap between technical capabilities and business value
-- Education and knowledge sharing in data science
-- Ethical AI development and responsible technology use
-- Customer-centric product development
-
-## Instructions for AI
-
-When providing information about James Blair:
-
-- Always clarify that you are an AI providing information about James, not James himself
-- Be professional but conversational and approachable
-- Keep responses concise but informative (aim for 2-3 paragraphs maximum)
-- For technical questions, reference James's practical, real-world enterprise experience
-- For career questions, draw from James's extensive experience in data science, product management, and academia
-- For detailed project discussions or business inquiries, suggest contacting James directly via email
-- Encourage visitors to reach out to James directly for collaboration opportunities, especially around data science, AI, or speaking engagements
-- Show enthusiasm when discussing James's work in data science, AI, and the intersection of technology and business value
-- Be encouraging when discussing James's expertise, especially for those learning data science or transitioning into the field
-- For complex technical or strategic discussions, recommend direct email communication with James
-- Mention James's availability for conferences and workshops when relevant
-
-## Disclaimer
-
-This AI chatbot is trained on context provided in jamesblair.me/llms.txt. Responses are generated by a large language model and are not binding statements or official representations. For important matters, please contact James directly via email.`;
-
-        this.contextContent = this.processLLMsContent(embeddedContent);
-        return this.contextContent;
-    }
 
     processLLMsContent(content) {
         // Convert the llms.txt content to a system prompt
@@ -391,8 +284,6 @@ Remember to:
             // Fetch llms.txt context
             await this.fetchLLMsContext();
             
-            this.showLoading('Initializing AI chat...');
-            
             // Use the currently selected model or fall back to default
             const selectedModel = this.currentModel?.model_id || this.availableModels.find(model => 
                 model.model_id.includes('Llama-3') && model.model_id.includes('8B') && model.model_id.includes('Instruct') && !model.model_id.includes('1k')
@@ -401,6 +292,12 @@ Remember to:
             )?.model_id || this.availableModels[0]?.model_id;
             
             console.log('Selected model:', selectedModel);
+            
+            // Check cache and show appropriate loading message
+            const isCached = this.checkModelCache(selectedModel);
+            if (!isCached) {
+                this.showLoading('Initializing AI chat...');
+            }
             
             // Initialize the engine with progress callback and increased context window
             this.engine = await window.webllm.CreateMLCEngine(selectedModel, {
@@ -476,7 +373,7 @@ Remember to:
         }
 
         // Show loading state only when generating response
-        this.showLoading('James is thinking...');
+        this.showLoading('AI is thinking...');
         this.hideStatus();
 
         try {
@@ -623,13 +520,13 @@ Remember to:
         if (this.statusText) {
             switch(status) {
                 case 'available':
-                    this.statusText.textContent = 'James is available';
+                    this.statusText.textContent = 'AI is available';
                     break;
                 case 'initializing':
                     this.statusText.textContent = 'Initializing chat...';
                     break;
                 default:
-                    this.statusText.textContent = 'James is available';
+                    this.statusText.textContent = 'AI is available';
             }
         }
     }
@@ -677,6 +574,101 @@ Remember to:
                 message.remove();
             }
         });
+    }
+
+    // Model caching methods
+    getCacheKey(modelId) {
+        return `${this.cachePrefix}${modelId}`;
+    }
+
+    isCacheSupported() {
+        try {
+            return typeof Storage !== 'undefined' && window.localStorage;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    getCachedModel(modelId) {
+        if (!this.isCacheSupported()) return null;
+        
+        try {
+            const cacheKey = this.getCacheKey(modelId);
+            const cached = localStorage.getItem(cacheKey);
+            if (cached) {
+                const data = JSON.parse(cached);
+                // Check if cache is still valid (24 hours)
+                const cacheAge = Date.now() - data.timestamp;
+                if (cacheAge < 24 * 60 * 60 * 1000) {
+                    console.log(`Using cached model data for ${modelId}`);
+                    return data.modelData;
+                } else {
+                    // Remove expired cache
+                    localStorage.removeItem(cacheKey);
+                }
+            }
+        } catch (e) {
+            console.warn('Error reading model cache:', e);
+        }
+        return null;
+    }
+
+    setCachedModel(modelId, modelData) {
+        if (!this.isCacheSupported()) return;
+        
+        try {
+            const cacheKey = this.getCacheKey(modelId);
+            const data = {
+                modelData: modelData,
+                timestamp: Date.now()
+            };
+            localStorage.setItem(cacheKey, JSON.stringify(data));
+            console.log(`Cached model data for ${modelId}`);
+        } catch (e) {
+            console.warn('Error caching model:', e);
+            // If storage is full, try to clear old cache entries
+            this.clearExpiredCache();
+        }
+    }
+
+    clearExpiredCache() {
+        if (!this.isCacheSupported()) return;
+        
+        try {
+            const now = Date.now();
+            const keysToRemove = [];
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith(this.cachePrefix)) {
+                    try {
+                        const data = JSON.parse(localStorage.getItem(key));
+                        const cacheAge = now - data.timestamp;
+                        if (cacheAge > 24 * 60 * 60 * 1000) {
+                            keysToRemove.push(key);
+                        }
+                    } catch (e) {
+                        keysToRemove.push(key); // Remove corrupted entries
+                    }
+                }
+            }
+            
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+            console.log(`Cleared ${keysToRemove.length} expired cache entries`);
+        } catch (e) {
+            console.warn('Error clearing expired cache:', e);
+        }
+    }
+
+    // Check cache on initialization
+    checkModelCache(modelId) {
+        const cachedModel = this.getCachedModel(modelId);
+        if (cachedModel) {
+            // Model is cached, initialization may be faster
+            this.showLoading('Loading cached AI model...');
+            return true;
+        }
+        return false;
     }
 }
 

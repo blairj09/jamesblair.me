@@ -16,6 +16,11 @@
     
     <!-- Preload critical resources -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="images/profile.jpg" as="image" fetchpriority="high">
+    <link rel="preload" href="style.css" as="style">
+    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.46/lib/index.js">
     
     <!-- Import web-llm via CDN -->
     <script type="module">
@@ -75,7 +80,13 @@
                     </div>
                 </div>
                 <div class="hero-image">
-                    <img src="images/profile.jpg" alt="James Blair profile photo" loading="lazy">
+                    <img src="images/profile.jpg" 
+                         alt="James Blair profile photo" 
+                         loading="eager"
+                         decoding="async"
+                         fetchpriority="high"
+                         width="300" 
+                         height="300">
                 </div>
             </div>
         </section>
@@ -101,7 +112,12 @@
                             <div class="tab-panel active" id="work-panel" role="tabpanel" aria-labelledby="work-tab">
                                 <div class="tab-panel-content">
                                     <div class="panel-image">
-                                        <img src="images/speaking.jpg" alt="James speaking at a conference" loading="lazy">
+                                        <img src="images/speaking.jpg" 
+                                             alt="James speaking at a conference" 
+                                             loading="lazy"
+                                             decoding="async"
+                                             width="300" 
+                                             height="420">
                                     </div>
                                     <div class="panel-text">
                                         <h3>Work</h3>
@@ -115,7 +131,12 @@
                             <div class="tab-panel" id="home-panel" role="tabpanel" aria-labelledby="home-tab">
                                 <div class="tab-panel-content">
                                     <div class="panel-image">
-                                        <img src="images/my-family.jpg" alt="James with his family" loading="lazy">
+                                        <img src="images/my-family.jpg" 
+                                             alt="James with his family" 
+                                             loading="lazy"
+                                             decoding="async"
+                                             width="300" 
+                                             height="420">
                                     </div>
                                     <div class="panel-text">
                                         <h3>Home</h3>
@@ -129,7 +150,12 @@
                             <div class="tab-panel" id="hobbies-panel" role="tabpanel" aria-labelledby="hobbies-tab">
                                 <div class="tab-panel-content">
                                     <div class="panel-image">
-                                        <img src="images/cycling.jpeg" alt="James cycling" loading="lazy">
+                                        <img src="images/cycling.jpeg" 
+                                             alt="James cycling" 
+                                             loading="lazy"
+                                             decoding="async"
+                                             width="300" 
+                                             height="420">
                                     </div>
                                     <div class="panel-text">
                                         <h3>Hobbies</h3>
@@ -207,8 +233,17 @@
                 
                 <div class="chat-container">
                     <div class="chat-intro">
-                        <p>Ask anything about my background, experience, or interests! This AI is prompted to give you personalized responses.</p>
+                        <p>Ask anything about James's background, experience, or interests! This AI is prompted to give you personalized responses.</p>
                     </div>
+                    <!-- Mobile Chat Message -->
+                    <div class="mobile-chat-notice">
+                        <div class="mobile-notice-content">
+                            <h3>💬 AI Chat Available on Desktop</h3>
+                            <p>The interactive AI chat feature works best on desktop browsers. Please visit this site on a desktop or laptop computer to chat with the AI about James's background and experience.</p>
+                            <p>For direct contact, please use the <a href="#contact">contact section</a> below.</p>
+                        </div>
+                    </div>
+                    
                     <div class="chat-widget-wrapper">
                         <div class="chat-widget-embedded" role="dialog" aria-labelledby="chat-title">
                             <!-- Model Selector Drawer -->
@@ -242,7 +277,7 @@
                             </div>
                             <div class="message ai-message" role="article" aria-label="AI message">
                                 <div class="message-content">
-                                    Hi! Ask me anything about James's background, experience, or interests!
+                                    Hi! I'm an AI assistant. Ask me anything about James's background, experience, or interests!
                                 </div>
                             </div>
                         </div>
