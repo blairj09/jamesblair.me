@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeAccessibility();
     initializeThemeToggle();
     initializeTabs();
+    initializeAIContextCallout();
 });
 
 // Navigation functionality
@@ -397,6 +398,58 @@ function initializeTabs() {
             }
         }, 1000);
     }
+}
+
+// AI Context Info functionality
+function initializeAIContextCallout() {
+    const infoToggle = document.querySelector('.info-toggle');
+    const infoDetails = document.getElementById('ai-context-details');
+    
+    if (!infoToggle || !infoDetails) return;
+    
+    // Handle toggle button click
+    function toggleInfo() {
+        const isExpanded = infoToggle.getAttribute('aria-expanded') === 'true';
+        const newState = !isExpanded;
+        
+        infoToggle.setAttribute('aria-expanded', newState);
+        infoDetails.classList.toggle('hidden', !newState);
+        
+        // Update screen reader text
+        const srText = infoToggle.querySelector('.sr-only');
+        if (srText) {
+            srText.textContent = newState ? 'Hide details' : 'Learn more';
+        }
+        
+        // Update title attribute
+        infoToggle.setAttribute('title', newState ? 'Hide AI chat details' : 'Learn more about this AI chat');
+        
+        // Announce change to screen readers
+        const announcement = document.createElement('div');
+        announcement.setAttribute('aria-live', 'polite');
+        announcement.setAttribute('aria-atomic', 'true');
+        announcement.style.position = 'absolute';
+        announcement.style.left = '-10000px';
+        announcement.textContent = newState ? 'AI chat details expanded' : 'AI chat details collapsed';
+        
+        document.body.appendChild(announcement);
+        setTimeout(() => {
+            if (announcement.parentNode) {
+                announcement.parentNode.removeChild(announcement);
+            }
+        }, 1000);
+    }
+    
+    // Add click handler to toggle button
+    infoToggle.addEventListener('click', toggleInfo);
+    
+    // Add keyboard support
+    infoToggle.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleInfo();
+        }
+    });
 }
 
 // Expose utilities globally for other scripts
