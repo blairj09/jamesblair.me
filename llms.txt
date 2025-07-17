@@ -163,4 +163,4 @@ When providing information about James Blair:
 
 ## Disclaimer
 
-This context is maintained to enable AI tools to understand context about James. Tools using this context may respond in unexpected and unancitipated ways that are not reflective of James. For important matters, please contact James directly via email james@jamesblair.me.
+This context is maintained to enable AI tools to understand context about James. Tools using this context may respond in unexpected and unanticipated ways that are not reflective of James. For important matters, please contact James directly via email james@jamesblair.me.
