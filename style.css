@@ -275,74 +275,36 @@ a:focus {
     width: 24px;
     height: 24px;
     transition: var(--transition);
-    filter: brightness(0) saturate(100%) invert(20%) sepia(15%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
+    /* Black icons in light mode */
+    filter: brightness(0) saturate(100%) invert(0%);
 }
 
 .social-icon:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-md);
+    /* Simple background change on hover - same for all themes */
+    background-color: var(--text-dark);
 }
 
-/* Individual icon colors */
-.email-icon:hover {
-    background-color: #ea4335;
-}
-
-.email-icon:hover .icon-img {
-    filter: brightness(0) saturate(100%) invert(100%);
-}
-
-.linkedin-icon:hover {
-    background-color: #0077b5;
-}
-
-.linkedin-icon:hover .icon-img {
-    filter: brightness(0) saturate(100%) invert(100%);
-}
-
-.github-icon:hover {
-    background-color: #333;
-}
-
-.github-icon:hover .icon-img {
-    filter: brightness(0) saturate(100%) invert(100%);
-}
-
-.strava-icon:hover {
-    background-color: #fc4c02;
-}
-
-.strava-icon:hover .icon-img {
-    filter: brightness(0) saturate(100%) invert(100%);
-}
-
-.etsy-icon:hover {
-    background-color: #f1641e;
-}
-
-.etsy-icon:hover .icon-img {
+.social-icon:hover .icon-img {
+    /* Invert to white on hover - same for all themes */
     filter: brightness(0) saturate(100%) invert(100%);
 }
 
 /* Dark mode social icons */
-[data-theme="dark"] .social-icon {
-    background-color: var(--background-white);
-}
-
 [data-theme="dark"] .social-icon .icon-img {
+    /* White icons in dark mode */
     filter: brightness(0) saturate(100%) invert(100%);
 }
 
-[data-theme="dark"] .github-icon .icon-img {
-    filter: brightness(0) saturate(100%) invert(100%);
+[data-theme="dark"] .social-icon:hover {
+    /* Dark background on hover in dark mode */
+    background-color: var(--text-dark);
 }
 
-[data-theme="dark"] .email-icon:hover .icon-img,
-[data-theme="dark"] .linkedin-icon:hover .icon-img,
-[data-theme="dark"] .github-icon:hover .icon-img,
-[data-theme="dark"] .etsy-icon:hover .icon-img,
-[data-theme="dark"] .strava-icon:hover .icon-img {
-    filter: brightness(0) saturate(100%) invert(100%);
+[data-theme="dark"] .social-icon:hover .icon-img {
+    /* Invert to black on hover in dark mode */
+    filter: brightness(0) saturate(100%) invert(0%);
 }
 
 /* About Tabs */
@@ -845,9 +807,10 @@ a:focus {
 /* Footer */
 .footer {
     padding: 3rem 0;
-    background-color: var(--text-dark);
-    color: white;
+    background-color: var(--background-light);
+    color: var(--text-dark);
     text-align: center;
+    border-top: 1px solid var(--border-color);
 }
 
 .footer p {

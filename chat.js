@@ -32,6 +32,14 @@ class JamesChat {
         // Initialize with proper state - hide both indicators initially
         this.hideLoading();
         this.hideStatus();
+        
+        // Register service worker for better caching (if available)
+        this.registerServiceWorker();
+        
+        // Start background preloading of popular models after a delay
+        setTimeout(() => {
+            this.preloadPopularModels();
+        }, 5000); // Wait 5 seconds after page load
     }
 
     initializeEventListeners() {
@@ -185,37 +193,35 @@ class JamesChat {
         if (!this.modelSelect || !this.switchModelBtn) return;
         
         const selectedModelId = this.modelSelect.value;
-        const selectedModel = this.availableModels.find(model => model.model_id === selectedModelId);
         
-        if (!selectedModel || selectedModel.model_id === this.currentModel?.model_id) {
+        if (!selectedModelId || selectedModelId === this.currentModel?.model_id) {
             return;
         }
         
         // Disable switch button during transition
         this.switchModelBtn.disabled = true;
         this.switchModelBtn.textContent = 'Switching...';
-        this.hideStatus();
         
         try {
-            // Clean up current engine
-            if (this.engine) {
-                this.engine = null;
-            }
-            
-            // Reset state
-            this.isInitialized = false;
-            this.isInitializing = false;
-            this.currentModel = selectedModel;
-            
             // Add model switch message
-            this.addMessage('ai', `Switching to ${this.formatModelName(selectedModel.model_id)}. Please wait...`);
+            const modelName = this.formatModelName(selectedModelId);
+            this.addMessage('ai', `Switching to ${modelName}. Please wait...`);
             
-            // Reload context and initialize with new model
-            await this.initialize();
+            // Use the optimized switchModel method
+            const success = await this.switchModelOptimized(selectedModelId);
+            
+            if (!success) {
+                this.addMessage('ai', `Failed to switch to ${modelName}. Please try again or contact James directly.`);
+                // Revert dropdown to current model
+                this.modelSelect.value = this.currentModel?.model_id || '';
+            }
             
         } catch (error) {
             console.error('Failed to switch model:', error);
-            this.addMessage('ai', `Failed to switch to ${this.formatModelName(selectedModel.model_id)}. Please try again or contact James directly.`);
+            const modelName = this.formatModelName(selectedModelId);
+            this.addMessage('ai', `Failed to switch to ${modelName}. Please try again or contact James directly.`);
+            // Revert dropdown to current model
+            this.modelSelect.value = this.currentModel?.model_id || '';
         } finally {
             // Re-enable switch button
             this.switchModelBtn.disabled = false;
@@ -261,7 +267,7 @@ Remember to:
 - For detailed inquiries or business matters, suggest contacting James directly via email
 - Show enthusiasm when discussing James's work in data science, AI, and technology
 - Be encouraging when discussing James's expertise and availability for speaking engagements
-- Direct users to email james.m.blair@icloud.com for direct communication with James`;
+- Direct users to email james@jamesblair.me for direct communication with James`;
 
         return systemPrompt;
     }
@@ -294,19 +300,42 @@ Remember to:
             console.log('Selected model:', selectedModel);
             
             // Check cache and show appropriate loading message
-            const isCached = this.checkModelCache(selectedModel);
+            const isCached = await this.checkModelCache(selectedModel);
             if (!isCached) {
                 this.showLoading('Initializing AI chat...');
             }
             
-            // Initialize the engine with progress callback and increased context window
+            // Initialize the engine with optimized settings for caching and performance
             this.engine = await window.webllm.CreateMLCEngine(selectedModel, {
                 initProgressCallback: (progress) => {
                     const percentage = Math.round(progress.progress * 100);
-                    this.showLoading(`Loading AI model: ${percentage}%`);
+                    let progressText = `Loading AI model: ${percentage}%`;
+                    
+                    // Show more detailed progress information
+                    if (progress.text) {
+                        progressText = `${progress.text}: ${percentage}%`;
+                    }
+                    
+                    this.showLoading(progressText);
+                    
+                    // Log detailed progress for debugging
+                    console.log('Model loading progress:', {
+                        percentage,
+                        text: progress.text,
+                        timeStamp: new Date().toISOString()
+                    });
                 },
                 context_window_size: 4096, // Increased from default 1024
-                sliding_window_size: 2048   // Enable sliding window for longer conversations
+                sliding_window_size: 2048,   // Enable sliding window for longer conversations
+                
+                // Enable aggressive caching for faster subsequent loads
+                use_cache: true,
+                
+                // Optimize memory usage
+                low_resource_required: false,
+                
+                // Enable model file caching in browser
+                cache_model_in_cache_api: true
             });
             
             // Initialize message history with system prompt from llms.txt
@@ -316,6 +345,14 @@ Remember to:
             this.isInitializing = false;
             this.hideLoading();
             this.showStatus('available');
+            
+            // Update model usage for cache prioritization
+            this.updateModelUsage(selectedModel);
+            
+            // Start background preloading of recently used models
+            setTimeout(() => {
+                this.preloadPopularModels();
+            }, 2000); // Wait 2 seconds after initialization
             
             // Show success message with model info
             const modelName = this.formatModelName(selectedModel);
@@ -343,7 +380,7 @@ Remember to:
         }
         
         this.addMessage('ai', errorMessage);
-        this.addMessage('ai', 'You can always reach James at james.m.blair@icloud.com for direct communication.');
+        this.addMessage('ai', 'You can always reach James at james@jamesblair.me for direct communication.');
     }
 
     async sendMessage() {
@@ -368,7 +405,7 @@ Remember to:
 
         // If still not initialized, show error
         if (!this.isInitialized) {
-            this.addMessage('ai', 'I\'m having trouble connecting right now. Please try again in a moment or contact James directly at james.m.blair@icloud.com.');
+            this.addMessage('ai', 'I\'m having trouble connecting right now. Please try again in a moment or contact James directly at james@jamesblair.me.');
             return;
         }
 
@@ -436,7 +473,7 @@ Remember to:
         } else if (error.message.includes('rate limit') || error.message.includes('quota')) {
             errorMessage += 'The AI service is busy. Please try again in a moment.';
         } else {
-            errorMessage += 'Please try asking your question again, or contact James directly at james.m.blair@icloud.com.';
+            errorMessage += 'Please try asking your question again, or contact James directly at james@jamesblair.me.';
         }
         
         this.addMessage('ai', errorMessage);
@@ -576,7 +613,7 @@ Remember to:
         });
     }
 
-    // Model caching methods
+    // Enhanced model caching and preloading methods
     getCacheKey(modelId) {
         return `${this.cachePrefix}${modelId}`;
     }
@@ -589,6 +626,18 @@ Remember to:
         }
     }
 
+    // Check if web-llm has the model cached
+    async isModelCachedByWebLLM(modelId) {
+        try {
+            if (window.webllm && window.webllm.hasModelInCache) {
+                return await window.webllm.hasModelInCache(modelId);
+            }
+        } catch (e) {
+            console.log('Could not check web-llm cache status:', e);
+        }
+        return false;
+    }
+
     getCachedModel(modelId) {
         if (!this.isCacheSupported()) return null;
         
@@ -597,10 +646,10 @@ Remember to:
             const cached = localStorage.getItem(cacheKey);
             if (cached) {
                 const data = JSON.parse(cached);
-                // Check if cache is still valid (24 hours)
+                // Check if cache is still valid (7 days for model info)
                 const cacheAge = Date.now() - data.timestamp;
-                if (cacheAge < 24 * 60 * 60 * 1000) {
-                    console.log(`Using cached model data for ${modelId}`);
+                if (cacheAge < 7 * 24 * 60 * 60 * 1000) {
+                    console.log(`Using cached model info for ${modelId}`);
                     return data.modelData;
                 } else {
                     // Remove expired cache
@@ -620,14 +669,85 @@ Remember to:
             const cacheKey = this.getCacheKey(modelId);
             const data = {
                 modelData: modelData,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                lastUsed: Date.now()
             };
             localStorage.setItem(cacheKey, JSON.stringify(data));
-            console.log(`Cached model data for ${modelId}`);
+            console.log(`Cached model info for ${modelId}`);
         } catch (e) {
             console.warn('Error caching model:', e);
             // If storage is full, try to clear old cache entries
             this.clearExpiredCache();
+        }
+    }
+
+    // Update last used timestamp for cache prioritization
+    updateModelUsage(modelId) {
+        if (!this.isCacheSupported()) return;
+        
+        try {
+            const cacheKey = this.getCacheKey(modelId);
+            const cached = localStorage.getItem(cacheKey);
+            if (cached) {
+                const data = JSON.parse(cached);
+                data.lastUsed = Date.now();
+                localStorage.setItem(cacheKey, JSON.stringify(data));
+            }
+        } catch (e) {
+            console.warn('Error updating model usage:', e);
+        }
+    }
+
+    // Preload popular models in the background
+    async preloadPopularModels() {
+        if (!window.webllm || this.isInitializing) return;
+        
+        // Get most recently used models
+        const recentModels = this.getRecentlyUsedModels();
+        
+        // Preload the most recent model if it's not the current one
+        if (recentModels.length > 0 && recentModels[0] !== this.currentModel?.model_id) {
+            const modelToPreload = recentModels[0];
+            console.log(`Preloading recently used model: ${modelToPreload}`);
+            
+            try {
+                // Check if already cached
+                const isCached = await this.isModelCachedByWebLLM(modelToPreload);
+                if (!isCached) {
+                    // Preload in background (don't await to avoid blocking)
+                    window.webllm.preloadModel(modelToPreload).catch(e => {
+                        console.log('Background preload failed (this is normal):', e);
+                    });
+                }
+            } catch (e) {
+                console.log('Could not preload model:', e);
+            }
+        }
+    }
+
+    getRecentlyUsedModels() {
+        if (!this.isCacheSupported()) return [];
+        
+        const models = [];
+        try {
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith(this.cachePrefix)) {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    if (data.lastUsed) {
+                        models.push({
+                            modelId: key.replace(this.cachePrefix, ''),
+                            lastUsed: data.lastUsed
+                        });
+                    }
+                }
+            }
+            // Sort by most recently used
+            models.sort((a, b) => b.lastUsed - a.lastUsed);
+            return models.map(m => m.modelId);
+        } catch (e) {
+            console.warn('Error getting recent models:', e);
+            return [];
         }
     }
 
@@ -660,15 +780,83 @@ Remember to:
         }
     }
 
-    // Check cache on initialization
-    checkModelCache(modelId) {
+    // Enhanced cache checking with web-llm integration
+    async checkModelCache(modelId) {
+        // Check our localStorage cache first
         const cachedModel = this.getCachedModel(modelId);
-        if (cachedModel) {
-            // Model is cached, initialization may be faster
+        
+        // Check if web-llm has the model files cached
+        const isWebLLMCached = await this.isModelCachedByWebLLM(modelId);
+        
+        if (isWebLLMCached) {
             this.showLoading('Loading cached AI model...');
+            console.log(`Model ${modelId} found in web-llm cache - should load quickly`);
+            return true;
+        } else if (cachedModel) {
+            this.showLoading('Model info cached, downloading model files...');
+            console.log(`Model ${modelId} info cached but files need download`);
+            return false; // Still need to download, but we have some info
+        }
+        
+        console.log(`Model ${modelId} not cached - first-time download`);
+        return false;
+    }
+
+    // Add service worker registration for better caching
+    async registerServiceWorker() {
+        if ('serviceWorker' in navigator && 'caches' in window) {
+            try {
+                const registration = await navigator.serviceWorker.register('/sw.js');
+                console.log('Service Worker registered for model caching');
+                return registration;
+            } catch (error) {
+                console.log('Service Worker registration failed (this is normal):', error);
+            }
+        }
+        return null;
+    }
+
+    // Optimize model switching without full page reload
+    async switchModelOptimized(newModelId) {
+        if (this.isInitializing || !this.isInitialized) {
+            console.log('Cannot switch models while chat is initializing');
+            return false;
+        }
+
+        if (this.currentModel?.model_id === newModelId) {
+            console.log('Model already loaded');
             return true;
         }
-        return false;
+
+        this.showLoading('Switching AI model...');
+        
+        try {
+            // Clean up current engine
+            if (this.engine) {
+                await this.engine.unload();
+            }
+
+            // Reset state
+            this.isInitialized = false;
+            this.engine = null;
+
+            // Update current model
+            const newModel = this.availableModels.find(m => m.model_id === newModelId);
+            if (newModel) {
+                this.currentModel = newModel;
+                
+                // Re-initialize with new model
+                await this.initialize();
+                return true;
+            } else {
+                throw new Error(`Model ${newModelId} not found in available models`);
+            }
+        } catch (error) {
+            console.error('Failed to switch model:', error);
+            this.hideLoading();
+            this.showStatus('error');
+            return false;
+        }
     }
 }
 
