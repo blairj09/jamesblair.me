@@ -14,6 +14,8 @@ class JamesChat {
         this.contextContent = null;
         this.modelCache = new Map();
         this.cachePrefix = 'webllm_model_cache_';
+        this.progressSimulationInterval = null;
+        this.lastProgressUpdate = 0;
         
         // DOM elements
         this.chatMessages = document.getElementById('chat-messages');
@@ -311,20 +313,35 @@ Remember to:
                 this.showLoading('Initializing AI chat...');
             }
             
+            // Start progress simulation only for cached models
+            if (isCached) {
+                this.startProgressSimulation();
+            }
+            
             // Initialize the engine with optimized settings for caching and performance
             this.engine = await window.webllm.CreateMLCEngine(selectedModel, {
                 initProgressCallback: (progress) => {
                     const percentage = Math.round(progress.progress * 100);
-                    let progressText = this.getCleanProgressMessage(progress, percentage);
                     
-                    this.showLoadingWithProgress(progressText, percentage);
+                    // For cached models, stop simulation when real progress starts
+                    if (isCached && percentage > 0 && progress.text) {
+                        this.lastProgressUpdate = Date.now();
+                        this.clearProgressSimulation();
+                    }
                     
-                    // Log detailed progress for debugging
-                    console.log('Model loading progress:', {
-                        percentage,
-                        text: progress.text,
-                        timeStamp: new Date().toISOString()
-                    });
+                    // Always show real progress when available
+                    if (percentage > 0) {
+                        let progressText = this.getCleanProgressMessage(progress, percentage, isCached);
+                        this.showLoadingWithProgress(progressText, percentage);
+                        
+                        // Log detailed progress for debugging
+                        console.log('Model loading progress:', {
+                            percentage,
+                            text: progress.text,
+                            timeStamp: new Date().toISOString(),
+                            cached: isCached
+                        });
+                    }
                 },
                 context_window_size: 4096, // Increased from default 1024
                 sliding_window_size: 2048,   // Enable sliding window for longer conversations
@@ -344,6 +361,7 @@ Remember to:
             
             this.isInitialized = true;
             this.isInitializing = false;
+            this.clearProgressSimulation(); // Clear any ongoing simulation
             this.hideLoading();
             this.showStatus('available');
             
@@ -362,6 +380,7 @@ Remember to:
         } catch (error) {
             console.error('Failed to initialize chat:', error);
             this.isInitializing = false;
+            this.clearProgressSimulation(); // Clear any ongoing simulation
             this.handleInitializationError(error);
         }
     }
@@ -478,6 +497,57 @@ Remember to:
         }
         
         this.addMessage('ai', errorMessage);
+    }
+
+    // Simulate progress for cached models when real progress is stuck at 0%
+    startProgressSimulation() {
+        this.clearProgressSimulation();
+        
+        const progressSteps = [
+            { progress: 15, text: 'Loading cached model' },
+            { progress: 35, text: 'Initializing cached model files' },
+            { progress: 55, text: 'Setting up cached model' },
+            { progress: 75, text: 'Preparing cached model for use' },
+            { progress: 95, text: 'Finalizing cached model setup' }
+        ];
+        
+        let currentStep = 0;
+        let progressUpdateTimeout = null;
+        
+        // Start simulation immediately
+        const updateProgress = () => {
+            // Stop simulation if real progress is working
+            const timeSinceLastUpdate = Date.now() - this.lastProgressUpdate;
+            if (this.lastProgressUpdate > 0 && timeSinceLastUpdate < 2000) {
+                this.clearProgressSimulation();
+                return;
+            }
+            
+            if (currentStep < progressSteps.length) {
+                const step = progressSteps[currentStep];
+                this.showLoadingWithProgress(step.text, step.progress);
+                currentStep++;
+                
+                // Schedule next update - faster for cached models
+                progressUpdateTimeout = setTimeout(updateProgress, 300);
+            } else {
+                this.clearProgressSimulation();
+            }
+        };
+        
+        // Start immediately
+        updateProgress();
+        
+        // Store timeout reference for cleanup
+        this.progressSimulationInterval = progressUpdateTimeout;
+    }
+    
+    // Clear progress simulation
+    clearProgressSimulation() {
+        if (this.progressSimulationInterval) {
+            clearTimeout(this.progressSimulationInterval);
+            this.progressSimulationInterval = null;
+        }
     }
 
     addMessage(sender, content) {
@@ -831,38 +901,67 @@ Remember to:
     }
 
     // Clean up verbose progress messages into user-friendly text
-    getCleanProgressMessage(progress, percentage) {
+    getCleanProgressMessage(progress, percentage, isCached = false) {
         // If we have specific progress text, try to clean it up
         if (progress.text) {
             const text = progress.text.toLowerCase();
             
+            // Handle cache-specific messages
+            if (text.includes('loading model from cache') || (text.includes('cache') && isCached)) {
+                return 'Loading cached model files';
+            }
+            
             // Handle different types of progress messages
             if (text.includes('fetching param cache') || text.includes('loading') || text.includes('fetch')) {
-                if (percentage < 25) {
-                    return 'Downloading model files';
-                } else if (percentage < 75) {
-                    return 'Loading model into memory';
+                if (isCached) {
+                    if (percentage < 25) {
+                        return 'Loading cached model files';
+                    } else if (percentage < 75) {
+                        return 'Initializing cached model';
+                    } else {
+                        return 'Finalizing cached model setup';
+                    }
                 } else {
-                    return 'Finalizing setup';
+                    if (percentage < 25) {
+                        return 'Downloading model files';
+                    } else if (percentage < 75) {
+                        return 'Loading model into memory';
+                    } else {
+                        return 'Finalizing setup';
+                    }
                 }
             } else if (text.includes('compil') || text.includes('preprocess')) {
-                return 'Preparing model';
+                return isCached ? 'Preparing cached model' : 'Preparing model';
             } else if (text.includes('init') || text.includes('setting up')) {
-                return 'Initializing';
+                return isCached ? 'Initializing cached model' : 'Initializing';
             }
         }
         
         // Default fallback based on percentage ranges with cleaner messages
-        if (percentage < 10) {
-            return 'Starting download';
-        } else if (percentage < 30) {
-            return 'Downloading model files';
-        } else if (percentage < 70) {
-            return 'Loading into memory';
-        } else if (percentage < 95) {
-            return 'Finalizing setup';
+        if (isCached) {
+            if (percentage < 10) {
+                return 'Loading cached model';
+            } else if (percentage < 30) {
+                return 'Initializing cached model files';
+            } else if (percentage < 70) {
+                return 'Setting up cached model';
+            } else if (percentage < 95) {
+                return 'Finalizing cached model setup';
+            } else {
+                return 'Cached model ready!';
+            }
         } else {
-            return 'Almost ready';
+            if (percentage < 10) {
+                return 'Starting download';
+            } else if (percentage < 30) {
+                return 'Downloading model files';
+            } else if (percentage < 70) {
+                return 'Loading into memory';
+            } else if (percentage < 95) {
+                return 'Finalizing setup';
+            } else {
+                return 'Ready!';
+            }
         }
     }
 
