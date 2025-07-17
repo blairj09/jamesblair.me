@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://jamesblair.me/sitemap.xml
+
+# Block access to service worker and other system files
+Disallow: /sw.js
+Disallow: /.DS_Store
+
+# Allow all images
+Allow: /images/
+
+# Allow CSS and JS
+Allow: /*.css
+Allow: /*.js

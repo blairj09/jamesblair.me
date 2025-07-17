@@ -8,11 +8,31 @@
     <meta name="keywords" content="James Blair, Senior Product Manager, Data Science, AI, Posit, RStudio, Cloud Partnerships, AWS, Azure, GCP, Databricks, Snowflake, Agentic AI, Keynote Speaker">
     <meta name="author" content="James Blair">
     
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://fonts.googleapis.com; worker-src 'self';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="James Blair - Senior Product Manager | Data Science & AI Expert">
     <meta property="og:description" content="Senior Product Manager at Posit with 10+ years in data science and AI, driving $20M+ revenue through cloud partnerships. Built agentic AI systems. Keynote speaker. Husband and father of 5.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://jamesblair.me">
+    <meta property="og:image" content="https://jamesblair.me/images/profile.jpg">
+    <meta property="og:image:width" content="300">
+    <meta property="og:image:height" content="300">
+    <meta property="og:image:alt" content="James Blair profile photo">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="James Blair - Senior Product Manager | Data Science & AI Expert">
+    <meta name="twitter:description" content="Senior Product Manager at Posit with 10+ years in data science and AI, driving $20M+ revenue through cloud partnerships. Built agentic AI systems. Keynote speaker. Husband and father of 5.">
+    <meta name="twitter:image" content="https://jamesblair.me/images/profile.jpg">
+    <meta name="twitter:image:alt" content="James Blair profile photo">
+    <meta name="twitter:creator" content="@blairjm">
+    <meta name="twitter:site" content="@blairjm">
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -23,17 +43,72 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"></noscript>
     <link rel="preload" href="images/profile.jpg" as="image" fetchpriority="high">
     <link rel="preload" href="style.css" as="style">
-    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.46/lib/index.js">
+    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.46/lib/index.js" 
+          integrity="sha384-2pgSFn+NQT1+9/F1MQkSGoAU7B76Y1Me5cvGwMMqMbnrxO8IwxrPDDNqvW6Zh3UY" 
+          crossorigin="anonymous">
     
     <!-- Import web-llm via CDN -->
-    <script type="module">
+    <script type="module" crossorigin="anonymous">
         import * as webllm from "https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.46/lib/index.js";
         window.webllm = webllm;
     </script>
     
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "James Blair",
+        "jobTitle": "Senior Product Manager",
+        "worksFor": {
+            "@type": "Organization",
+            "name": "Posit"
+        },
+        "url": "https://jamesblair.me",
+        "email": "james@jamesblair.me",
+        "image": "https://jamesblair.me/images/profile.jpg",
+        "description": "Senior Product Manager with 10+ years in data science and AI, driving $20M+ annual revenue through strategic cloud partnerships (AWS, Azure, GCP, Databricks, Snowflake). Built agentic AI systems reducing demo prep by 90%. Keynote speaker at major tech conferences.",
+        "alumniOf": [
+            {
+                "@type": "EducationalOrganization",
+                "name": "University of the Pacific",
+                "description": "Master's in Data Science"
+            },
+            {
+                "@type": "EducationalOrganization", 
+                "name": "Brigham Young University",
+                "description": "Bachelor's in Statistics"
+            }
+        ],
+        "knowsAbout": [
+            "Data Science",
+            "Artificial Intelligence",
+            "Product Management",
+            "Cloud Computing",
+            "Machine Learning",
+            "Python",
+            "R",
+            "SQL"
+        ],
+        "sameAs": [
+            "https://www.linkedin.com/in/blairjm",
+            "https://github.com/blairj09",
+            "https://www.strava.com/athletes/114569653"
+        ],
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Eagle Mountain",
+            "addressRegion": "Utah",
+            "addressCountry": "United States"
+        }
+    }
+    </script>
 </head>
 <body>
     <header class="header">
