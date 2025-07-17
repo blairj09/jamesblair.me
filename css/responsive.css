@@ -2,21 +2,22 @@
 @media (max-width: 768px) {
     .nav-menu {
         position: fixed;
-        top: 100%;
+        top: 0;
         left: 0;
         width: 100%;
         background-color: var(--background-white);
         flex-direction: column;
         padding: 1rem;
         box-shadow: var(--shadow-md);
-        transform: translateY(-100%);
         transition: var(--transition);
         opacity: 0;
         pointer-events: none;
+        z-index: 1000;
+        transform: translateY(-100%);
     }
 
     .nav-menu.active {
-        transform: translateY(0);
+        transform: translateY(73px);
         opacity: 1;
         pointer-events: auto;
     }
