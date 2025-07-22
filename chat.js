@@ -209,7 +209,36 @@ class ClaudeChat {
 
         const contentDiv = document.createElement('div');
         contentDiv.className = 'message-content';
-        contentDiv.textContent = content;
+        
+        // Render markdown for assistant messages, plain text for user messages
+        if (role === 'assistant' && typeof marked !== 'undefined') {
+            // Configure marked for security and styling
+            const renderer = new marked.Renderer();
+            
+            // Customize link rendering for security
+            renderer.link = (href, title, text) => {
+                const titleAttr = title ? ` title="${title}"` : '';
+                return `<a href="${href}"${titleAttr} target="_blank" rel="noopener noreferrer">${text}</a>`;
+            };
+            
+            // Configure marked options
+            marked.setOptions({
+                renderer: renderer,
+                gfm: true, // GitHub Flavored Markdown
+                breaks: true, // Convert \n to <br>
+                sanitize: false, // We'll handle XSS protection with CSP
+                silent: true // Don't throw on error
+            });
+            
+            try {
+                contentDiv.innerHTML = marked.parse(content);
+            } catch (error) {
+                console.warn('Markdown parsing failed, falling back to plain text:', error);
+                contentDiv.textContent = content;
+            }
+        } else {
+            contentDiv.textContent = content;
+        }
 
         messageDiv.appendChild(contentDiv);
         this.chatMessages.appendChild(messageDiv);
