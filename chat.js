@@ -223,6 +223,7 @@ class ClaudeChat {
         }
     }
 
+
     // Enhanced accessibility method from Web-LLM implementation
     announceMessage(content) {
         // Create a temporary element for screen reader announcement
