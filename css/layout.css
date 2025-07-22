@@ -122,6 +122,16 @@
     max-width: 600px;
 }
 
+.hero-highlight {
+    font-weight: 600;
+    color: var(--primary-color);
+    text-shadow: 
+        0 0 10px rgba(59, 130, 246, 0.3),
+        0 0 20px rgba(59, 130, 246, 0.2),
+        0 0 30px rgba(59, 130, 246, 0.1);
+    transition: all 0.3s ease;
+}
+
 .hero-cta {
     display: flex;
     gap: 1rem;
@@ -393,8 +403,8 @@
 /* Footer */
 .footer {
     padding: 3rem 0;
-    background-color: var(--primary-color);
-    color: white;
+    background-color: var(--background-light);
+    color: var(--text-light);
     text-align: center;
 }
 
