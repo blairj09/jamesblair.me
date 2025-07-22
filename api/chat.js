@@ -14,18 +14,7 @@ async function loadJamesContext() {
       const { readFileSync } = await import('fs');
       const { join } = await import('path');
       const llmsPath = join(process.cwd(), 'llms.txt');
-      console.log('Attempting to load llms.txt from path:', llmsPath);
-      console.log('Current working directory:', process.cwd());
-      
-      // Check if file exists and list directory contents
-      const { existsSync, readdirSync } = await import('fs');
-      console.log('File exists?', existsSync(llmsPath));
-      console.log('Directory contents:', readdirSync(process.cwd()));
-      
       llmsContent = readFileSync(llmsPath, 'utf-8');
-      console.log('Successfully loaded llms.txt from filesystem. Content length:', llmsContent.length);
-      console.log('First 200 chars:', llmsContent.substring(0, 200));
-      console.log('Contains FTP?', llmsContent.includes('FTP'));
     } catch (fsError) {
       // Fall back to HTTP (for other environments)
       console.log('Filesystem access failed, trying HTTP:', fsError.message);
@@ -34,7 +23,6 @@ async function loadJamesContext() {
         ? `https://${process.env.VERCEL_URL}` 
         : 'http://localhost:3000';
       
-      console.log('Fetching from URL:', `${baseUrl}/llms.txt`);
       const llmsResponse = await fetch(`${baseUrl}/llms.txt`);
       
       if (!llmsResponse.ok) {
@@ -42,9 +30,6 @@ async function loadJamesContext() {
       }
       
       llmsContent = await llmsResponse.text();
-      console.log('Successfully loaded llms.txt via HTTP. Content length:', llmsContent.length);
-      console.log('First 200 chars:', llmsContent.substring(0, 200));
-      console.log('Contains FTP?', llmsContent.includes('FTP'));
     }
     
     // Create a system prompt that incorporates the llms.txt content
@@ -218,8 +203,6 @@ export default async function handler(req, res) {
 
     // Load James Blair context dynamically from llms.txt
     const systemPrompt = await loadJamesContext();
-    console.log('System prompt length:', systemPrompt.length);
-    console.log('System prompt contains FTP?', systemPrompt.includes('FTP'));
 
     // Call Claude API with retry logic for overloaded errors
     const claudeResponse = await callClaudeWithRetry(systemPrompt, messages);
