@@ -97,11 +97,11 @@
     }
 
     .mobile-chat-notice {
-        display: block;
+        display: none;
     }
 
     .chat-widget-wrapper {
-        display: none;
+        display: block;
     }
 
     .chat-widget-embedded {
