@@ -1,4 +1,4 @@
-# James Blair
+# James Michael Blair
 
 > Senior Product Manager at Posit with 10+ years in data science and AI. I've led 0 to 1 product development of internal agentic AI systems and external reporting tools, while building strategic cloud partnerships with AWS, Azure, GCP, Databricks, and Snowflake that contribute to $20M+ annual revenue. Regular speaker at major tech conferences. Husband to Brittany and father to 5 amazing kids. I like to ride all the bikes.
 

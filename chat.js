@@ -178,6 +178,11 @@ class ClaudeChat {
             // Update message count display
             this.updateMessageCountDisplay();
 
+            // Check if session limit is now reached after this exchange
+            if (this.isSessionLimitReached()) {
+                this.showSessionLimitReached();
+            }
+
             // Update conversation history
             this.conversationHistory.push(
                 { role: 'user', content: message },
@@ -193,11 +198,13 @@ class ClaudeChat {
             console.error('Chat error:', error);
             this.handleResponseError(error);
         } finally {
-            // Re-enable input
+            // Re-enable input only if session limit hasn't been reached
             this.showLoading(false);
-            this.chatInput.disabled = false;
-            this.updateSendButton();
-            this.chatInput.focus();
+            if (!this.isSessionLimitReached()) {
+                this.chatInput.disabled = false;
+                this.updateSendButton();
+                this.chatInput.focus();
+            }
         }
     }
 
@@ -296,11 +303,17 @@ class ClaudeChat {
 
     showLoading(show) {
         if (show) {
-            this.loadingIndicator?.classList.remove('hidden');
-            this.statusIndicator?.classList.add('hidden');
-        } else {
+            // Hide the separate loading indicator and show thinking status
             this.loadingIndicator?.classList.add('hidden');
-            this.showStatus('Ready', 'ready');
+            this.showStatus('Claude is thinking...', 'thinking');
+        } else {
+            // Hide loading indicator and show appropriate status
+            this.loadingIndicator?.classList.add('hidden');
+            if (this.isSessionLimitReached()) {
+                this.showStatus('Session limit', 'limit');
+            } else {
+                this.showStatus('Ready', 'ready');
+            }
         }
     }
 
@@ -330,7 +343,14 @@ To continue chatting, please refresh the page to start a new session.`;
         this.sendButton.disabled = true;
         this.chatInput.placeholder = "Session limit reached - refresh to continue";
         
-        this.showStatus(`Session limit reached (${this.messageCount}/${this.maxMessages})`, 'limit');
+        // Update the message counter to show the total count
+        const messageCountText = document.getElementById('message-count-text');
+        if (messageCountText) {
+            messageCountText.textContent = `${this.messageCount}/${this.maxMessages} messages`;
+        }
+        
+        // Show "Session limit" with red indicator
+        this.showStatus('Session limit', 'limit');
     }
 
     // Enhanced error handling from Web-LLM implementation
@@ -357,10 +377,37 @@ To continue chatting, please refresh the page to start a new session.`;
         const remaining = this.maxMessages - this.messageCount;
         console.log(`Updating display: ${this.messageCount} used, ${remaining} remaining`);
         
-        if (remaining <= 3 && remaining > 0) {
-            this.showStatus(`${remaining} messages remaining`, 'warning');
-        } else if (remaining > 0) {
+        // Update the dedicated message counter
+        const messageCountText = document.getElementById('message-count-text');
+        const messageCounter = document.querySelector('.message-counter');
+        
+        if (messageCountText) {
+            if (remaining === 1) {
+                messageCountText.textContent = '1 message remaining';
+            } else if (remaining > 0) {
+                messageCountText.textContent = `${remaining} messages remaining`;
+            } else {
+                messageCountText.textContent = 'Session limit reached';
+            }
+        }
+        
+        // Update message counter styling based on remaining count
+        if (messageCounter) {
+            messageCounter.className = 'message-counter';
+            if (remaining <= 1) {
+                messageCounter.classList.add('critical');
+            } else if (remaining <= 3) {
+                messageCounter.classList.add('warning');
+            }
+            // Keep subtle default style for 4+ messages remaining
+        }
+        
+        // Update main status indicator - always green when ready
+        if (remaining > 0) {
             this.showStatus('Ready', 'ready');
+        } else {
+            // When limit is reached, show "Session limit" with red indicator
+            this.showStatus('Session limit', 'limit');
         }
     }
 
@@ -404,6 +451,51 @@ To continue chatting, please refresh the page to start a new session.`;
         // Reset session
         this.resetSession();
         this.updateMessageCountDisplay();
+    }
+
+    // Test method to simulate different message count states
+    testMessageStates() {
+        if (!this.isInitialized) {
+            console.warn('Chat not initialized yet');
+            return;
+        }
+        
+        console.log('Testing message counter states...');
+        const originalCount = this.messageCount;
+        
+        // Test different states with delays
+        const states = [
+            { remaining: 10, label: "Fresh start (10 remaining)" },
+            { remaining: 5, label: "Caution state (5 remaining)" },
+            { remaining: 3, label: "Warning state (3 remaining)" },
+            { remaining: 1, label: "Critical state (1 remaining)" },
+            { remaining: 0, label: "Session limit reached (0 remaining)" }
+        ];
+        
+        states.forEach((state, index) => {
+            setTimeout(() => {
+                this.messageCount = this.maxMessages - state.remaining;
+                console.log(`Testing: ${state.label}`);
+                this.updateMessageCountDisplay();
+                
+                // For the final state, also simulate the full session limit behavior
+                if (state.remaining === 0) {
+                    setTimeout(() => {
+                        this.showSessionLimitReached();
+                    }, 500);
+                }
+            }, index * 2000);
+        });
+        
+        // Reset to original state
+        setTimeout(() => {
+            this.messageCount = originalCount;
+            this.chatInput.disabled = false;
+            this.sendButton.disabled = false;
+            this.chatInput.placeholder = "Ask me about James...";
+            this.updateMessageCountDisplay();
+            console.log('Reset to original state');
+        }, states.length * 2000 + 2000);
     }
 }
 
