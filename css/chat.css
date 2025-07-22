@@ -103,18 +103,7 @@
 
 .chat-container {
     max-width: 800px;
-    margin: 0 auto;
-}
-
-.chat-intro {
-    text-align: left;
-    margin-bottom: 3rem;
-}
-
-.chat-intro p {
-    font-size: 1.1rem;
-    color: var(--text-light);
-    line-height: 1.7;
+    margin: 2rem auto 0 auto;
 }
 
 .chat-disclaimer {
@@ -307,6 +296,62 @@
 .drawer-content.collapsed {
     max-height: 0;
     padding: 0 1.5rem;
+}
+
+/* Chat Header */
+.chat-header {
+    background-color: var(--background-white);
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.chat-title-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.chat-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ai-badge {
+    display: flex;
+    align-items: center;
+}
+
+.ai-model {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.375rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.ai-model:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .ai-model {
+    background-color: var(--secondary-color);
+    color: var(--background-white);
+}
+
+[data-theme="dark"] .ai-model:hover {
+    background-color: var(--accent-color);
 }
 
 /* Enhanced AI Widget with Living Light Effect */
@@ -577,17 +622,19 @@
 }
 
 .disclaimer-message {
-    background-color: #fef3c7;
-    border: 1px solid #fcd34d;
+    background-color: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
     border-radius: 0.5rem;
-    color: #92400e;
+    color: var(--primary-color);
     margin-bottom: 1rem;
+    border-left: 4px solid var(--primary-color);
 }
 
 [data-theme="dark"] .disclaimer-message {
-    background-color: #451a03;
-    border-color: #a16207;
-    color: #fbbf24;
+    background-color: rgba(96, 165, 250, 0.15);
+    border-color: rgba(96, 165, 250, 0.4);
+    color: var(--accent-color);
+    border-left-color: var(--secondary-color);
 }
 
 .chat-input-container {

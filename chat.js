@@ -1,577 +1,229 @@
-// Web-LLM Chat Integration for James Blair's website
-// This module handles the AI chat functionality using web-llm
+// Claude API Chat Implementation
+// Enhanced with improved UX features from Web-LLM implementation
 
-class JamesChat {
+class ClaudeChat {
     constructor() {
-        this.engine = null;
+        this.conversationHistory = [];
         this.isInitialized = false;
-        this.isInitializing = false;
-        this.messageHistory = [];
-        this.maxRetries = 3;
-        this.retryDelay = 1000;
-        this.availableModels = [];
-        this.currentModel = null;
-        this.contextContent = null;
-        this.modelCache = new Map();
-        this.cachePrefix = 'webllm_model_cache_';
-        this.progressSimulationInterval = null;
-        this.lastProgressUpdate = 0;
+        this.maxMessages = 10;
         
-        // DOM elements
+        // Reset session on each page load for better UX
+        this.resetSession();
+        
+        this.sessionId = this.getOrCreateSessionId();
+        this.messageCount = this.getSessionMessageCount();
+        this.init();
+    }
+
+    // Session management methods
+    getOrCreateSessionId() {
+        let sessionId = sessionStorage.getItem('claude-chat-session-id');
+        if (!sessionId) {
+            sessionId = 'session-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
+            sessionStorage.setItem('claude-chat-session-id', sessionId);
+            console.log('Created new session:', sessionId);
+        } else {
+            console.log('Using existing session:', sessionId);
+        }
+        return sessionId;
+    }
+
+    getSessionMessageCount() {
+        const count = sessionStorage.getItem('claude-chat-message-count');
+        const parsed = count ? parseInt(count, 10) : 0;
+        console.log('Retrieved message count:', parsed);
+        return parsed;
+    }
+
+    incrementMessageCount() {
+        this.messageCount++;
+        sessionStorage.setItem('claude-chat-message-count', this.messageCount.toString());
+        console.log(`Message count incremented to: ${this.messageCount}/${this.maxMessages}`);
+    }
+
+    isSessionLimitReached() {
+        return this.messageCount >= this.maxMessages;
+    }
+
+    resetSession() {
+        // Clear existing session data
+        sessionStorage.removeItem('claude-chat-session-id');
+        sessionStorage.removeItem('claude-chat-message-count');
+        sessionStorage.removeItem('claude-chat-session-timestamp');
+        
+        // Reset instance variables (new session will be created when needed)
+        this.sessionId = null;
+        this.messageCount = 0;
+        console.log('Session reset');
+    }
+
+    handleSessionExpiration() {
+        const sessionTimestamp = sessionStorage.getItem('claude-chat-session-timestamp');
+        const currentTime = Date.now();
+        
+        // If no timestamp, this is a fresh start
+        if (!sessionTimestamp) {
+            sessionStorage.setItem('claude-chat-session-timestamp', currentTime.toString());
+            return;
+        }
+        
+        // Reset session if older than 30 minutes
+        const sessionAge = currentTime - parseInt(sessionTimestamp);
+        const thirtyMinutes = 30 * 60 * 1000;
+        
+        if (sessionAge > thirtyMinutes) {
+            console.log('Session expired (30+ minutes old), resetting');
+            this.resetSession();
+            sessionStorage.setItem('claude-chat-session-timestamp', currentTime.toString());
+        } else {
+            console.log(`Session still valid (${Math.round(sessionAge / 1000 / 60)} minutes old)`);
+        }
+    }
+
+    init() {
+        // Get DOM elements
         this.chatMessages = document.getElementById('chat-messages');
         this.chatInput = document.getElementById('chat-input');
         this.sendButton = document.getElementById('send-message');
-        this.chatLoading = document.getElementById('chat-loading');
-        this.loadingText = document.querySelector('.loading-text');
-        this.progressContainer = document.querySelector('.progress-container');
-        this.progressFill = document.querySelector('.progress-fill');
-        this.progressText = document.querySelector('.progress-text');
-        this.progressPercentage = document.querySelector('.progress-percentage');
-        this.chatStatus = document.getElementById('chat-status');
-        this.statusText = document.querySelector('.status-text');
-        this.modelSelect = document.getElementById('model-select');
-        this.switchModelBtn = document.getElementById('switch-model');
-        
-        this.initializeEventListeners();
-        this.initializeModelSelection();
-        
-        // Initialize with proper state - hide both indicators initially
-        this.hideLoading();
-        this.hideStatus();
-        
-        // Register service worker for better caching (if available)
-        this.registerServiceWorker();
-        
-        // Start background preloading of popular models after a delay
-        setTimeout(() => {
-            this.preloadPopularModels();
-        }, 5000); // Wait 5 seconds after page load
-    }
+        this.loadingIndicator = document.getElementById('chat-loading');
+        this.statusIndicator = document.getElementById('chat-status');
 
-    initializeEventListeners() {
-        // Send message on button click
-        if (this.sendButton) {
-            this.sendButton.addEventListener('click', () => this.sendMessage());
-        }
-
-        // Send message on Enter key press
-        if (this.chatInput) {
-            this.chatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    this.sendMessage();
-                }
-            });
-
-            // Auto-resize textarea and handle input
-            this.chatInput.addEventListener('input', () => {
-                this.adjustInputHeight();
-                this.updateSendButton();
-            });
-        }
-
-        // Model switch button
-        if (this.switchModelBtn) {
-            this.switchModelBtn.addEventListener('click', () => this.switchModel());
-        }
-    }
-
-    async initializeModelSelection() {
-        try {
-            // Wait for webllm to be available
-            if (!window.webllm) {
-                setTimeout(() => this.initializeModelSelection(), 1000);
-                return;
-            }
-
-            // Get available models and filter out ones with insufficient context window
-            const allModels = window.webllm.prebuiltAppConfig.model_list;
-            
-            // Filter out models with 1K context window since our llms.txt content is ~1214 tokens
-            this.availableModels = allModels.filter(model => {
-                const modelId = model.model_id.toLowerCase();
-                // Exclude models with "1k" in their ID (indicates 1024 token context window)
-                // Also exclude any other known small context models
-                return !modelId.includes('1k') && !modelId.includes('-1k');
-            });
-            
-            console.log(`Filtered models: ${allModels.length} total, ${this.availableModels.length} compatible with context size`);
-            console.log(`Filtered out ${allModels.length - this.availableModels.length} models with insufficient context window`);
-            
-            // Safety check - ensure we have models available
-            if (this.availableModels.length === 0) {
-                console.error('No models available after filtering for context size compatibility');
-                this.availableModels = allModels; // Fallback to all models if filtering removed everything
-            }
-            
-            // Populate model dropdown
-            this.populateModelDropdown();
-            
-            // Set default model (prefer Llama-3 without 1K context limitation)
-            const defaultModel = this.availableModels.find(model => 
-                model.model_id.includes('Llama-3') && model.model_id.includes('8B') && model.model_id.includes('Instruct') && !model.model_id.includes('1k')
-            ) || this.availableModels.find(model => 
-                model.model_id.includes('Llama-3') && model.model_id.includes('8B') && model.model_id.includes('Instruct')
-            ) || this.availableModels[0];
-            
-            this.currentModel = defaultModel;
-            
-            if (this.modelSelect) {
-                this.modelSelect.value = defaultModel.model_id;
-            }
-            
-        } catch (error) {
-            console.error('Failed to initialize model selection:', error);
-        }
-    }
-
-    populateModelDropdown() {
-        if (!this.modelSelect) return;
-        
-        // Clear existing options
-        this.modelSelect.innerHTML = '';
-        
-        // Group models by type for better UX
-        const modelGroups = this.groupModelsByType();
-        
-        Object.entries(modelGroups).forEach(([groupName, models]) => {
-            if (models.length > 0) {
-                const optgroup = document.createElement('optgroup');
-                optgroup.label = groupName;
-                
-                models.forEach(model => {
-                    const option = document.createElement('option');
-                    option.value = model.model_id;
-                    option.textContent = this.formatModelName(model.model_id);
-                    optgroup.appendChild(option);
-                });
-                
-                this.modelSelect.appendChild(optgroup);
-            }
-        });
-    }
-
-    groupModelsByType() {
-        const groups = {
-            'Llama 3': [],
-            'Llama 2': [],
-            'Phi': [],
-            'Mistral': [],
-            'Gemma': [],
-            'Qwen': [],
-            'Other': []
-        };
-        
-        this.availableModels.forEach(model => {
-            const modelId = model.model_id;
-            if (modelId.includes('Llama-3')) {
-                groups['Llama 3'].push(model);
-            } else if (modelId.includes('Llama-2')) {
-                groups['Llama 2'].push(model);
-            } else if (modelId.includes('Phi') || modelId.includes('phi')) {
-                groups['Phi'].push(model);
-            } else if (modelId.includes('Mistral')) {
-                groups['Mistral'].push(model);
-            } else if (modelId.includes('gemma')) {
-                groups['Gemma'].push(model);
-            } else if (modelId.includes('Qwen')) {
-                groups['Qwen'].push(model);
-            } else {
-                groups['Other'].push(model);
-            }
-        });
-        
-        return groups;
-    }
-
-    formatModelName(modelId) {
-        // Convert model ID to more readable format
-        return modelId
-            .replace(/-/g, ' ')
-            .replace(/q4f16_1/g, '(4-bit)')
-            .replace(/q4f32_1/g, '(4-bit float)')
-            .replace(/MLC/g, '')
-            .replace(/1k/g, '1K context')
-            .trim();
-    }
-
-    async switchModel() {
-        if (!this.modelSelect || !this.switchModelBtn) return;
-        
-        const selectedModelId = this.modelSelect.value;
-        const selectedModel = this.availableModels.find(model => model.model_id === selectedModelId);
-        
-        if (!selectedModel || selectedModel.model_id === this.currentModel?.model_id) {
+        if (!this.chatMessages || !this.chatInput || !this.sendButton) {
+            console.error('Required chat elements not found');
             return;
         }
-        
-        // Disable switch button during transition
-        this.switchModelBtn.disabled = true;
-        this.switchModelBtn.textContent = 'Switching...';
-        this.hideStatus();
-        
-        try {
-            // Add model switch message
-            const modelName = this.formatModelName(selectedModelId);
-            this.addMessage('ai', `Switching to ${modelName}. Please wait...`);
-            
-            // Clean up current state
-            this.engine = null;
-            this.isInitialized = false;
-            this.isInitializing = false;
-            this.currentModel = selectedModel;
-            
-            // Re-initialize with new model
-            await this.initialize();
-            
-        } catch (error) {
-            console.error('Failed to switch model:', error);
-            const modelName = this.formatModelName(selectedModelId);
-            this.addMessage('ai', `Failed to switch to ${modelName}. Error: ${error.message || 'Unknown error'}. Please try again or contact James directly.`);
-            // Revert dropdown to current model
-            this.modelSelect.value = this.currentModel?.model_id || '';
-        } finally {
-            // Re-enable switch button
-            this.switchModelBtn.disabled = false;
-            this.switchModelBtn.textContent = 'Switch Model';
-        }
-    }
 
-    async fetchLLMsContext() {
-        try {
-            // Try to fetch llms.txt (works in production with HTTP server)
-            const response = await fetch('./llms.txt');
-            if (!response.ok) {
-                throw new Error(`Failed to fetch llms.txt: ${response.status}`);
+        // Bind event listeners
+        this.sendButton.addEventListener('click', () => this.sendMessage());
+        this.chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                this.sendMessage();
             }
-            
-            const content = await response.text();
-            this.contextContent = this.processLLMsContent(content);
-            return this.contextContent;
-            
-        } catch (error) {
-            console.error('Error fetching llms.txt:', error);
-            
-            // For local file:// protocol, provide helpful error message
-            if (window.location.protocol === 'file:') {
-                throw new Error('AI chat requires HTTP access to load context. Please serve this site via a web server (e.g., python -m http.server) rather than opening the HTML file directly.');
-            }
-            
-            throw new Error('Failed to load context from llms.txt. Please ensure the file exists and is accessible.');
-        }
-    }
+        });
 
+        // Enhanced input handling with auto-resize and send button updates
+        this.chatInput.addEventListener('input', () => {
+            this.adjustInputHeight();
+            this.updateSendButton();
+        });
 
-    processLLMsContent(content) {
-        // Convert the llms.txt content to a system prompt
-        const systemPrompt = `You are an AI assistant providing information about James Blair based on his personal website jamesblair.me. Use the following context to answer questions about James:
-
-${content}
-
-Remember to:
-- Always clarify that you are an AI providing information about James, not James himself
-- Be professional but conversational and approachable
-- Keep responses concise but informative (2-3 paragraphs maximum)
-- For detailed inquiries or business matters, suggest contacting James directly via email
-- Show enthusiasm when discussing James's work in data science, AI, and technology
-- Be encouraging when discussing James's expertise and availability for speaking engagements
-- Direct users to email james@jamesblair.me for direct communication with James`;
-
-        return systemPrompt;
-    }
-
-    async initialize() {
-        if (this.isInitialized || this.isInitializing) {
-            return;
-        }
+        // Enable input immediately - no model loading needed
+        this.chatInput.disabled = false;
+        this.sendButton.disabled = false;
         
-        this.isInitializing = true;
+        // Show initial message count status
+        this.updateMessageCountDisplay();
+        this.updateSendButton(); // Initialize send button state
         
-        try {
-            // Check if web-llm is available
-            if (!window.webllm) {
-                throw new Error('Web-LLM not available. Please check your internet connection.');
-            }
-
-            this.showLoading('Loading context...');
-            
-            // Fetch llms.txt context
-            await this.fetchLLMsContext();
-            
-            // Use the currently selected model or fall back to default
-            const selectedModel = this.currentModel?.model_id || this.availableModels.find(model => 
-                model.model_id.includes('Llama-3') && model.model_id.includes('8B') && model.model_id.includes('Instruct') && !model.model_id.includes('1k')
-            )?.model_id || this.availableModels.find(model => 
-                model.model_id.includes('Llama-3') && model.model_id.includes('8B') && model.model_id.includes('Instruct')
-            )?.model_id || this.availableModels[0]?.model_id;
-            
-            console.log('Selected model:', selectedModel);
-            
-            // Check cache and show appropriate loading message
-            const isCached = await this.checkModelCache(selectedModel);
-            if (!isCached) {
-                this.showLoading('Initializing AI chat...');
-            }
-            
-            // Start progress simulation only for cached models
-            if (isCached) {
-                this.startProgressSimulation();
-            }
-            
-            // Initialize the engine with optimized settings for caching and performance
-            this.engine = await window.webllm.CreateMLCEngine(selectedModel, {
-                initProgressCallback: (progress) => {
-                    const percentage = Math.round(progress.progress * 100);
-                    
-                    // For cached models, stop simulation when real progress starts
-                    if (isCached && percentage > 0 && progress.text) {
-                        this.lastProgressUpdate = Date.now();
-                        this.clearProgressSimulation();
-                    }
-                    
-                    // Always show real progress when available
-                    if (percentage > 0) {
-                        let progressText = this.getCleanProgressMessage(progress, percentage, isCached);
-                        this.showLoadingWithProgress(progressText, percentage);
-                        
-                        // Log detailed progress for debugging
-                        console.log('Model loading progress:', {
-                            percentage,
-                            text: progress.text,
-                            timeStamp: new Date().toISOString(),
-                            cached: isCached
-                        });
-                    }
-                },
-                context_window_size: 4096, // Increased from default 1024
-                sliding_window_size: 2048,   // Enable sliding window for longer conversations
-                
-                // Enable aggressive caching for faster subsequent loads
-                use_cache: true,
-                
-                // Optimize memory usage
-                low_resource_required: false,
-                
-                // Enable model file caching in browser
-                cache_model_in_cache_api: true
-            });
-            
-            // Initialize message history with system prompt from llms.txt
-            this.messageHistory = [{ role: "system", content: this.contextContent }];
-            
-            this.isInitialized = true;
-            this.isInitializing = false;
-            this.clearProgressSimulation(); // Clear any ongoing simulation
-            this.hideLoading();
-            this.showStatus('available');
-            
-            // Update model usage for cache prioritization
-            this.updateModelUsage(selectedModel);
-            
-            // Start background preloading of recently used models
-            setTimeout(() => {
-                this.preloadPopularModels();
-            }, 2000); // Wait 2 seconds after initialization
-            
-            // Show success message with model info
-            const modelName = this.formatModelName(selectedModel);
-            this.addMessage('ai', `Chat ready using ${modelName}! Ask me anything about James's background, experience, or interests.`);
-            
-        } catch (error) {
-            console.error('Failed to initialize chat:', error);
-            this.isInitializing = false;
-            this.clearProgressSimulation(); // Clear any ongoing simulation
-            this.handleInitializationError(error);
-        }
-    }
-
-    handleInitializationError(error) {
-        this.hideLoading();
-        this.hideStatus();
-        
-        let errorMessage = 'Chat is temporarily unavailable. ';
-        
-        if (error.message.includes('network') || error.message.includes('connection')) {
-            errorMessage += 'Please check your internet connection and try again.';
-        } else if (error.message.includes('WebGL') || error.message.includes('GPU')) {
-            errorMessage += 'Your browser may not support the required features. Please try a different browser.';
-        } else {
-            errorMessage += 'Please try refreshing the page or contact James directly via email.';
-        }
-        
-        this.addMessage('ai', errorMessage);
-        this.addMessage('ai', 'You can always reach James at james@jamesblair.me for direct communication.');
+        this.isInitialized = true;
+        console.log(`Claude chat initialized successfully. Session: ${this.sessionId}, Messages: ${this.messageCount}/${this.maxMessages}`);
     }
 
     async sendMessage() {
         const message = this.chatInput.value.trim();
-        
-        if (!message) {
+        if (!message) return;
+
+        // Check session limit
+        if (this.isSessionLimitReached()) {
+            this.showSessionLimitReached();
             return;
         }
 
-        // Clear input and disable send button
-        this.chatInput.value = '';
-        this.updateSendButton();
-        this.adjustInputHeight();
-
+        // Disable input while processing
+        this.chatInput.disabled = true;
+        this.sendButton.disabled = true;
+        
         // Add user message to chat
         this.addMessage('user', message);
-
-        // Initialize chat if not already done
-        if (!this.isInitialized && !this.isInitializing) {
-            await this.initialize();
-        }
-
-        // If still not initialized, show error
-        if (!this.isInitialized) {
-            this.addMessage('ai', 'I\'m having trouble connecting right now. Please try again in a moment or contact James directly at james@jamesblair.me.');
-            return;
-        }
-
-        // Show loading state only when generating response
-        this.showLoading('Thinking...');
-        this.hideStatus();
+        
+        // Clear input and reset height
+        this.chatInput.value = '';
+        this.adjustInputHeight();
+        
+        // Show loading state
+        this.showLoading(true);
 
         try {
-            // Generate response
-            const response = await this.generateResponse(message);
-            
-            this.hideLoading();
-            this.showStatus('available');
-            this.addMessage('ai', response);
-            
-        } catch (error) {
-            console.error('Error generating response:', error);
-            this.hideLoading();
-            this.showStatus('available');
-            this.handleResponseError(error);
-        }
-    }
-
-    async generateResponse(message, retryCount = 0) {
-        try {
-            // Add message to history
-            this.messageHistory.push({ role: 'user', content: message });
-            
-            // Generate response
-            const response = await this.engine.chat.completions.create({
-                messages: this.messageHistory,
-                temperature: 0.7,
-                max_tokens: 800,
-                stream: false
+            // Send to Claude API via edge function
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: message,
+                    conversationHistory: this.conversationHistory.slice(-10), // Last 10 messages for context
+                    sessionId: this.sessionId
+                })
             });
-            
-            const aiResponse = response.choices[0].message.content;
-            
-            // Add AI response to history
-            this.messageHistory.push({ role: 'assistant', content: aiResponse });
-            
-            // Keep history manageable (last 20 messages + system prompt for 4K context)
-            if (this.messageHistory.length > 21) {
-                const systemPrompt = this.messageHistory[0]; // Preserve system prompt
-                this.messageHistory = [systemPrompt, ...this.messageHistory.slice(-20)];
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: 'Network error' }));
+                throw new Error(errorData.error || `HTTP ${response.status}`);
             }
+
+            const data = await response.json();
             
-            return aiResponse;
-            
+            if (!data.message) {
+                throw new Error('Invalid response format');
+            }
+
+            // Add AI response to chat
+            this.addMessage('assistant', data.message);
+
+            // Increment message count (user message counts toward limit)
+            this.incrementMessageCount();
+
+            // Update message count display
+            this.updateMessageCountDisplay();
+
+            // Update conversation history
+            this.conversationHistory.push(
+                { role: 'user', content: message },
+                { role: 'assistant', content: data.message }
+            );
+
+            // Keep conversation history reasonable size
+            if (this.conversationHistory.length > 20) {
+                this.conversationHistory = this.conversationHistory.slice(-16);
+            }
+
         } catch (error) {
-            if (retryCount < this.maxRetries) {
-                console.log(`Retrying message generation (attempt ${retryCount + 1}/${this.maxRetries})`);
-                await new Promise(resolve => setTimeout(resolve, this.retryDelay));
-                return await this.generateResponse(message, retryCount + 1);
-            }
-            throw error;
+            console.error('Chat error:', error);
+            this.handleResponseError(error);
+        } finally {
+            // Re-enable input
+            this.showLoading(false);
+            this.chatInput.disabled = false;
+            this.updateSendButton();
+            this.chatInput.focus();
         }
     }
 
-    handleResponseError(error) {
-        let errorMessage = 'I encountered an issue generating a response. ';
-        
-        if (error.message.includes('network') || error.message.includes('connection')) {
-            errorMessage += 'Please check your internet connection and try again.';
-        } else if (error.message.includes('rate limit') || error.message.includes('quota')) {
-            errorMessage += 'The AI service is busy. Please try again in a moment.';
-        } else {
-            errorMessage += 'Please try asking your question again, or contact James directly at james@jamesblair.me.';
-        }
-        
-        this.addMessage('ai', errorMessage);
-    }
-
-    // Simulate progress for cached models when real progress is stuck at 0%
-    startProgressSimulation() {
-        this.clearProgressSimulation();
-        
-        const progressSteps = [
-            { progress: 15, text: 'Loading cached model' },
-            { progress: 35, text: 'Initializing cached model files' },
-            { progress: 55, text: 'Setting up cached model' },
-            { progress: 75, text: 'Preparing cached model for use' },
-            { progress: 95, text: 'Finalizing cached model setup' }
-        ];
-        
-        let currentStep = 0;
-        let progressUpdateTimeout = null;
-        
-        // Start simulation immediately
-        const updateProgress = () => {
-            // Stop simulation if real progress is working
-            const timeSinceLastUpdate = Date.now() - this.lastProgressUpdate;
-            if (this.lastProgressUpdate > 0 && timeSinceLastUpdate < 2000) {
-                this.clearProgressSimulation();
-                return;
-            }
-            
-            if (currentStep < progressSteps.length) {
-                const step = progressSteps[currentStep];
-                this.showLoadingWithProgress(step.text, step.progress);
-                currentStep++;
-                
-                // Schedule next update - faster for cached models
-                progressUpdateTimeout = setTimeout(updateProgress, 300);
-            } else {
-                this.clearProgressSimulation();
-            }
-        };
-        
-        // Start immediately
-        updateProgress();
-        
-        // Store timeout reference for cleanup
-        this.progressSimulationInterval = progressUpdateTimeout;
-    }
-    
-    // Clear progress simulation
-    clearProgressSimulation() {
-        if (this.progressSimulationInterval) {
-            clearTimeout(this.progressSimulationInterval);
-            this.progressSimulationInterval = null;
-        }
-    }
-
-    addMessage(sender, content) {
+    addMessage(role, content, type = 'normal') {
         const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${sender}-message`;
+        messageDiv.className = `message ${role}-message${type === 'error' ? ' error-message' : ''}`;
         messageDiv.setAttribute('role', 'article');
-        messageDiv.setAttribute('aria-label', `${sender} message`);
-        
-        const messageContent = document.createElement('div');
-        messageContent.className = 'message-content';
-        messageContent.textContent = content;
-        
-        messageDiv.appendChild(messageContent);
+        messageDiv.setAttribute('aria-label', `${role} message`);
+
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
+        contentDiv.textContent = content;
+
+        messageDiv.appendChild(contentDiv);
         this.chatMessages.appendChild(messageDiv);
-        
-        // Auto-scroll to bottom
+
+        // Scroll to bottom
         this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
-        
-        // Announce new messages to screen readers
-        if (sender === 'ai') {
+
+        // Enhanced accessibility - announce new AI messages to screen readers
+        if (role === 'assistant') {
             this.announceMessage(content);
         }
     }
 
+    // Enhanced accessibility method from Web-LLM implementation
     announceMessage(content) {
         // Create a temporary element for screen reader announcement
         const announcement = document.createElement('div');
@@ -589,117 +241,83 @@ Remember to:
         }, 1000);
     }
 
-    showLoading(text) {
-        if (this.loadingText) {
-            this.loadingText.textContent = text;
-        }
-        
-        if (this.chatLoading) {
-            this.chatLoading.classList.remove('hidden');
-        }
-        
-        // Hide progress bar when showing simple loading
-        if (this.progressContainer) {
-            this.progressContainer.classList.add('hidden');
-        }
-        
-        // Hide status when showing loading
-        this.hideStatus();
-        
-        this.updateSendButton(true);
-    }
-
-    showLoadingWithProgress(text, percentage) {
-        // Show the main loading container
-        if (this.chatLoading) {
-            this.chatLoading.classList.remove('hidden');
-        }
-        
-        // Hide the simple loading spinner and text
-        if (this.loadingText) {
-            this.loadingText.style.display = 'none';
-        }
-        
-        // Show and update progress bar
-        if (this.progressContainer) {
-            this.progressContainer.classList.remove('hidden');
-            
-            if (this.progressFill) {
-                this.progressFill.style.width = `${percentage}%`;
-            }
-            
-            if (this.progressText) {
-                this.progressText.textContent = text;
-            }
-            
-            if (this.progressPercentage) {
-                this.progressPercentage.textContent = `${percentage}%`;
-            }
-        }
-        
-        // Hide status when showing loading
-        this.hideStatus();
-        
-        this.updateSendButton(true);
-    }
-
-    hideLoading() {
-        if (this.chatLoading) {
-            this.chatLoading.classList.add('hidden');
-        }
-        
-        // Reset progress bar
-        if (this.progressContainer) {
-            this.progressContainer.classList.add('hidden');
-        }
-        
-        // Reset loading text display
-        if (this.loadingText) {
-            this.loadingText.style.display = '';
-        }
-        
-        // Don't update send button if we're hiding loading during initialization
-        if (this.isInitialized) {
-            this.updateSendButton(false);
+    showLoading(show) {
+        if (show) {
+            this.loadingIndicator?.classList.remove('hidden');
+            this.statusIndicator?.classList.add('hidden');
+        } else {
+            this.loadingIndicator?.classList.add('hidden');
+            this.showStatus('Ready', 'ready');
         }
     }
 
-    showStatus(status) {
-        if (!this.chatStatus) return;
+    showStatus(text, type) {
+        if (!this.statusIndicator) return;
         
-        // Hide loading spinner when showing status (but don't affect send button state)
-        if (this.chatLoading) {
-            this.chatLoading.classList.add('hidden');
+        const statusText = this.statusIndicator.querySelector('.status-text');
+        const statusIndicator = this.statusIndicator.querySelector('.status-indicator');
+        
+        if (statusText) statusText.textContent = text;
+        if (statusIndicator) {
+            statusIndicator.className = `status-indicator status-${type}`;
         }
         
-        this.chatStatus.classList.remove('hidden');
+        this.statusIndicator.classList.remove('hidden');
+    }
+
+    showSessionLimitReached() {
+        const limitMessage = `You've reached the 10 message limit for this session. This helps keep costs manageable while still allowing you to learn about James's background and experience. 
         
-        if (this.statusText) {
-            switch(status) {
-                case 'available':
-                    this.statusText.textContent = 'Ready';
-                    break;
-                case 'initializing':
-                    this.statusText.textContent = 'Initializing chat...';
-                    break;
-                default:
-                    this.statusText.textContent = 'Ready';
-            }
+To continue chatting, please refresh the page to start a new session.`;
+        
+        this.addMessage('assistant', limitMessage, 'info');
+        
+        // Disable input
+        this.chatInput.disabled = true;
+        this.sendButton.disabled = true;
+        this.chatInput.placeholder = "Session limit reached - refresh to continue";
+        
+        this.showStatus(`Session limit reached (${this.messageCount}/${this.maxMessages})`, 'limit');
+    }
+
+    // Enhanced error handling from Web-LLM implementation
+    handleResponseError(error) {
+        let errorMessage = 'Sorry, I encountered an error. Please try again.';
+        
+        if (error.message.includes('Rate limited')) {
+            errorMessage = 'Too many requests. Please wait a moment before trying again.';
+        } else if (error.message.includes('temporarily unavailable')) {
+            errorMessage = 'The AI service is temporarily unavailable. Please try again in a few moments.';
+        } else if (error.message.includes('about James Blair')) {
+            errorMessage = error.message; // Use the specific content filtering message
+        } else if (error.message.includes('network') || error.message.includes('connection')) {
+            errorMessage = 'Please check your internet connection and try again.';
+        } else if (error.message.includes('timeout')) {
+            errorMessage = 'The request timed out. Please try asking your question again.';
+        }
+        
+        this.addMessage('assistant', errorMessage, 'error');
+    }
+
+    // Add method to show remaining messages in status
+    updateMessageCountDisplay() {
+        const remaining = this.maxMessages - this.messageCount;
+        console.log(`Updating display: ${this.messageCount} used, ${remaining} remaining`);
+        
+        if (remaining <= 3 && remaining > 0) {
+            this.showStatus(`${remaining} messages remaining`, 'warning');
+        } else if (remaining > 0) {
+            this.showStatus('Ready', 'ready');
         }
     }
 
-    hideStatus() {
-        if (this.chatStatus) {
-            this.chatStatus.classList.add('hidden');
-        }
-    }
-
+    // Enhanced input handling from Web-LLM implementation
     updateSendButton(isLoading = false) {
         if (!this.sendButton) return;
         
         const hasText = this.chatInput && this.chatInput.value.trim().length > 0;
         
-        this.sendButton.disabled = isLoading || !hasText;
+        this.sendButton.disabled = isLoading || !hasText || this.chatInput?.disabled;
         this.sendButton.textContent = isLoading ? 'Sending...' : 'Send';
     }
 
@@ -710,19 +328,17 @@ Remember to:
         this.chatInput.style.height = Math.min(this.chatInput.scrollHeight, 120) + 'px';
     }
 
-    // Public method to check if chat is ready
+    // Public methods for testing and external use
     isReady() {
         return this.isInitialized;
     }
 
-    // Public method to get chat history
     getHistory() {
-        return [...this.messageHistory];
+        return [...this.conversationHistory];
     }
 
-    // Public method to clear chat history
     clearHistory() {
-        this.messageHistory = [{ role: "system", content: this.contextContent }];
+        this.conversationHistory = [];
         
         // Clear visual messages except the first two (disclaimer and welcome)
         const messages = this.chatMessages.querySelectorAll('.message');
@@ -731,312 +347,32 @@ Remember to:
                 message.remove();
             }
         });
-    }
-
-    // Enhanced model caching and preloading methods
-    getCacheKey(modelId) {
-        return `${this.cachePrefix}${modelId}`;
-    }
-
-    isCacheSupported() {
-        try {
-            return typeof Storage !== 'undefined' && window.localStorage;
-        } catch (e) {
-            return false;
-        }
-    }
-
-    // Check if web-llm has the model cached
-    async isModelCachedByWebLLM(modelId) {
-        try {
-            if (window.webllm && window.webllm.hasModelInCache) {
-                return await window.webllm.hasModelInCache(modelId);
-            }
-        } catch (e) {
-            console.log('Could not check web-llm cache status:', e);
-        }
-        return false;
-    }
-
-    getCachedModel(modelId) {
-        if (!this.isCacheSupported()) return null;
         
-        try {
-            const cacheKey = this.getCacheKey(modelId);
-            const cached = localStorage.getItem(cacheKey);
-            if (cached) {
-                const data = JSON.parse(cached);
-                // Check if cache is still valid (7 days for model info)
-                const cacheAge = Date.now() - data.timestamp;
-                if (cacheAge < 7 * 24 * 60 * 60 * 1000) {
-                    console.log(`Using cached model info for ${modelId}`);
-                    return data.modelData;
-                } else {
-                    // Remove expired cache
-                    localStorage.removeItem(cacheKey);
-                }
-            }
-        } catch (e) {
-            console.warn('Error reading model cache:', e);
-        }
-        return null;
+        // Reset session
+        this.resetSession();
+        this.updateMessageCountDisplay();
     }
-
-    setCachedModel(modelId, modelData) {
-        if (!this.isCacheSupported()) return;
-        
-        try {
-            const cacheKey = this.getCacheKey(modelId);
-            const data = {
-                modelData: modelData,
-                timestamp: Date.now(),
-                lastUsed: Date.now()
-            };
-            localStorage.setItem(cacheKey, JSON.stringify(data));
-            console.log(`Cached model info for ${modelId}`);
-        } catch (e) {
-            console.warn('Error caching model:', e);
-            // If storage is full, try to clear old cache entries
-            this.clearExpiredCache();
-        }
-    }
-
-    // Update last used timestamp for cache prioritization
-    updateModelUsage(modelId) {
-        if (!this.isCacheSupported()) return;
-        
-        try {
-            const cacheKey = this.getCacheKey(modelId);
-            const cached = localStorage.getItem(cacheKey);
-            if (cached) {
-                const data = JSON.parse(cached);
-                data.lastUsed = Date.now();
-                localStorage.setItem(cacheKey, JSON.stringify(data));
-            }
-        } catch (e) {
-            console.warn('Error updating model usage:', e);
-        }
-    }
-
-    // Preload popular models in the background
-    async preloadPopularModels() {
-        if (!window.webllm || this.isInitializing) return;
-        
-        // Get most recently used models
-        const recentModels = this.getRecentlyUsedModels();
-        
-        // Preload the most recent model if it's not the current one
-        if (recentModels.length > 0 && recentModels[0] !== this.currentModel?.model_id) {
-            const modelToPreload = recentModels[0];
-            console.log(`Preloading recently used model: ${modelToPreload}`);
-            
-            try {
-                // Check if already cached
-                const isCached = await this.isModelCachedByWebLLM(modelToPreload);
-                if (!isCached) {
-                    // Preload in background (don't await to avoid blocking)
-                    window.webllm.preloadModel(modelToPreload).catch(e => {
-                        console.log('Background preload failed (this is normal):', e);
-                    });
-                }
-            } catch (e) {
-                console.log('Could not preload model:', e);
-            }
-        }
-    }
-
-    getRecentlyUsedModels() {
-        if (!this.isCacheSupported()) return [];
-        
-        const models = [];
-        try {
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key && key.startsWith(this.cachePrefix)) {
-                    const data = JSON.parse(localStorage.getItem(key));
-                    if (data.lastUsed) {
-                        models.push({
-                            modelId: key.replace(this.cachePrefix, ''),
-                            lastUsed: data.lastUsed
-                        });
-                    }
-                }
-            }
-            // Sort by most recently used
-            models.sort((a, b) => b.lastUsed - a.lastUsed);
-            return models.map(m => m.modelId);
-        } catch (e) {
-            console.warn('Error getting recent models:', e);
-            return [];
-        }
-    }
-
-    clearExpiredCache() {
-        if (!this.isCacheSupported()) return;
-        
-        try {
-            const now = Date.now();
-            const keysToRemove = [];
-            
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key && key.startsWith(this.cachePrefix)) {
-                    try {
-                        const data = JSON.parse(localStorage.getItem(key));
-                        const cacheAge = now - data.timestamp;
-                        if (cacheAge > 24 * 60 * 60 * 1000) {
-                            keysToRemove.push(key);
-                        }
-                    } catch (e) {
-                        keysToRemove.push(key); // Remove corrupted entries
-                    }
-                }
-            }
-            
-            keysToRemove.forEach(key => localStorage.removeItem(key));
-            console.log(`Cleared ${keysToRemove.length} expired cache entries`);
-        } catch (e) {
-            console.warn('Error clearing expired cache:', e);
-        }
-    }
-
-    // Clean up verbose progress messages into user-friendly text
-    getCleanProgressMessage(progress, percentage, isCached = false) {
-        // If we have specific progress text, try to clean it up
-        if (progress.text) {
-            const text = progress.text.toLowerCase();
-            
-            // Handle cache-specific messages
-            if (text.includes('loading model from cache') || (text.includes('cache') && isCached)) {
-                return 'Loading cached model files';
-            }
-            
-            // Handle different types of progress messages
-            if (text.includes('fetching param cache') || text.includes('loading') || text.includes('fetch')) {
-                if (isCached) {
-                    if (percentage < 25) {
-                        return 'Loading cached model files';
-                    } else if (percentage < 75) {
-                        return 'Initializing cached model';
-                    } else {
-                        return 'Finalizing cached model setup';
-                    }
-                } else {
-                    if (percentage < 25) {
-                        return 'Downloading model files';
-                    } else if (percentage < 75) {
-                        return 'Loading model into memory';
-                    } else {
-                        return 'Finalizing setup';
-                    }
-                }
-            } else if (text.includes('compil') || text.includes('preprocess')) {
-                return isCached ? 'Preparing cached model' : 'Preparing model';
-            } else if (text.includes('init') || text.includes('setting up')) {
-                return isCached ? 'Initializing cached model' : 'Initializing';
-            }
-        }
-        
-        // Default fallback based on percentage ranges with cleaner messages
-        if (isCached) {
-            if (percentage < 10) {
-                return 'Loading cached model';
-            } else if (percentage < 30) {
-                return 'Initializing cached model files';
-            } else if (percentage < 70) {
-                return 'Setting up cached model';
-            } else if (percentage < 95) {
-                return 'Finalizing cached model setup';
-            } else {
-                return 'Cached model ready!';
-            }
-        } else {
-            if (percentage < 10) {
-                return 'Starting download';
-            } else if (percentage < 30) {
-                return 'Downloading model files';
-            } else if (percentage < 70) {
-                return 'Loading into memory';
-            } else if (percentage < 95) {
-                return 'Finalizing setup';
-            } else {
-                return 'Ready!';
-            }
-        }
-    }
-
-    // Enhanced cache checking with web-llm integration
-    async checkModelCache(modelId) {
-        // Check our localStorage cache first
-        const cachedModel = this.getCachedModel(modelId);
-        
-        // Check if web-llm has the model files cached
-        const isWebLLMCached = await this.isModelCachedByWebLLM(modelId);
-        
-        if (isWebLLMCached) {
-            this.showLoading('Loading cached AI model...');
-            console.log(`Model ${modelId} found in web-llm cache - should load quickly`);
-            return true;
-        } else if (cachedModel) {
-            this.showLoading('Model info cached, downloading model files...');
-            console.log(`Model ${modelId} info cached but files need download`);
-            return false; // Still need to download, but we have some info
-        }
-        
-        console.log(`Model ${modelId} not cached - first-time download`);
-        return false;
-    }
-
-    // Add service worker registration for better caching
-    async registerServiceWorker() {
-        if ('serviceWorker' in navigator && 'caches' in window) {
-            try {
-                const registration = await navigator.serviceWorker.register('/sw.js');
-                console.log('Service Worker registered for enhanced caching');
-                return registration;
-            } catch (error) {
-                // Only log if it's not a 404 (missing sw.js file)
-                if (!error.message.includes('404') && !error.message.includes('bad HTTP response')) {
-                    console.warn('Service Worker registration failed:', error);
-                }
-            }
-        }
-        return null;
-    }
-
 }
 
 // Initialize chat when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-    // Create global chat instance
-    window.JamesChat = new JamesChat();
-    
-    // The embedded chat is always visible, so no need for visibility observer
-    // Chat initialization is handled by the intersection observer in script.js
-});
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.claudeChat = new ClaudeChat();
+    });
+} else {
+    window.claudeChat = new ClaudeChat();
+}
 
-// Handle page visibility changes
+// Handle page visibility changes for better resource management
 document.addEventListener('visibilitychange', function() {
-    if (document.hidden && window.JamesChat) {
-        // Page is hidden, could pause any ongoing operations
+    if (document.hidden && window.claudeChat) {
         console.log('Page hidden, chat operations paused');
-    } else if (window.JamesChat) {
-        // Page is visible again
+    } else if (window.claudeChat) {
         console.log('Page visible, chat operations resumed');
-    }
-});
-
-// Handle errors globally
-window.addEventListener('error', function(event) {
-    if (event.error && event.error.message && event.error.message.includes('webllm')) {
-        console.error('Web-LLM error:', event.error);
-        if (window.AppUtils) {
-            window.AppUtils.showNotification('AI chat encountered an error. Please try again.', 'error');
-        }
     }
 });
 
 // Export for testing or external use
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = JamesChat;
+    module.exports = ClaudeChat;
 }

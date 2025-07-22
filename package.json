@@ -1,14 +1,18 @@
 {
   "name": "jamesblair-me",
-  "version": "1.0.0",
-  "description": "Personal website for James Blair with AI chat functionality",
+  "version": "2.0.0",
+  "description": "Personal website for James Blair with Claude AI chat integration",
   "scripts": {
     "build:css": "cat css/base.css css/components.css css/layout.css css/chat.css css/responsive.css > style.css",
     "watch:css": "npm run build:css && echo 'CSS built successfully'",
-    "dev": "npm run build:css && python3 -m http.server 8000",
-    "build": "npm run build:css"
+    "serve": "python3 -m http.server 8000",
+    "build": "npm run build:css",
+    "deploy": "vercel --prod"
   },
-  "keywords": ["personal-website", "ai-chat", "web-llm", "data-science"],
+  "keywords": ["personal-website", "ai-chat", "claude-api", "data-science", "anthropic"],
   "author": "James Blair",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  }
 }
