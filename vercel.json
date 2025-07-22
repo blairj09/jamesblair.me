@@ -1,5 +1,10 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": ".",
-  "devCommand": null
+  "devCommand": null,
+  "functions": {
+    "api/chat.js": {
+      "includeFiles": "llms.txt"
+    }
+  }
 }
