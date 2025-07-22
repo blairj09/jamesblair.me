@@ -15,6 +15,13 @@ async function loadJamesContext() {
       const { join } = await import('path');
       const llmsPath = join(process.cwd(), 'llms.txt');
       console.log('Attempting to load llms.txt from path:', llmsPath);
+      console.log('Current working directory:', process.cwd());
+      
+      // Check if file exists and list directory contents
+      const { existsSync, readdirSync } = await import('fs');
+      console.log('File exists?', existsSync(llmsPath));
+      console.log('Directory contents:', readdirSync(process.cwd()));
+      
       llmsContent = readFileSync(llmsPath, 'utf-8');
       console.log('Successfully loaded llms.txt from filesystem. Content length:', llmsContent.length);
       console.log('First 200 chars:', llmsContent.substring(0, 200));
