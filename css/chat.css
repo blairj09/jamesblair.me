@@ -506,7 +506,7 @@
     word-wrap: break-word;
 }
 
-.ai-message {
+.assistant-message {
     background-color: var(--background-light);
     color: var(--text-dark);
     align-self: flex-start;
@@ -608,6 +608,7 @@
 .message-content a:hover {
     text-decoration: none;
 }
+
 
 /* Typing indicator for streaming responses */
 .typing-indicator {
