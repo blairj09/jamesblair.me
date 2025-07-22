@@ -221,6 +221,24 @@ class ClaudeChat {
                 return `<a href="${href}"${titleAttr} target="_blank" rel="noopener noreferrer">${text}</a>`;
             };
             
+            // Customize code block rendering for syntax highlighting
+            renderer.code = (code, language) => {
+                // Escape HTML in code content
+                const escapedCode = code
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+                
+                // If language is specified, add Prism classes
+                if (language) {
+                    return `<pre class="language-${language}"><code class="language-${language}">${escapedCode}</code></pre>`;
+                } else {
+                    return `<pre><code>${escapedCode}</code></pre>`;
+                }
+            };
+            
             // Configure marked options
             marked.setOptions({
                 renderer: renderer,
@@ -232,6 +250,11 @@ class ClaudeChat {
             
             try {
                 contentDiv.innerHTML = marked.parse(content);
+                
+                // Apply syntax highlighting to newly added code blocks
+                if (typeof Prism !== 'undefined') {
+                    Prism.highlightAllUnder(contentDiv);
+                }
             } catch (error) {
                 console.warn('Markdown parsing failed, falling back to plain text:', error);
                 contentDiv.textContent = content;
