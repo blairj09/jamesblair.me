@@ -571,23 +571,163 @@
     border: 1px solid var(--border-color);
     padding: 0.1rem 0.3rem;
     border-radius: 3px;
-    font-family: 'Courier New', monospace;
+    font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
     font-size: 0.85rem;
 }
 
 .message-content pre {
-    background-color: var(--background-white);
+    background-color: #f8f9fa;
     border: 1px solid var(--border-color);
-    padding: 0.5rem;
-    border-radius: 5px;
+    padding: 1rem;
+    border-radius: 8px;
     overflow-x: auto;
-    margin: 0.5rem 0;
+    margin: 0.75rem 0;
+    line-height: 1.4;
 }
 
 .message-content pre code {
     background-color: transparent;
+    border: none;
     padding: 0;
     border-radius: 0;
+    font-size: 0.875rem;
+}
+
+/* Dark mode support for code blocks */
+[data-theme="dark"] .message-content pre {
+    background-color: #1e293b;
+    border-color: #475569;
+}
+
+[data-theme="dark"] .message-content code {
+    background-color: #334155;
+    border-color: #475569;
+    color: #e2e8f0;
+}
+
+/* Syntax highlighting theme overrides for better chat integration */
+.message-content pre[class*="language-"] {
+    background-color: #f8f9fa;
+    border: 1px solid var(--border-color);
+    box-shadow: none;
+    margin: 0.75rem 0;
+}
+
+[data-theme="dark"] .message-content pre[class*="language-"] {
+    background-color: #1e293b;
+    border-color: #475569;
+}
+
+/* Prism token colors for light theme */
+.message-content .token.comment,
+.message-content .token.prolog,
+.message-content .token.doctype,
+.message-content .token.cdata {
+    color: #6a737d;
+}
+
+.message-content .token.punctuation {
+    color: #586069;
+}
+
+.message-content .token.property,
+.message-content .token.tag,
+.message-content .token.boolean,
+.message-content .token.number,
+.message-content .token.constant,
+.message-content .token.symbol,
+.message-content .token.deleted {
+    color: #005cc5;
+}
+
+.message-content .token.selector,
+.message-content .token.attr-name,
+.message-content .token.string,
+.message-content .token.char,
+.message-content .token.builtin,
+.message-content .token.inserted {
+    color: #032f62;
+}
+
+.message-content .token.operator,
+.message-content .token.entity,
+.message-content .token.url,
+.message-content .language-css .token.string,
+.message-content .style .token.string {
+    color: #d73a49;
+}
+
+.message-content .token.atrule,
+.message-content .token.attr-value,
+.message-content .token.keyword {
+    color: #d73a49;
+}
+
+.message-content .token.function,
+.message-content .token.class-name {
+    color: #6f42c1;
+}
+
+.message-content .token.regex,
+.message-content .token.important,
+.message-content .token.variable {
+    color: #e36209;
+}
+
+/* Dark theme token colors */
+[data-theme="dark"] .message-content .token.comment,
+[data-theme="dark"] .message-content .token.prolog,
+[data-theme="dark"] .message-content .token.doctype,
+[data-theme="dark"] .message-content .token.cdata {
+    color: #8b949e;
+}
+
+[data-theme="dark"] .message-content .token.punctuation {
+    color: #c9d1d9;
+}
+
+[data-theme="dark"] .message-content .token.property,
+[data-theme="dark"] .message-content .token.tag,
+[data-theme="dark"] .message-content .token.boolean,
+[data-theme="dark"] .message-content .token.number,
+[data-theme="dark"] .message-content .token.constant,
+[data-theme="dark"] .message-content .token.symbol,
+[data-theme="dark"] .message-content .token.deleted {
+    color: #79c0ff;
+}
+
+[data-theme="dark"] .message-content .token.selector,
+[data-theme="dark"] .message-content .token.attr-name,
+[data-theme="dark"] .message-content .token.string,
+[data-theme="dark"] .message-content .token.char,
+[data-theme="dark"] .message-content .token.builtin,
+[data-theme="dark"] .message-content .token.inserted {
+    color: #a5d6ff;
+}
+
+[data-theme="dark"] .message-content .token.operator,
+[data-theme="dark"] .message-content .token.entity,
+[data-theme="dark"] .message-content .token.url,
+[data-theme="dark"] .message-content .language-css .token.string,
+[data-theme="dark"] .message-content .style .token.string {
+    color: #ff7b72;
+}
+
+[data-theme="dark"] .message-content .token.atrule,
+[data-theme="dark"] .message-content .token.attr-value,
+[data-theme="dark"] .message-content .token.keyword {
+    color: #ff7b72;
+}
+
+[data-theme="dark"] .message-content .token.function,
+[data-theme="dark"] .message-content .token.class-name {
+    color: #d2a8ff;
+}
+
+[data-theme="dark"] .message-content .token.regex,
+[data-theme="dark"] .message-content .token.important,
+[data-theme="dark"] .message-content .token.variable {
+    color: #ffa657;
 }
 
 .message-content ul,
@@ -749,12 +889,17 @@
 
 .chat-status {
     padding: 1rem 1.5rem;
-    text-align: center;
     border-top: 1px solid var(--border-color);
     background-color: var(--background-light);
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.status-left {
+    display: flex;
+    align-items: center;
     gap: 0.5rem;
 }
 
@@ -767,8 +912,80 @@
     box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
 }
 
+.status-indicator.status-thinking {
+    background-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    animation: thinking-pulse 1.5s ease-in-out infinite;
+}
+
+.status-indicator.status-warning {
+    background-color: #f59e0b;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+.status-indicator.status-limit {
+    background-color: #ef4444;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+@keyframes thinking-pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+    }
+}
+
 .status-text {
     font-size: 0.9rem;
     color: var(--text-light);
     font-weight: 500;
+}
+
+.message-counter {
+    display: flex;
+    align-items: center;
+}
+
+.message-count-text {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    opacity: 0.7;
+    font-weight: 400;
+    transition: var(--transition);
+}
+
+/* Message counter warning states */
+.message-counter.caution .message-count-text {
+    opacity: 0.85;
+    color: var(--text-dark);
+}
+
+.message-counter.warning .message-count-text {
+    opacity: 1;
+    color: #f59e0b;
+    font-weight: 500;
+}
+
+.message-counter.critical .message-count-text {
+    opacity: 1;
+    color: #ef4444;
+    font-weight: 600;
+}
+
+
+/* Dark mode adjustments */
+[data-theme="dark"] .message-counter.caution .message-count-text {
+    color: var(--text-light);
+}
+
+[data-theme="dark"] .message-counter.warning .message-count-text {
+    color: #fbbf24;
+}
+
+[data-theme="dark"] .message-counter.critical .message-count-text {
+    color: #ef4444;
 }
