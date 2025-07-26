@@ -108,7 +108,7 @@ class ClaudeChat {
             this.updateSendButton();
         });
 
-        // Enable input immediately - no model loading needed
+        // Enable input immediately - no token fetching needed
         this.chatInput.disabled = false;
         this.sendButton.disabled = false;
         
@@ -149,7 +149,7 @@ class ClaudeChat {
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     message: message,
