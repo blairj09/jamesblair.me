@@ -130,7 +130,10 @@ export default async function handler(req, res) {
   ];
   
   const origin = req.headers.origin;
-  const isAllowedOrigin = allowedOrigins.includes(origin);
+  
+  // Allow Vercel preview deployments (only from your specific project)
+  const isYourVercelPreview = origin && origin.includes('james-blairs-projects.vercel.app');
+  const isAllowedOrigin = allowedOrigins.includes(origin) || isYourVercelPreview;
   
   // Set CORS headers - only allow requests from your domain
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -159,8 +162,9 @@ export default async function handler(req, res) {
   }
   
   // Check Referer header (indicates which page made the request)
-  const isValidReferer = referer && allowedOrigins.some(allowedOrigin => 
-    referer.startsWith(allowedOrigin)
+  const isValidReferer = referer && (
+    allowedOrigins.some(allowedOrigin => referer.startsWith(allowedOrigin)) ||
+    referer.includes('james-blairs-projects.vercel.app') // Allow only your Vercel previews
   );
   
   if (!isValidReferer) {
