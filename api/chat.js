@@ -4,6 +4,7 @@
 // Simple in-memory session tracking (resets on function cold start)
 const sessionStore = new Map();
 
+
 // Function to load and process James Blair context from llms.txt
 async function loadJamesContext() {
   try {
@@ -118,10 +119,26 @@ async function callClaudeWithRetry(systemPrompt, messages, maxRetries = 3) {
 }
 
 export default async function handler(req, res) {
-  // Set CORS headers
+  // Allowed origins for CORS and security validation
+  const allowedOrigins = [
+    'https://www.jamesblair.me',
+    'https://jamesblair.me',
+    'http://localhost:3000',     // For Vercel dev
+    'http://127.0.0.1:3000',     // For Vercel dev
+    'http://localhost:8000',     // For local testing
+    'http://127.0.0.1:8000'      // For local testing
+  ];
+  
+  const origin = req.headers.origin;
+  
+  // Allow Vercel preview deployments (only from your specific project)
+  const isYourVercelPreview = origin && origin.includes('james-blairs-projects.vercel.app');
+  const isAllowedOrigin = allowedOrigins.includes(origin) || isYourVercelPreview;
+  
+  // Set CORS headers - only allow requests from your domain
   res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : 'null');
+  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   // Handle preflight requests
@@ -133,6 +150,29 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+
+  // Enhanced Origin and Referer validation
+  const referer = req.headers.referer || req.headers.referrer;
+  const clientIP = req.headers['x-forwarded-for'] || req.connection?.remoteAddress || 'unknown';
+  
+  // Check Origin header (set by browsers for CORS requests)
+  if (!isAllowedOrigin) {
+    console.warn(`Rejected request from unauthorized origin: ${origin || 'null'} (IP: ${clientIP})`);
+    return res.status(403).json({ error: 'Forbidden: Invalid origin' });
+  }
+  
+  // Check Referer header (indicates which page made the request)
+  const isValidReferer = referer && (
+    allowedOrigins.some(allowedOrigin => referer.startsWith(allowedOrigin)) ||
+    referer.includes('james-blairs-projects.vercel.app') // Allow only your Vercel previews
+  );
+  
+  if (!isValidReferer) {
+    console.warn(`Rejected request with invalid referer: ${referer || 'null'} from origin: ${origin} (IP: ${clientIP})`);
+    return res.status(403).json({ error: 'Forbidden: Invalid referer' });
+  }
+  
+  console.log(`Valid request from origin: ${origin}, referer: ${referer} (IP: ${clientIP})`);
 
   // Validate API key is configured
   if (!process.env.ANTHROPIC_API_KEY) {
@@ -176,8 +216,6 @@ export default async function handler(req, res) {
       sessionStore.set(sessionId, sessionData);
     }
 
-    // Rate limiting - basic IP-based limiting
-    const clientIP = req.headers['x-forwarded-for'] || req.connection?.remoteAddress || 'unknown';
 
     // Content filtering - ensure messages are about James
     const jamesKeywords = ['james', 'blair', 'background', 'experience', 'work', 'posit', 'data science', 'product manager', 'ai', 'cycling', 'family'];
