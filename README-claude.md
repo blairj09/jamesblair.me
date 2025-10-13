@@ -12,7 +12,7 @@ This branch replaces the web-llm implementation with Claude API integration for 
 
 ### Added
 - Vercel edge function (`/api/chat.js`) for secure Claude API proxy
-- Simplified chat interface with Claude 3.5 Sonnet
+- Simplified chat interface with [Claude Sonnet 4.5](https://www.anthropic.com/news/claude-sonnet-4-5)
 - Rate limiting and content filtering on the server side
 - Fast, consistent responses (~2-3 seconds vs 10-30 seconds)
 
