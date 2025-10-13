@@ -4,7 +4,7 @@ Personal website with Claude AI chat integration.
 
 ## Features
 
-- **Claude Chat**: Interactive AI assistant powered by Claude Sonnet 4
+- **Claude Chat**: Interactive AI assistant powered by [Claude Sonnet 4.5](https://www.anthropic.com/news/claude-sonnet-4-5)
 - **Responsive Design**: Mobile-first, accessible interface
 - **Dark/Light Mode**: Theme switching with system preference detection
 - **Edge Functions**: Fast, secure API integration via Vercel
