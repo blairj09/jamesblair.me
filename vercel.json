@@ -6,5 +6,7 @@
     "api/chat.js": {
       "includeFiles": "llms.txt"
     }
-  }
+  },
+  "cleanUrls": true,
+  "trailingSlash": true
 }
