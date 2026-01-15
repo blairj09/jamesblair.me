@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sampling Methods Visualizer | Stat 121</title>
+    <meta name="description" content="Interactive visualization of different sampling methods for statistics education">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIj4KICA8cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHJ4PSI2IiBmaWxsPSIjMjU2M2ViIi8+CiAgPHRleHQgeD0iMTYiIHk9IjIyIiBmb250LWZhbWlseT0ic3lzdGVtLXVpLCAtYXBwbGUtc3lzdGVtLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+SkI8L3RleHQ+Cjwvc3ZnPg==">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="../">← Stat 121 Resources</a>
+            </div>
+            <div class="header-right">
+                <div class="scenario-selector">
+                    <label for="scenario-select">Scenario:</label>
+                    <select id="scenario-select" class="scenario-dropdown">
+                        <!-- Dynamically populated by JavaScript -->
+                    </select>
+                </div>
+                <label class="theme-toggle" for="theme-switch" aria-label="Toggle dark mode">
+                    <input type="checkbox" id="theme-switch" class="theme-switch-input" />
+                    <span class="theme-switch-slider">
+                        <span class="theme-switch-handle">
+                            <span class="theme-icon">🌙</span>
+                        </span>
+                    </span>
+                </label>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="title-section">
+            <h1>Sampling Methods</h1>
+            <p class="scenario-title" id="scenario-title">Loading scenario...</p>
+            <div class="scenario-hint" id="scenario-hint">
+                <span class="hint-icon">💡</span>
+                <span id="hint-text">Try different sampling methods to see which produces the best estimate!</span>
+            </div>
+        </section>
+
+        <div class="main-content">
+            <!-- Left Column: Canvas Visualization -->
+            <div class="canvas-section">
+                <!-- Settings Panel -->
+                <div class="settings-panel">
+                    <h3>Settings</h3>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <label for="population-size">Population Size:</label>
+                            <input type="number" id="population-size" min="50" max="500" step="10" value="100">
+                        </div>
+                        <div class="setting-item">
+                            <label for="sample-size">Sample Size:</label>
+                            <input type="number" id="sample-size" min="10" max="100" step="5" value="20">
+                        </div>
+                    </div>
+                    <button id="apply-settings-btn" class="btn-secondary">Apply Settings</button>
+                </div>
+
+                <div class="canvas-container">
+                    <canvas id="visualization-canvas" aria-label="Sampling visualization"></canvas>
+                </div>
+                <div class="canvas-controls">
+                    <button id="sample-btn" class="btn-primary">Sample Once</button>
+                    <button id="reset-btn" class="btn-secondary">Reset</button>
+                    <button id="view-data-btn" class="btn-secondary">View Data</button>
+                    <div class="sample-info">
+                        <span id="sample-count">Sample size: 0</span>
+                    </div>
+                </div>
+
+                <!-- Simulation Controls -->
+                <div class="simulation-panel">
+                    <h3>Run Simulation</h3>
+                    <p class="simulation-description">Run the current sampling method multiple times to see the distribution of sample means.</p>
+                    <div class="simulation-controls">
+                        <div class="setting-item">
+                            <label for="simulation-runs">Number of Runs:</label>
+                            <input type="number" id="simulation-runs" min="10" max="1000" step="10" value="100">
+                        </div>
+                        <button id="run-simulation-btn" class="btn-primary">Run Simulation</button>
+                    </div>
+                    <div id="simulation-progress" class="simulation-progress" style="display: none;">
+                        <div class="progress-bar">
+                            <div id="progress-fill" class="progress-fill"></div>
+                        </div>
+                        <span id="progress-text">Running simulation...</span>
+                    </div>
+                </div>
+
+                <!-- Simulation Results -->
+                <div id="simulation-results" class="simulation-results" style="display: none;">
+                    <h3>Simulation Results</h3>
+                    <div class="results-grid">
+                        <div class="result-stat">
+                            <div class="result-label">Mean of Sample Means</div>
+                            <div class="result-value" id="sim-mean">—</div>
+                        </div>
+                        <div class="result-stat">
+                            <div class="result-label">Standard Error (SE)</div>
+                            <div class="result-value" id="sim-std">—</div>
+                        </div>
+                        <div class="result-stat">
+                            <div class="result-label">95% CI</div>
+                            <div class="result-value" id="sim-ci">—</div>
+                        </div>
+                    </div>
+                    <canvas id="simulation-histogram" aria-label="Distribution of sample means"></canvas>
+                </div>
+            </div>
+
+            <!-- Right Column: Method Selector & Info -->
+            <div class="info-section">
+                <div class="method-tabs" role="tablist" aria-label="Sampling methods">
+                    <button class="tab-btn active probability-method" data-method="simple-random" role="tab" aria-selected="true" aria-controls="simple-random-panel" id="simple-random-tab">
+                        Simple Random
+                    </button>
+                    <button class="tab-btn probability-method" data-method="stratified" role="tab" aria-selected="false" aria-controls="stratified-panel" id="stratified-tab">
+                        Stratified
+                    </button>
+                    <button class="tab-btn probability-method" data-method="cluster" role="tab" aria-selected="false" aria-controls="cluster-panel" id="cluster-tab">
+                        Cluster
+                    </button>
+                    <button class="tab-btn probability-method" data-method="multistage" role="tab" aria-selected="false" aria-controls="multistage-panel" id="multistage-tab">
+                        Multistage
+                    </button>
+                    <button class="tab-btn nonprobability-method" data-method="convenience" role="tab" aria-selected="false" aria-controls="convenience-panel" id="convenience-tab">
+                        Convenience
+                    </button>
+                    <button class="tab-btn nonprobability-method" data-method="quota" role="tab" aria-selected="false" aria-controls="quota-panel" id="quota-tab">
+                        Quota
+                    </button>
+                </div>
+
+                <div class="method-content">
+                    <!-- Simple Random Sampling -->
+                    <div class="method-panel active" id="simple-random-panel" role="tabpanel" aria-labelledby="simple-random-tab">
+                        <div class="method-badge probability-badge">Probability Sampling</div>
+                        <h3>Simple Random Sampling</h3>
+                        <p class="method-description">Every member of the population has an equal and independent chance of being selected. Like drawing names from a hat.</p>
+                        
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Advantages</h4>
+                                <ul>
+                                    <li>Unbiased and representative</li>
+                                    <li>Easy to understand and explain</li>
+                                    <li>Statistical theory is straightforward</li>
+                                    <li>Sample statistic provides good estimate of population parameter</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Disadvantages</h4>
+                                <ul>
+                                    <li>Requires complete population list</li>
+                                    <li>Can be expensive to implement</li>
+                                    <li>May miss small subgroups by chance</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="best-use">
+                            <strong>Best used when:</strong> You have a complete list of the population and want the simplest, most unbiased approach.
+                        </div>
+                    </div>
+
+                    <!-- Stratified Sampling -->
+                    <div class="method-panel" id="stratified-panel" role="tabpanel" aria-labelledby="stratified-tab">
+                        <div class="method-badge probability-badge">Probability Sampling</div>
+                        <h3>Stratified Sampling</h3>
+                        <p class="method-description">Population is divided into homogeneous groups (strata) where members <strong>within each stratum are similar</strong> to each other. Then random samples are taken from each stratum proportionally.</p>
+                        
+                        <div class="key-insight">
+                            <strong>Key Insight:</strong> Works best when strata are <em>homogeneous within</em> (similar cases grouped together) but <em>heterogeneous between</em> (strata differ from each other).
+                        </div>
+                        
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Advantages</h4>
+                                <ul>
+                                    <li>Ensures representation of all groups</li>
+                                    <li>More precise estimates than simple random</li>
+                                    <li>Can compare between strata</li>
+                                    <li>Reduces sampling variability</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Disadvantages</h4>
+                                <ul>
+                                    <li>Requires knowledge of strata</li>
+                                    <li>More complex to implement</li>
+                                    <li>May need different sampling rates</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="best-use">
+                            <strong>Best used when:</strong> Your population has distinct subgroups (like class year, income level) and you want to ensure each is adequately represented.
+                        </div>
+                    </div>
+
+                    <!-- Cluster Sampling -->
+                    <div class="method-panel" id="cluster-panel" role="tabpanel" aria-labelledby="cluster-tab">
+                        <div class="method-badge probability-badge">Probability Sampling</div>
+                        <h3>Cluster Sampling</h3>
+                        <p class="method-description">Population is divided into clusters (often geographic). Then entire clusters are randomly selected and <strong>all members</strong> of those clusters are surveyed.</p>
+                        
+                        <div class="key-insight">
+                            <strong>Key Insight:</strong> Works best when each cluster is <em>heterogeneous within</em> (diverse mix of individuals) and clusters are <em>homogeneous between</em> (similar to each other). Opposite of stratified sampling!
+                        </div>
+                        
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Advantages</h4>
+                                <ul>
+                                    <li>Cost-effective and practical</li>
+                                    <li>No need for complete population list</li>
+                                    <li>Convenient for geographically dispersed populations</li>
+                                    <li>Reduces travel/data collection costs</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Disadvantages</h4>
+                                <ul>
+                                    <li>Less precise than other methods</li>
+                                    <li>Clusters may not be representative</li>
+                                    <li>Higher sampling error if clusters differ</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="best-use">
+                            <strong>Best used when:</strong> Your population is naturally grouped (neighborhoods, schools, hospitals) and sampling individuals would be too expensive or impractical.
+                        </div>
+                    </div>
+
+                    <!-- Multistage Sampling -->
+                    <div class="method-panel" id="multistage-panel" role="tabpanel" aria-labelledby="multistage-tab">
+                        <div class="method-badge probability-badge">Probability Sampling</div>
+                        <h3>Multistage Sampling</h3>
+                        <p class="method-description">Like cluster sampling, but instead of surveying everyone in selected clusters, we take a <strong>random sample within each selected cluster</strong>. This is a two-stage process.</p>
+                        
+                        <div class="key-insight">
+                            <strong>Key Insight:</strong> More practical than cluster sampling when clusters are large. Combines the cost savings of cluster sampling with better precision from within-cluster sampling.
+                        </div>
+                        
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Advantages</h4>
+                                <ul>
+                                    <li>More economical than simple random sampling</li>
+                                    <li>More precise than pure cluster sampling</li>
+                                    <li>Practical for large, dispersed populations</li>
+                                    <li>Balances cost and accuracy</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Disadvantages</h4>
+                                <ul>
+                                    <li>More complex to plan and execute</li>
+                                    <li>Requires sampling at multiple levels</li>
+                                    <li>Analysis is more complicated</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="best-use">
+                            <strong>Best used when:</strong> Clusters are large and you want cost savings without surveying every individual in selected clusters (e.g., select villages, then sample people within each village).
+                        </div>
+                    </div>
+
+                    <!-- Convenience Sampling -->
+                    <div class="method-panel" id="convenience-panel" role="tabpanel" aria-labelledby="convenience-tab">
+                        <div class="method-badge nonprobability-badge">Non-Probability Sampling ⚠️</div>
+                        <h3>Convenience Sampling</h3>
+                        <p class="method-description">Samples are selected based on availability and ease of access, without randomization. <strong>Not recommended for generalizing to a population.</strong></p>
+                        
+                        <div class="key-insight warning-insight">
+                            <strong>⚠️ Warning:</strong> This method introduces bias and does not allow you to make valid inferences about the population. Results cannot be generalized.
+                        </div>
+                        
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Advantages</h4>
+                                <ul>
+                                    <li>Fast and inexpensive</li>
+                                    <li>Easy to implement</li>
+                                    <li>Useful for pilot studies or exploratory research</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Disadvantages</h4>
+                                <ul>
+                                    <li>High risk of bias</li>
+                                    <li>Not representative of population</li>
+                                    <li>Cannot generalize findings</li>
+                                    <li>Sample statistic is likely biased estimate</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="best-use">
+                            <strong>Best used when:</strong> You need quick preliminary data or when other methods are impossible, but you <strong>cannot make generalizations</strong> about the population.
+                        </div>
+                    </div>
+
+                    <!-- Quota Sampling -->
+                    <div class="method-panel" id="quota-panel" role="tabpanel" aria-labelledby="quota-tab">
+                        <div class="method-badge nonprobability-badge">Non-Probability Sampling ⚠️</div>
+                        <h3>Quota Sampling</h3>
+                        <p class="method-description">Non-random sampling where researchers ensure specific numbers (quotas) are met for different groups. <strong>Not recommended for valid statistical inference.</strong></p>
+                        
+                        <div class="key-insight warning-insight">
+                            <strong>⚠️ Warning:</strong> While quotas ensure group representation, selection within groups is not random, introducing bias. Cannot generalize to population.
+                        </div>
+                        
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Advantages</h4>
+                                <ul>
+                                    <li>Ensures group representation</li>
+                                    <li>Faster than stratified sampling</li>
+                                    <li>No need for random selection</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Disadvantages</h4>
+                                <ul>
+                                    <li>Introduces selection bias</li>
+                                    <li>Not truly representative</li>
+                                    <li>Researcher bias in selection</li>
+                                    <li>Cannot make valid population inferences</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="best-use">
+                            <strong>Best used when:</strong> You need quick representation of subgroups but randomization is not feasible. <strong>However, stratified sampling is always preferred</strong> if valid inference is needed.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Legend -->
+                <div class="legend" id="legend">
+                    <h4>Population Groups</h4>
+                    <div class="legend-items" id="legend-items">
+                        <!-- Dynamically populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Statistics Comparison -->
+                <div class="statistics-panel">
+                    <h4>Population Parameter vs Sample Statistic</h4>
+                    <div class="stat-metric">
+                        <strong>Measuring:</strong> <span id="metric-name">—</span>
+                    </div>
+                    <div class="parameter-explanation">
+                        The goal of sampling is to use the <strong>sample statistic</strong> to estimate the unknown <strong>population parameter</strong>.
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat-item population-stat">
+                            <div class="stat-label">Population Parameter (μ)</div>
+                            <div class="stat-sublabel">True value for entire population</div>
+                            <div class="stat-value" id="population-mean">—</div>
+                        </div>
+                        <div class="stat-item sample-stat">
+                            <div class="stat-label">Sample Statistic (x̄)</div>
+                            <div class="stat-sublabel">Estimate from our sample</div>
+                            <div class="stat-value" id="sample-mean">—</div>
+                        </div>
+                    </div>
+                    <div class="stat-difference">
+                        <strong>Bias:</strong> <span id="difference">—</span>
+                    </div>
+                    <div class="stat-hint">
+                        With probability sampling methods, the sample statistic provides an unbiased estimate of the population parameter.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 James Blair | Built for BYU Stat 121</p>
+    </footer>
+
+    <!-- Data View Modal -->
+    <div id="data-modal" class="data-modal" style="display: none;">
+        <div class="data-modal-content">
+            <div class="data-modal-header">
+                <h2>Population Data</h2>
+                <div class="data-modal-actions">
+                    <button id="export-csv-btn" class="btn-secondary btn-small">Export CSV</button>
+                    <button id="close-data-btn" class="btn-close">&times;</button>
+                </div>
+            </div>
+            <div class="data-modal-body">
+                <div class="data-info">
+                    <p><strong>Population Size:</strong> <span id="data-pop-size">—</span></p>
+                    <p><strong>Sample Size:</strong> <span id="data-sample-size">—</span></p>
+                    <p><strong>Scenario:</strong> <span id="data-scenario">—</span></p>
+                    <p class="data-legend">
+                        <span class="legend-highlight sampled">■</span> = In Sample
+                        <span class="legend-highlight not-sampled">□</span> = Not in Sample
+                    </p>
+                </div>
+                <div class="data-table-container">
+                    <table id="data-table" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th id="cluster-header" style="display: none;">Cluster</th>
+                                <th>Group</th>
+                                <th class="data-metric-header">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody id="data-table-body">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
