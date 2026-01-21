@@ -287,6 +287,78 @@ input[type="number"]:focus {
     margin-top: 0.25rem;
 }
 
+/* Sync Section */
+.sync-section {
+    background-color: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.sync-status {
+    padding: 0.75rem;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.sync-status .syncing {
+    color: var(--secondary-color);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.sync-status .synced {
+    color: var(--success-color);
+}
+
+.sync-status .not-synced {
+    color: var(--text-secondary);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.sync-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.sync-btn {
+    padding: 0.75rem;
+    background-color: transparent;
+    color: var(--secondary-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.sync-btn:hover {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.sync-help {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
 /* History Section */
 .history-list {
     max-height: 300px;

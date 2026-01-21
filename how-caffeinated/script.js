@@ -3,29 +3,62 @@ let state = {
     doses: [], // Array of {amount: number, timestamp: number}
     halfLife: 5.5, // hours
     timeWindow: 24, // hours
-    currentTime: Date.now()
+    currentTime: Date.now(),
+    isSyncing: false,
+    lastSync: null
 };
 
 // Constants
 const STORAGE_KEY = 'caffeine-tracker-data';
+const USER_ID_KEY = 'caffeine-tracker-user-id';
 const SAFE_THRESHOLD = 25; // mg - when caffeine is mostly out of system
+const API_URL = '/api/caffeine';
 
 // Canvas setup
 const canvas = document.getElementById('caffeine-chart');
 const ctx = canvas.getContext('2d');
 
 // Initialize
-function init() {
+async function init() {
+    await initializeUser();
     loadFromStorage();
+    await loadFromCloud();
     setupEventListeners();
     setupCanvas();
     updateVisualization();
+    updateSyncStatus();
 
     // Update current time every minute
     setInterval(() => {
         state.currentTime = Date.now();
         updateVisualization();
     }, 60000);
+
+    // Auto-sync every 5 minutes
+    setInterval(() => {
+        saveToCloud();
+    }, 5 * 60 * 1000);
+}
+
+// Get or create user ID
+function getUserId() {
+    let userId = localStorage.getItem(USER_ID_KEY);
+    if (!userId) {
+        userId = generateUserId();
+        localStorage.setItem(USER_ID_KEY, userId);
+    }
+    return userId;
+}
+
+// Generate a unique user ID
+function generateUserId() {
+    return 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+}
+
+// Initialize user and display sync info
+async function initializeUser() {
+    const userId = getUserId();
+    console.log('User ID:', userId);
 }
 
 // Load data from localStorage
@@ -60,6 +93,132 @@ function saveToStorage() {
     }
 }
 
+// Load data from cloud
+async function loadFromCloud() {
+    try {
+        state.isSyncing = true;
+        updateSyncStatus();
+
+        const userId = getUserId();
+        const response = await fetch(`${API_URL}?userId=${encodeURIComponent(userId)}`);
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const cloudData = await response.json();
+
+        if (cloudData.doses && cloudData.doses.length > 0) {
+            // Merge cloud data with local data
+            const mergedDoses = mergeDoses(state.doses, cloudData.doses);
+            state.doses = mergedDoses;
+            state.halfLife = cloudData.halfLife || state.halfLife;
+            state.timeWindow = cloudData.timeWindow || state.timeWindow;
+            state.lastSync = cloudData.lastSync;
+
+            // Save merged data locally
+            saveToStorage();
+        }
+
+        console.log('Synced from cloud:', cloudData);
+    } catch (error) {
+        console.error('Error loading from cloud:', error);
+    } finally {
+        state.isSyncing = false;
+        updateSyncStatus();
+    }
+}
+
+// Save data to cloud
+async function saveToCloud() {
+    try {
+        state.isSyncing = true;
+        updateSyncStatus();
+
+        const userId = getUserId();
+
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId,
+                doses: state.doses,
+                halfLife: state.halfLife,
+                timeWindow: state.timeWindow
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+        state.lastSync = result.lastSync;
+
+        console.log('Synced to cloud:', result);
+    } catch (error) {
+        console.error('Error saving to cloud:', error);
+    } finally {
+        state.isSyncing = false;
+        updateSyncStatus();
+    }
+}
+
+// Merge doses from two sources (local and cloud)
+function mergeDoses(localDoses, cloudDoses) {
+    // Create a map of all doses by timestamp
+    const doseMap = new Map();
+
+    // Add local doses
+    localDoses.forEach(dose => {
+        const key = `${dose.timestamp}-${dose.amount}`;
+        doseMap.set(key, dose);
+    });
+
+    // Add cloud doses (may overwrite or add new)
+    cloudDoses.forEach(dose => {
+        const key = `${dose.timestamp}-${dose.amount}`;
+        doseMap.set(key, dose);
+    });
+
+    // Convert back to array and sort by timestamp
+    const merged = Array.from(doseMap.values()).sort((a, b) => a.timestamp - b.timestamp);
+
+    // Remove doses older than 48 hours
+    const cutoff = Date.now() - (48 * 60 * 60 * 1000);
+    return merged.filter(d => d.timestamp > cutoff);
+}
+
+// Update sync status display
+function updateSyncStatus() {
+    const syncStatus = document.getElementById('sync-status');
+    if (!syncStatus) return;
+
+    if (state.isSyncing) {
+        syncStatus.innerHTML = '<span class="syncing">⟳ Syncing...</span>';
+    } else if (state.lastSync) {
+        const syncTime = new Date(state.lastSync);
+        const now = new Date();
+        const diffMinutes = Math.floor((now - syncTime) / (1000 * 60));
+
+        let timeAgo;
+        if (diffMinutes < 1) {
+            timeAgo = 'just now';
+        } else if (diffMinutes < 60) {
+            timeAgo = `${diffMinutes}m ago`;
+        } else {
+            const diffHours = Math.floor(diffMinutes / 60);
+            timeAgo = `${diffHours}h ago`;
+        }
+
+        syncStatus.innerHTML = `<span class="synced">✓ Synced ${timeAgo}</span>`;
+    } else {
+        syncStatus.innerHTML = '<span class="not-synced">○ Not synced</span>';
+    }
+}
+
 // Calculate caffeine amount at a given time for a single dose
 function calculateCaffeineAtTime(initialAmount, doseTime, currentTime, halfLife) {
     const hoursElapsed = (currentTime - doseTime) / (1000 * 60 * 60);
@@ -82,7 +241,7 @@ function getTotalCaffeineAtTime(time) {
 }
 
 // Add a new caffeine dose
-function addDose(amount) {
+async function addDose(amount) {
     if (amount <= 0) return;
 
     state.doses.push({
@@ -91,14 +250,16 @@ function addDose(amount) {
     });
 
     saveToStorage();
+    await saveToCloud();
     updateVisualization();
 }
 
 // Clear all doses
-function clearHistory() {
+async function clearHistory() {
     if (confirm('Are you sure you want to clear all caffeine intake history?')) {
         state.doses = [];
         saveToStorage();
+        await saveToCloud();
         updateVisualization();
     }
 }
@@ -441,18 +602,57 @@ function setupEventListeners() {
     document.getElementById('clear-history-btn').addEventListener('click', clearHistory);
 
     // Half-life setting
-    document.getElementById('half-life').addEventListener('change', (e) => {
+    document.getElementById('half-life').addEventListener('change', async (e) => {
         state.halfLife = parseFloat(e.target.value);
         saveToStorage();
+        await saveToCloud();
         updateVisualization();
     });
 
     // Time window setting
-    document.getElementById('time-window').addEventListener('change', (e) => {
+    document.getElementById('time-window').addEventListener('change', async (e) => {
         state.timeWindow = parseFloat(e.target.value);
         saveToStorage();
+        await saveToCloud();
         updateVisualization();
     });
+
+    // Sync now button
+    const syncBtn = document.getElementById('sync-now-btn');
+    if (syncBtn) {
+        syncBtn.addEventListener('click', async () => {
+            await saveToCloud();
+            await loadFromCloud();
+            updateVisualization();
+        });
+    }
+
+    // Copy user ID button
+    const copyIdBtn = document.getElementById('copy-id-btn');
+    if (copyIdBtn) {
+        copyIdBtn.addEventListener('click', () => {
+            const userId = getUserId();
+            navigator.clipboard.writeText(userId).then(() => {
+                alert('User ID copied to clipboard! Share this ID to sync across devices.');
+            }).catch(err => {
+                prompt('Copy this User ID to sync across devices:', userId);
+            });
+        });
+    }
+
+    // Set user ID button
+    const setIdBtn = document.getElementById('set-id-btn');
+    if (setIdBtn) {
+        setIdBtn.addEventListener('click', async () => {
+            const newUserId = prompt('Enter your User ID from another device:');
+            if (newUserId && newUserId.trim()) {
+                localStorage.setItem(USER_ID_KEY, newUserId.trim());
+                await loadFromCloud();
+                updateVisualization();
+                alert('User ID updated! Your data has been synced.');
+            }
+        });
+    }
 
     // Theme toggle
     const themeToggle = document.getElementById('theme-toggle');
