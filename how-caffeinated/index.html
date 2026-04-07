@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Caffeinated - James Blair</title>
+    <meta name="description" content="Track your caffeine intake and visualize how it decays over time using the half-life of caffeine.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="../">← Home</a>
+            </div>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1>How Caffeinated Am I?</h1>
+        <p class="subtitle">Track your caffeine intake and see how it decays over time</p>
+
+        <div class="app-layout">
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <div class="current-caffeine-display">
+                    <h2>Current Caffeine</h2>
+                    <div class="caffeine-amount" id="current-caffeine">0 mg</div>
+                    <div class="caffeine-percentage" id="caffeine-percentage">0%</div>
+                </div>
+
+                <div class="input-section">
+                    <h3>Add Caffeine Intake</h3>
+                    <div class="input-group">
+                        <label for="caffeine-amount">Amount (mg)</label>
+                        <input type="number" id="caffeine-amount" min="0" max="1000" value="95" step="5">
+                        <div class="quick-amounts">
+                            <button class="quick-btn" data-amount="50">Espresso (50mg)</button>
+                            <button class="quick-btn" data-amount="95">Coffee (95mg)</button>
+                            <button class="quick-btn" data-amount="40">Tea (40mg)</button>
+                            <button class="quick-btn" data-amount="80">Energy Drink (80mg)</button>
+                            <button class="quick-btn" data-amount="35">Soda (35mg)</button>
+                        </div>
+                    </div>
+                    <button id="add-caffeine-btn" class="primary-btn">Add Caffeine</button>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Settings</h3>
+                    <div class="setting-item">
+                        <label for="half-life">Caffeine Half-Life (hours)</label>
+                        <input type="number" id="half-life" min="3" max="8" value="5.5" step="0.5">
+                        <small>Typical range: 3-8 hours (avg 5.5)</small>
+                    </div>
+                    <div class="setting-item">
+                        <label for="time-window">Time Window (hours)</label>
+                        <input type="number" id="time-window" min="6" max="48" value="24" step="6">
+                    </div>
+                </div>
+
+                <div class="sync-section">
+                    <h3>Cloud Sync</h3>
+                    <div id="sync-status" class="sync-status">
+                        <span class="not-synced">○ Not synced</span>
+                    </div>
+                    <div class="sync-buttons">
+                        <button id="sync-now-btn" class="sync-btn">Sync Now</button>
+                        <button id="copy-id-btn" class="sync-btn">Copy User ID</button>
+                        <button id="set-id-btn" class="sync-btn">Use Different ID</button>
+                    </div>
+                    <small class="sync-help">Copy your User ID to sync across devices. Paste it on another device to access the same data.</small>
+                </div>
+
+                <div class="intake-history">
+                    <h3>Intake History</h3>
+                    <div id="history-list" class="history-list"></div>
+                    <button id="clear-history-btn" class="secondary-btn">Clear History</button>
+                </div>
+            </div>
+
+            <!-- Visualization Panel -->
+            <div class="visualization-panel">
+                <h3>Caffeine Decay Over Time</h3>
+                <div class="canvas-container">
+                    <canvas id="caffeine-chart"></canvas>
+                </div>
+                <div class="chart-info">
+                    <div class="info-item">
+                        <span class="info-label">Peak Caffeine:</span>
+                        <span id="peak-caffeine">0 mg</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Time to 25mg:</span>
+                        <span id="time-to-threshold">N/A</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
