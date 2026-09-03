@@ -169,6 +169,35 @@ h2 { max-width: 15ch; margin-bottom: 1.75rem; font-size: clamp(2.8rem, 6.3vw, 6.
   .nav-button { min-width: 2.7rem; }
 }
 
+/* Fill larger projection screens without changing the compact classroom layout. */
+@media (min-width: 1440px) and (min-height: 800px) {
+  .topbar, .deck-nav { left: clamp(2rem, 3vw, 4rem); right: clamp(2rem, 3vw, 4rem); }
+  .topbar { top: clamp(1.5rem, 3vw, 3.25rem); }
+  .wordmark { font-size: clamp(1.05rem, 1.15vw, 1.35rem); }
+  .slide__content { width: min(84vw, 2000px); margin-top: clamp(2rem, 3vh, 4rem); }
+  .teach-layout { width: min(78vw, 1720px); }
+  .eyebrow { font-size: clamp(1.1rem, 1.15vw, 1.35rem); }
+  h1 { font-size: clamp(7rem, 10.5vw, 13.5rem); }
+  h2 { font-size: clamp(5.6rem, 6.3vw, 10rem); }
+  .lede { font-size: clamp(1.55rem, 1.8vw, 2.25rem); }
+  .welcome__details { font-size: clamp(1.1rem, 1.3vw, 1.45rem); }
+  .portrait--welcome { width: min(33vw, 540px); right: clamp(2.5rem, 10vw, 16rem); }
+  .timeline strong { font-size: clamp(1.8rem, 2vw, 2.5rem); }
+  .timeline small { font-size: clamp(1.15rem, 1.35vw, 1.4rem); }
+  .work-photo { width: min(32vw, 560px); }
+  .teach-statement { max-width: 20ch; font-size: clamp(5.2rem, 6.2vw, 9.5rem); }
+  .family-gallery { width: min(31vw, 540px); }
+  .outdoors-gallery { width: min(38vw, 680px); }
+  .facts-list li { font-size: clamp(1.35rem, 1.65vw, 1.75rem); }
+  .facts-photo { width: min(36vw, 640px); }
+  .daughter-quote { font-size: clamp(1.25rem, 1.5vw, 1.6rem); }
+  .expectations strong { font-size: clamp(1.45rem, 2vw, 2rem); }
+  .expectations p { font-size: clamp(1.2rem, 1.45vw, 1.45rem); }
+  .nav-button { min-width: 9.4rem; padding: .9rem 1.35rem; font-size: 1.1rem; }
+  .slide-counter { font-size: 1.05rem; }
+  .progress { width: min(18vw, 190px); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
