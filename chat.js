@@ -7,9 +7,9 @@ class ClaudeChat {
         this.isInitialized = false;
         this.maxMessages = 10;
         
-        // Reset session on each page load for better UX
-        this.resetSession();
-        
+        // Keep a browser session for 30 minutes. This is a UX limit, not a durable
+        // abuse-control mechanism; the server documents the same limitation.
+        this.handleSessionExpiration();
         this.sessionId = this.getOrCreateSessionId();
         this.messageCount = this.getSessionMessageCount();
         this.init();
@@ -21,9 +21,6 @@ class ClaudeChat {
         if (!sessionId) {
             sessionId = 'session-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
             sessionStorage.setItem('claude-chat-session-id', sessionId);
-            console.log('Created new session:', sessionId);
-        } else {
-            console.log('Using existing session:', sessionId);
         }
         return sessionId;
     }
@@ -31,14 +28,12 @@ class ClaudeChat {
     getSessionMessageCount() {
         const count = sessionStorage.getItem('claude-chat-message-count');
         const parsed = count ? parseInt(count, 10) : 0;
-        console.log('Retrieved message count:', parsed);
         return parsed;
     }
 
     incrementMessageCount() {
         this.messageCount++;
         sessionStorage.setItem('claude-chat-message-count', this.messageCount.toString());
-        console.log(`Message count incremented to: ${this.messageCount}/${this.maxMessages}`);
     }
 
     isSessionLimitReached() {
@@ -54,7 +49,6 @@ class ClaudeChat {
         // Reset instance variables (new session will be created when needed)
         this.sessionId = null;
         this.messageCount = 0;
-        console.log('Session reset');
     }
 
     handleSessionExpiration() {
@@ -72,11 +66,8 @@ class ClaudeChat {
         const thirtyMinutes = 30 * 60 * 1000;
         
         if (sessionAge > thirtyMinutes) {
-            console.log('Session expired (30+ minutes old), resetting');
             this.resetSession();
             sessionStorage.setItem('claude-chat-session-timestamp', currentTime.toString());
-        } else {
-            console.log(`Session still valid (${Math.round(sessionAge / 1000 / 60)} minutes old)`);
         }
     }
 
@@ -117,7 +108,6 @@ class ClaudeChat {
         this.updateSendButton(); // Initialize send button state
         
         this.isInitialized = true;
-        console.log(`Claude chat initialized successfully. Session: ${this.sessionId}, Messages: ${this.messageCount}/${this.maxMessages}`);
     }
 
     async sendMessage() {
@@ -160,6 +150,10 @@ class ClaudeChat {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({ error: 'Network error' }));
+                if (response.status === 429 && /session.*limit/i.test(errorData.error || '')) {
+                    this.messageCount = this.maxMessages;
+                    sessionStorage.setItem('claude-chat-message-count', this.messageCount.toString());
+                }
                 throw new Error(errorData.error || `HTTP ${response.status}`);
             }
 
@@ -172,8 +166,14 @@ class ClaudeChat {
             // Add AI response to chat
             this.addMessage('assistant', data.message);
 
-            // Increment message count (user message counts toward limit)
-            this.incrementMessageCount();
+            // Use the server's count when available, so the browser display stays
+            // aligned with the best-effort server-side session record.
+            if (Number.isInteger(data.remaining)) {
+                this.messageCount = this.maxMessages - data.remaining;
+                sessionStorage.setItem('claude-chat-message-count', this.messageCount.toString());
+            } else {
+                this.incrementMessageCount();
+            }
 
             // Update message count display
             this.updateMessageCountDisplay();
@@ -217,20 +217,19 @@ class ClaudeChat {
         const contentDiv = document.createElement('div');
         contentDiv.className = 'message-content';
         
-        // Render markdown for assistant messages, plain text for user messages
+        // Render a small, sanitized subset of Markdown for assistant messages.
+        // Model output is untrusted and must never be inserted directly as HTML.
         if (role === 'assistant' && typeof marked !== 'undefined') {
-            // Configure marked for security and styling
             const renderer = new marked.Renderer();
-            
-            // Customize link rendering for security
+
             renderer.link = (href, title, text) => {
-                const titleAttr = title ? ` title="${title}"` : '';
-                return `<a href="${href}"${titleAttr} target="_blank" rel="noopener noreferrer">${text}</a>`;
+                const safeHref = this.getSafeUrl(href);
+                return safeHref
+                    ? `<a href="${safeHref}" target="_blank" rel="noopener noreferrer">${text}</a>`
+                    : text;
             };
-            
-            // Customize code block rendering for syntax highlighting
+
             renderer.code = (code, language) => {
-                // Escape HTML in code content
                 const escapedCode = code
                     .replace(/&/g, '&amp;')
                     .replace(/</g, '&lt;')
@@ -238,25 +237,27 @@ class ClaudeChat {
                     .replace(/"/g, '&quot;')
                     .replace(/'/g, '&#39;');
                 
-                // If language is specified, add Prism classes
-                if (language) {
-                    return `<pre class="language-${language}"><code class="language-${language}">${escapedCode}</code></pre>`;
+                const safeLanguage = typeof language === 'string'
+                    ? language.replace(/[^a-z0-9_-]/gi, '')
+                    : '';
+                if (safeLanguage) {
+                    return `<pre class="language-${safeLanguage}"><code class="language-${safeLanguage}">${escapedCode}</code></pre>`;
                 } else {
                     return `<pre><code>${escapedCode}</code></pre>`;
                 }
             };
-            
-            // Configure marked options
+            // Discard raw HTML before the defensive DOM sanitizer below runs.
+            renderer.html = () => '';
+
             marked.setOptions({
                 renderer: renderer,
-                gfm: true, // GitHub Flavored Markdown
-                breaks: true, // Convert \n to <br>
-                sanitize: false, // We'll handle XSS protection with CSP
-                silent: true // Don't throw on error
+                gfm: true,
+                breaks: true,
+                silent: true
             });
             
             try {
-                contentDiv.innerHTML = marked.parse(content);
+                contentDiv.innerHTML = this.sanitizeHtml(marked.parse(content));
                 
                 // Apply syntax highlighting to newly added code blocks
                 if (typeof Prism !== 'undefined') {
@@ -282,6 +283,50 @@ class ClaudeChat {
         }
     }
 
+    getSafeUrl(value) {
+        if (typeof value !== 'string') return '';
+        try {
+            const url = new URL(value, window.location.origin);
+            return ['http:', 'https:', 'mailto:'].includes(url.protocol) ? url.href : '';
+        } catch {
+            return '';
+        }
+    }
+
+    sanitizeHtml(html) {
+        const template = document.createElement('template');
+        template.innerHTML = html;
+        const allowedTags = new Set(['a', 'blockquote', 'br', 'code', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'ol', 'p', 'pre', 'strong', 'ul']);
+        const removeCompletely = new Set(['embed', 'iframe', 'object', 'script', 'style']);
+
+        const clean = (parent) => {
+            [...parent.children].forEach((element) => {
+                const tagName = element.tagName.toLowerCase();
+                if (removeCompletely.has(tagName)) {
+                    element.remove();
+                    return;
+                }
+                if (!allowedTags.has(tagName)) {
+                    clean(element);
+                    element.replaceWith(...element.childNodes);
+                    return;
+                }
+
+                const href = tagName === 'a' ? this.getSafeUrl(element.getAttribute('href')) : '';
+                [...element.attributes].forEach((attribute) => element.removeAttribute(attribute.name));
+                if (href) {
+                    element.setAttribute('href', href);
+                    element.setAttribute('target', '_blank');
+                    element.setAttribute('rel', 'noopener noreferrer');
+                }
+                clean(element);
+            });
+        };
+
+        clean(template.content);
+        return template.innerHTML;
+    }
+
 
     // Enhanced accessibility method from Web-LLM implementation
     announceMessage(content) {
@@ -289,9 +334,8 @@ class ClaudeChat {
         const announcement = document.createElement('div');
         announcement.setAttribute('aria-live', 'polite');
         announcement.setAttribute('aria-atomic', 'true');
-        announcement.style.position = 'absolute';
-        announcement.style.left = '-10000px';
-        announcement.textContent = `James responded: ${content}`;
+        announcement.className = 'screen-reader-announcement';
+        announcement.textContent = `AI guide responded: ${content}`;
         
         document.body.appendChild(announcement);
         
@@ -305,7 +349,7 @@ class ClaudeChat {
         if (show) {
             // Hide the separate loading indicator and show thinking status
             this.loadingIndicator?.classList.add('hidden');
-            this.showStatus('Claude is thinking...', 'thinking');
+            this.showStatus('Thinking…', 'thinking');
         } else {
             // Hide loading indicator and show appropriate status
             this.loadingIndicator?.classList.add('hidden');
@@ -332,16 +376,14 @@ class ClaudeChat {
     }
 
     showSessionLimitReached() {
-        const limitMessage = `You've reached the 10 message limit for this session. This helps keep costs manageable while still allowing you to learn about James's background and experience. 
-        
-To continue chatting, please refresh the page to start a new session.`;
+        const limitMessage = `You've reached the 10-message limit for this browser session. For a direct conversation, email James at james@jamesblair.me.`;
         
         this.addMessage('assistant', limitMessage, 'info');
         
         // Disable input
         this.chatInput.disabled = true;
         this.sendButton.disabled = true;
-        this.chatInput.placeholder = "Session limit reached - refresh to continue";
+        this.chatInput.placeholder = "Session limit reached";
         
         // Update the message counter to show the total count
         const messageCountText = document.getElementById('message-count-text');
@@ -357,8 +399,10 @@ To continue chatting, please refresh the page to start a new session.`;
     handleResponseError(error) {
         let errorMessage = 'Sorry, I encountered an error. Please try again.';
         
-        if (error.message.includes('Rate limited')) {
+        if (error.message.includes('Rate limited') || error.message.includes('Please wait')) {
             errorMessage = 'Too many requests. Please wait a moment before trying again.';
+        } else if (error.message.includes('session has reached its message limit')) {
+            errorMessage = 'This browser session has reached its message limit. For a direct conversation, email James.';
         } else if (error.message.includes('temporarily unavailable')) {
             errorMessage = 'The AI service is temporarily unavailable. Please try again in a few moments.';
         } else if (error.message.includes('about James Blair')) {
@@ -375,7 +419,6 @@ To continue chatting, please refresh the page to start a new session.`;
     // Add method to show remaining messages in status
     updateMessageCountDisplay() {
         const remaining = this.maxMessages - this.messageCount;
-        console.log(`Updating display: ${this.messageCount} used, ${remaining} remaining`);
         
         // Update the dedicated message counter
         const messageCountText = document.getElementById('message-count-text');
@@ -422,10 +465,8 @@ To continue chatting, please refresh the page to start a new session.`;
     }
 
     adjustInputHeight() {
-        if (!this.chatInput) return;
-        
-        this.chatInput.style.height = 'auto';
-        this.chatInput.style.height = Math.min(this.chatInput.scrollHeight, 120) + 'px';
+        // This is a single-line input. Keeping its fixed CSS height also lets the
+        // page use a CSP that disallows unsafe inline styles.
     }
 
     // Public methods for testing and external use
@@ -450,6 +491,7 @@ To continue chatting, please refresh the page to start a new session.`;
         
         // Reset session
         this.resetSession();
+        this.sessionId = this.getOrCreateSessionId();
         this.updateMessageCountDisplay();
     }
 

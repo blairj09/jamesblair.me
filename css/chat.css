@@ -36,6 +36,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
 }
 
 .info-toggle:hover {
@@ -810,6 +812,7 @@
     font-size: 0.9rem;
     cursor: pointer;
     transition: var(--transition);
+    min-height: 44px;
 }
 
 .send-btn:hover {

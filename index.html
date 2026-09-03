@@ -3,29 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>James Blair - Senior Product Manager | Data Science & AI Expert</title>
-    <meta name="description" content="Senior Product Manager at Posit with 10+ years in data science and AI, driving $20M+ revenue through cloud partnerships. Built agentic AI systems. Keynote speaker. Husband and father of 5.">
+    <title>James Blair | Product, Data Science & AI</title>
+    <meta name="description" content="James Blair is a Senior Product Manager at Posit, building practical data science and AI products, cloud partnerships, and learning experiences.">
     <meta name="keywords" content="James Blair, Senior Product Manager, Data Science, AI, Posit, RStudio, Cloud Partnerships, AWS, Azure, GCP, Databricks, Snowflake, Agentic AI, Keynote Speaker">
     <meta name="author" content="James Blair">
+    <link rel="canonical" href="https://jamesblair.me/">
     
     <!-- Security Headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com https://vercel.live; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src https://fonts.gstatic.com; img-src 'self' data: https://www.google-analytics.com; connect-src 'self' https://fonts.googleapis.com https://www.google-analytics.com https://analytics.google.com https://huggingface.co https://raw.githubusercontent.com https://cdn-lfs-us-1.hf.co https://vercel.live; frame-src https://vercel.live; worker-src 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://cdn.jsdelivr.net https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src https://fonts.gstatic.com; img-src 'self' data: https://www.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com; frame-src 'none'; frame-ancestors 'none'; form-action 'self'; worker-src 'self';">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
     
-    <!-- Google Analytics -->
+    <!-- Google Analytics configuration is initialized in script.js so the CSP can disallow inline scripts. -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-QPZMEL1FKS"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-QPZMEL1FKS');
-    </script>
     
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="James Blair - Senior Product Manager | Data Science & AI Expert">
-    <meta property="og:description" content="Senior Product Manager at Posit with 10+ years in data science and AI, driving $20M+ revenue through cloud partnerships. Built agentic AI systems. Keynote speaker. Husband and father of 5.">
+    <meta property="og:title" content="James Blair | Product, Data Science & AI">
+    <meta property="og:description" content="Senior Product Manager at Posit, building practical data science and AI products, cloud partnerships, and learning experiences.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://jamesblair.me">
     <meta property="og:image" content="https://jamesblair.me/images/profile.jpg">
@@ -34,9 +29,10 @@
     <meta property="og:image:alt" content="James Blair profile photo">
     
     <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="James Blair - Senior Product Manager | Data Science & AI Expert">
-    <meta name="twitter:description" content="Senior Product Manager at Posit with 10+ years in data science and AI, driving $20M+ revenue through cloud partnerships. Built agentic AI systems. Keynote speaker. Husband and father of 5.">
+    <!-- The existing portrait is square, so use the matching summary card until a 1200×630 image is available. -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="James Blair | Product, Data Science & AI">
+    <meta name="twitter:description" content="Senior Product Manager at Posit, building practical data science and AI products, cloud partnerships, and learning experiences.">
     <meta name="twitter:image" content="https://jamesblair.me/images/profile.jpg">
     <meta name="twitter:image:alt" content="James Blair profile photo">
     <meta name="twitter:creator" content="@blairjm">
@@ -118,12 +114,12 @@
                     <a href="#home" aria-label="James Blair - Home">James Blair</a>
                 </div>
                 <div class="nav-right">
-                    <ul class="nav-menu" role="menubar">
-                        <li role="none"><a href="#home" role="menuitem">Home</a></li>
-                        <li role="none"><a href="#about" role="menuitem">About</a></li>
-                        <li role="none"><a href="#skills" role="menuitem">Skills</a></li>
-                        <li role="none"><a href="#chat" role="menuitem">Chat</a></li>
-                        <li role="none"><a href="#contact" role="menuitem">Contact</a></li>
+                    <ul id="nav-menu" class="nav-menu">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#selected-work">Work &amp; Talks</a></li>
+                        <li><a href="#skills">Skills</a></li>
+                        <li><a href="#contact">Contact</a></li>
                     </ul>
                     <label class="theme-toggle" for="theme-switch" aria-label="Toggle dark mode">
                         <input type="checkbox" id="theme-switch" class="theme-switch-input" />
@@ -133,7 +129,7 @@
                             </span>
                         </span>
                     </label>
-                    <button id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <button id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation menu" aria-controls="nav-menu" aria-expanded="false">
                         <span class="hamburger"></span>
                         <span class="hamburger"></span>
                         <span class="hamburger"></span>
@@ -150,14 +146,11 @@
                     <h1 class="hero-title">James Blair</h1>
                     <p class="hero-subtitle">Senior Product Manager</p>
                     <p class="hero-description">
-                        <span class="hero-highlight">Technology should make us more human, not less.</span> That's the philosophy driving my work as a Senior Product Manager at Posit, where I build AI systems and reporting tools that eliminate tedious tasks so teams can focus on creative breakthroughs. Over a decade in data science and AI, I've led 0-to-1 development of agentic solutions that cut demo prep by 90% and built strategic partnerships with AWS, Azure, GCP, Databricks, and Snowflake that contribute $20M+ in annual revenue. At home with my wife Brittany and our five amazing kids (or out riding all the bikes) I see daily reminders of what really matters: <span class="hero-highlight">creating space for the work only humans can do.</span>
+                        <span class="hero-highlight">Technology should make us more human, not less.</span> I’m a Senior Product Manager at Posit who helps teams turn data science and AI into useful products. My work spans 0-to-1 AI tools, enterprise reporting, and cloud partnerships—always grounded in the people who use them.
                     </p>
                     <div class="hero-cta">
-                        <a href="#chat" class="btn btn-primary" aria-label="Start chat about James">
-                            <div class="ai-sphere"></div>
-                            Chat about James
-                        </a>
-                        <a href="#contact" class="btn btn-secondary">Get in Touch</a>
+                        <a href="mailto:james@jamesblair.me?subject=Speaking%20or%20collaboration%20inquiry" class="btn btn-primary">Invite me to speak</a>
+                        <a href="#contact" class="btn btn-secondary">Contact James</a>
                     </div>
                 </div>
                 <div class="hero-image">
@@ -178,7 +171,7 @@
                 <div class="about-content">
                     <div class="about-text">
                         <p>
-                            I believe the best technology amplifies human creativity rather than replacing it. As a Senior Product Manager at Posit (formerly RStudio), I spend my days working with leading cloud partners like AWS, Databricks, and Snowflake to deliver enterprise product integrations that meet customers where they are. I also build AI systems that handle the routine work so teams can focus on creative problem solving instead of tedious task management. Over 10+ years in this space, I've learned that great product management isn't about the technology, it's about understanding the humans who use it. So while AI is exciting and certainly has my attention, my purpose has never been more clear: to find my own little way to improve what it means to be human.
+                            I work at the intersection of product strategy, data science, and AI. At Posit (formerly RStudio), I partner with customers and cloud platforms to make technical tools easier to adopt and more valuable in practice. Over more than a decade in the field, I’ve learned that strong product work starts with listening closely, then creating enough space for people to do their best thinking.
                         </p>
                     </div>
                     
@@ -190,7 +183,7 @@
                         </div>
                         
                         <div class="tab-content">
-                            <div class="tab-panel active" id="work-panel" role="tabpanel" aria-labelledby="work-tab">
+                            <div class="tab-panel active" id="work-panel" role="tabpanel" aria-labelledby="work-tab" tabindex="0">
                                 <div class="tab-panel-content">
                                     <div class="panel-image">
                                         <img src="images/speaking.jpg" 
@@ -203,13 +196,13 @@
                                     <div class="panel-text">
                                         <h3>Work</h3>
                                         <p>
-                                            Throughout my career, I've driven millions in revenue through strategic cloud platform partnerships with AWS, Azure, GCP, Databricks, and Snowflake. I maintain meaningful customer relationships through 200+ annual customer calls and onsite visits to ensure products meet enterprise needs. I've built agentic AI systems that reduced demo preparation time by 90% and enabled us to rapidly deliver targeted content for customers and partners. I'm an accomplished speaker and instructor speaking at an average of 3 conferences a year including keynotes to 2,000+ professionals and leading hands-on, technical workshops.
+                                            I lead product work across cloud partnerships, enterprise integrations, and AI-enabled workflows. That has included building targeted demo tools that cut preparation time by 90%, maintaining close customer relationships, and helping partners deliver better data science experiences. I also speak and teach regularly through conference talks, keynotes, and hands-on technical workshops.
                                         </p>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="tab-panel" id="home-panel" role="tabpanel" aria-labelledby="home-tab">
+                            <div class="tab-panel" id="home-panel" role="tabpanel" aria-labelledby="home-tab" tabindex="0" aria-hidden="true">
                                 <div class="tab-panel-content">
                                     <div class="panel-image">
                                         <img src="images/my-family.jpg" 
@@ -222,13 +215,13 @@
                                     <div class="panel-text">
                                         <h3>Home</h3>
                                         <p>
-                                            I live in beautiful Eagle Mountain, Utah with my wife Brittany and our 5 amazing kids: Ellie, Charlie, Fox, Forest, and Oaks. We also have two (tiny) dogs, Poppy and Rosie. Our family enjoys spending time together on long road trips, out by the water (lakes or, if we're lucky, the ocean) and playing games together. One of our favorite family activities is watching American Ninja Warrior together - some of my kids might be future ninjas! We're also big fans of bedtime stories, backyard bbqs, and summer splashpads.
+                                            I’m based in Eagle Mountain, Utah with my wife and our five kids. Away from work, family time usually means road trips, time near the water, games, backyard barbecues, and a healthy amount of cheering for American Ninja Warrior.
                                         </p>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="tab-panel" id="hobbies-panel" role="tabpanel" aria-labelledby="hobbies-tab">
+                            <div class="tab-panel" id="hobbies-panel" role="tabpanel" aria-labelledby="hobbies-tab" tabindex="0" aria-hidden="true">
                                 <div class="tab-panel-content">
                                     <div class="panel-image">
                                         <img src="images/cycling.jpeg" 
@@ -290,14 +283,40 @@
             </div>
         </section>
 
+        <section id="selected-work" class="selected-work" aria-label="Selected work and talks">
+            <div class="container">
+                <h2 class="section-title">Selected Work &amp; Talks</h2>
+                <div class="selected-work-grid">
+                    <article class="selected-work-card">
+                        <p class="eyebrow">Product leadership</p>
+                        <h3>Practical data science products</h3>
+                        <p>I lead product work that connects enterprise customers, cloud platforms, and the open-source data science ecosystem.</p>
+                        <a href="https://posit.co" target="_blank" rel="noopener noreferrer">Learn about Posit <span aria-hidden="true">↗</span></a>
+                    </article>
+                    <article class="selected-work-card">
+                        <p class="eyebrow">Talks &amp; teaching</p>
+                        <h3>Ideas made useful in a room</h3>
+                        <p>I speak on data science, AI, and product practice, from keynotes to hands-on workshops.</p>
+                        <a href="https://github.com/blairj09-talks" target="_blank" rel="noopener noreferrer">Browse talk materials <span aria-hidden="true">↗</span></a>
+                    </article>
+                    <article class="selected-work-card">
+                        <p class="eyebrow">Open source</p>
+                        <h3>Projects and experiments</h3>
+                        <p>Explore the code, prototypes, and smaller projects I share publicly.</p>
+                        <a href="https://github.com/blairj09" target="_blank" rel="noopener noreferrer">Visit GitHub <span aria-hidden="true">↗</span></a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
         <section id="chat" class="chat-section" aria-label="Chat section">
             <div class="container">
-                <h2 class="section-title">Chat about James</h2>
+                <h2 class="section-title">Ask a quick question</h2>
                 
                 <!-- AI Context Info -->
                 <div class="ai-context-info">
                     <div class="info-header">
-                        <span class="info-text">AI-powered chat using Claude Sonnet 4</span>
+                        <span class="info-text">A supplemental, AI-powered guide to this site</span>
                         <button class="info-toggle" aria-expanded="false" aria-controls="ai-context-details" title="Learn more about this AI chat">
                             <span class="sr-only">Learn more</span>
                             <svg class="info-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
@@ -306,7 +325,7 @@
                         </button>
                     </div>
                     <div id="ai-context-details" class="info-details hidden">
-                        <p>This isn't actually a direct chat with James. It's an AI powered by <a href="https://www.anthropic.com/news/claude-sonnet-4" target="_blank" rel="noopener">Claude Sonnet 4</a> that's been given detailed context about James's background, experience, and interests. The AI will respond based on this information, but responses are generated by a large language model.</p>
+                        <p>This isn’t a direct chat with James. It is an AI assistant given context about his background, experience, and interests; its answers may be incomplete or inaccurate.</p>
                         <p>All context is stored in an <a href="llms.txt" target="_blank">llms.txt file</a> following the emerging standard for AI context management. This same context can be used by other AI clients like Claude Desktop, ChatGPT, or any tool that supports the llms.txt specification.</p>
                         <p>For direct communication with James, use the <a href="#contact">contact section</a> below or email him at <a href="mailto:james@jamesblair.me">james@jamesblair.me</a>.</p>
                     </div>
@@ -314,16 +333,16 @@
                 
                 <div class="chat-container">
                     <div class="chat-widget-wrapper">
-                        <div class="chat-widget-embedded" role="dialog" aria-labelledby="chat-title">
+                        <div class="chat-widget-embedded" aria-labelledby="chat-title">
                             <!-- Simple AI Chat Header -->
                             <div class="chat-header">
                                 <div class="chat-title-container">
                                     <h3 id="chat-title" class="chat-title">
                                         <div class="ai-sphere ai-sphere-small"></div>
-                                        Chat about James
+                                        Ask about James
                                     </h3>
                                     <div class="ai-badge">
-                                        <span class="ai-model">Powered by Claude Sonnet 4</span>
+                                        <span class="ai-model">Supplemental AI guide</span>
                                     </div>
                                 </div>
                             </div>
@@ -335,17 +354,17 @@
                             </div>
                             <div class="message assistant-message" role="article" aria-label="AI message">
                                 <div class="message-content">
-                                    What would you like to know about James? I can tell you about his work at Posit, his experience in data science and AI, his cycling adventures, or anything else you're curious about!
+                                    I can help with James’s work at Posit, talks and teaching, data science and AI experience, or cycling. For a direct conversation, email James.
                                 </div>
                             </div>
                         </div>
                         <div class="chat-input-container">
-                            <input type="text" id="chat-input" class="chat-input" placeholder="Ask me about James..." aria-label="Chat message input" maxlength="500" autocomplete="off" data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" spellcheck="false" role="combobox" aria-expanded="false">
+                            <input type="text" id="chat-input" class="chat-input" placeholder="Ask about James…" aria-label="Chat message input" maxlength="500" autocomplete="off" data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" spellcheck="false">
                             <button id="send-message" class="send-btn" aria-label="Send message">Send</button>
                         </div>
                         <div id="chat-loading" class="chat-loading hidden" aria-live="polite" role="status">
                             <div class="loading-spinner"></div>
-                            <span class="loading-text">Claude is thinking...</span>
+                            <span class="loading-text">The AI guide is thinking…</span>
                         </div>
                         <div id="chat-status" class="chat-status hidden" aria-live="polite" role="status">
                             <div class="status-left">
@@ -395,8 +414,8 @@
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 James Blair. All rights reserved.</p>
-            <p>Built with vanilla HTML, CSS, and JavaScript. Enhanced with AI chat via <a href="https://www.anthropic.com/news/claude-sonnet-4" target="_blank" rel="noopener">Claude Sonnet 4</a>.</p>
+            <p>&copy; 2026 James Blair. All rights reserved.</p>
+            <p>Built with vanilla HTML, CSS, and JavaScript. The optional site guide uses the Claude API.</p>
         </div>
     </footer>
 

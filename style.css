@@ -100,7 +100,16 @@ a:focus {
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
-}/* AI Energy Outline Animation */
+}
+
+.screen-reader-announcement {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+/* AI Energy Outline Animation */
 .ai-sphere {
     width: 20px;
     height: 20px;
@@ -270,6 +279,8 @@ a:focus {
     cursor: pointer;
     transition: var(--transition);
     font-size: 1rem;
+    min-height: 44px;
+    justify-content: center;
 }
 
 .btn-primary {
@@ -321,12 +332,20 @@ a:focus {
 /* Theme Toggle Switch */
 .theme-toggle {
     position: relative;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    min-width: 60px;
+    min-height: 44px;
     cursor: pointer;
 }
 
 .theme-switch-input {
-    display: none;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
 }
 
 .theme-switch-slider {
@@ -462,6 +481,7 @@ a:focus {
     color: var(--text-light);
     transition: var(--transition);
     position: relative;
+    min-height: 44px;
 }
 
 .tab-btn:hover {
@@ -595,6 +615,10 @@ a:focus {
     font-weight: 500;
 }
 
+.notification.visible {
+    transform: translateX(0);
+}
+
 .notification-info {
     background-color: #10b981;
     color: white;
@@ -629,7 +653,8 @@ a:focus {
 
 .nav-toggle .hamburger:nth-child(3).active {
     transform: rotate(-45deg) translate(7px, -6px);
-}/* Header */
+}
+/* Header */
 .header {
     background-color: var(--background-white);
     box-shadow: var(--shadow-sm);
@@ -677,6 +702,9 @@ a:focus {
     font-weight: 500;
     transition: var(--transition);
     position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
 }
 
 .nav-menu a:hover {
@@ -705,6 +733,8 @@ a:focus {
     border: none;
     cursor: pointer;
     padding: 0.5rem;
+    min-width: 44px;
+    min-height: 44px;
 }
 
 .hamburger {
@@ -946,6 +976,62 @@ a:focus {
     background-color: var(--background-light);
 }
 
+.selected-work {
+    padding: 6rem 0;
+    background-color: var(--background-white);
+}
+
+.selected-work-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+.selected-work-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: 240px;
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    background-color: var(--background-light);
+    box-shadow: var(--shadow-sm);
+}
+
+.selected-work-card .eyebrow {
+    margin-bottom: 0.75rem;
+    color: var(--secondary-color);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.selected-work-card h3 {
+    margin-bottom: 0.75rem;
+    color: var(--primary-color);
+    font-size: 1.35rem;
+    line-height: 1.3;
+}
+
+.selected-work-card p:not(.eyebrow) {
+    margin-bottom: 1.5rem;
+    color: var(--text-light);
+}
+
+.selected-work-card a {
+    margin-top: auto;
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.2em;
+}
+
+.selected-work-card a:hover {
+    color: var(--secondary-color);
+}
+
 .skills-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -1047,7 +1133,8 @@ a:focus {
     margin-bottom: 0;
     opacity: 0.8;
     font-size: 0.9rem;
-}/* Chat Section */
+}
+/* Chat Section */
 .chat-section {
     padding: 6rem 0;
     background-color: var(--background-light);
@@ -1085,6 +1172,8 @@ a:focus {
     display: flex;
     align-items: center;
     justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
 }
 
 .info-toggle:hover {
@@ -1859,6 +1948,7 @@ a:focus {
     font-size: 0.9rem;
     cursor: pointer;
     transition: var(--transition);
+    min-height: 44px;
 }
 
 .send-btn:hover {
@@ -2037,7 +2127,8 @@ a:focus {
 
 [data-theme="dark"] .message-counter.critical .message-count-text {
     color: #ef4444;
-}/* Responsive Design */
+}
+/* Responsive Design */
 @media (max-width: 768px) {
     .nav-menu {
         position: fixed;
@@ -2059,6 +2150,11 @@ a:focus {
         transform: translateY(73px);
         opacity: 1;
         pointer-events: auto;
+    }
+
+    .nav-menu a {
+        width: 100%;
+        justify-content: center;
     }
 
     .nav-toggle {
@@ -2202,6 +2298,10 @@ a:focus {
         text-align: center;
     }
 
+    .selected-work-grid {
+        grid-template-columns: 1fr;
+    }
+
     .panel-image {
         max-width: 250px;
     }
@@ -2254,6 +2354,7 @@ a:focus {
 
     .about,
     .skills,
+    .selected-work,
     .chat-section,
     .contact {
         padding: 4rem 0;

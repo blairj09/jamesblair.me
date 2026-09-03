@@ -1,13 +1,13 @@
 # jamesblair.me
 
-Personal website with Claude AI chat integration.
+Personal website with an optional Claude-powered site guide.
 
 ## Features
 
-- **Claude Chat**: Interactive AI assistant powered by [Claude Sonnet 4.5](https://www.anthropic.com/news/claude-sonnet-4-5)
+- **Optional AI guide**: A supplemental assistant that can answer questions about James’s public background; direct contact remains the best way to connect
 - **Responsive Design**: Mobile-first, accessible interface
 - **Dark/Light Mode**: Theme switching with system preference detection
-- **Edge Functions**: Fast, secure API integration via Vercel
+- **Serverless function**: API integration via Vercel; configure durable rate limiting at the hosting layer before relying on it for abuse protection
 
 ## Tech Stack
 

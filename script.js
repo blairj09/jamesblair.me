@@ -1,6 +1,7 @@
 // Main JavaScript functionality for jamesblair.me
 
 document.addEventListener('DOMContentLoaded', function() {
+    initializeAnalytics();
     // Initialize all functionality
     initializeNavigation();
     initializeChatWidget();
@@ -10,6 +11,15 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeTabs();
     initializeAIContextCallout();
 });
+
+function initializeAnalytics() {
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function() {
+        window.dataLayer.push(arguments);
+    };
+    window.gtag('js', new Date());
+    window.gtag('config', 'G-QPZMEL1FKS');
+}
 
 // Navigation functionality
 function initializeNavigation() {
@@ -30,6 +40,15 @@ function initializeNavigation() {
             hamburgers.forEach(bar => bar.classList.toggle('active'));
         });
     }
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && navMenu.classList.contains('active')) {
+            navMenu.classList.remove('active');
+            navToggle.setAttribute('aria-expanded', 'false');
+            navToggle.querySelectorAll('.hamburger').forEach(bar => bar.classList.remove('active'));
+            navToggle.focus();
+        }
+    });
 
     // Close mobile menu when clicking on a link
     navLinks.forEach(link => {
@@ -142,32 +161,6 @@ function initializeAccessibility() {
         });
     });
 
-    // Add keyboard navigation support
-    document.addEventListener('keydown', function(event) {
-        // Handle tab navigation in chat widget
-        const chatWidget = document.querySelector('.chat-widget-embedded');
-        if (chatWidget && !chatWidget.classList.contains('hidden')) {
-            const chatElements = document.querySelectorAll('.chat-widget-embedded button, .chat-widget-embedded input');
-            const firstElement = chatElements[0];
-            const lastElement = chatElements[chatElements.length - 1];
-            
-            if (event.key === 'Tab') {
-                if (event.shiftKey) {
-                    // Shift + Tab
-                    if (document.activeElement === firstElement) {
-                        event.preventDefault();
-                        lastElement.focus();
-                    }
-                } else {
-                    // Tab
-                    if (document.activeElement === lastElement) {
-                        event.preventDefault();
-                        firstElement.focus();
-                    }
-                }
-            }
-        }
-    });
 }
 
 // Utility functions
@@ -243,30 +236,14 @@ function showNotification(message, type = 'info') {
     
     document.body.appendChild(notification);
     
-    // Style the notification
-    notification.style.cssText = `
-        position: fixed;
-        top: 2rem;
-        right: 2rem;
-        padding: 1rem 1.5rem;
-        background-color: ${type === 'error' ? '#ef4444' : '#10b981'};
-        color: white;
-        border-radius: 0.5rem;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        z-index: 1001;
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
-        max-width: 300px;
-    `;
-    
     // Animate in
     setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
+        notification.classList.add('visible');
     }, 100);
     
     // Remove after 5 seconds
     setTimeout(() => {
-        notification.style.transform = 'translateX(100%)';
+        notification.classList.remove('visible');
         setTimeout(() => {
             if (notification.parentNode) {
                 notification.parentNode.removeChild(notification);
@@ -386,8 +363,7 @@ function initializeTabs() {
         const announcement = document.createElement('div');
         announcement.setAttribute('aria-live', 'polite');
         announcement.setAttribute('aria-atomic', 'true');
-        announcement.style.position = 'absolute';
-        announcement.style.left = '-10000px';
+        announcement.className = 'screen-reader-announcement';
         announcement.textContent = `Now showing: ${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`;
         
         document.body.appendChild(announcement);
@@ -428,8 +404,7 @@ function initializeAIContextCallout() {
         const announcement = document.createElement('div');
         announcement.setAttribute('aria-live', 'polite');
         announcement.setAttribute('aria-atomic', 'true');
-        announcement.style.position = 'absolute';
-        announcement.style.left = '-10000px';
+        announcement.className = 'screen-reader-announcement';
         announcement.textContent = newState ? 'AI chat details expanded' : 'AI chat details collapsed';
         
         document.body.appendChild(announcement);

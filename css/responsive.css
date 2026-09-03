@@ -22,6 +22,11 @@
         pointer-events: auto;
     }
 
+    .nav-menu a {
+        width: 100%;
+        justify-content: center;
+    }
+
     .nav-toggle {
         display: flex;
     }
@@ -163,6 +168,10 @@
         text-align: center;
     }
 
+    .selected-work-grid {
+        grid-template-columns: 1fr;
+    }
+
     .panel-image {
         max-width: 250px;
     }
@@ -215,6 +224,7 @@
 
     .about,
     .skills,
+    .selected-work,
     .chat-section,
     .contact {
         padding: 4rem 0;

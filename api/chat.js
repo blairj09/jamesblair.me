@@ -1,8 +1,64 @@
 // Vercel Edge Function for Claude API Proxy
 // This keeps your API key secure while enabling Claude chat
 
-// Simple in-memory session tracking (resets on function cold start)
+// Best-effort, in-memory session tracking. It resets on a cold start and is not
+// shared between function instances, so production abuse protection should also
+// be configured at the hosting/WAF layer or backed by durable storage.
 const sessionStore = new Map();
+const MAX_MESSAGES_PER_SESSION = 10;
+const SESSION_TTL_MS = 30 * 60 * 1000;
+const MIN_REQUEST_INTERVAL_MS = 1_000;
+
+function isValidSessionId(sessionId) {
+  return typeof sessionId === 'string' && /^session-\d+-[a-z0-9]{7,}$/i.test(sessionId);
+}
+
+function checkSessionLimit(sessionId) {
+  const now = Date.now();
+  const sessionData = sessionStore.get(sessionId);
+  const activeSession = sessionData && now - sessionData.createdAt < SESSION_TTL_MS
+    ? sessionData
+    : { messageCount: 0, createdAt: now, lastRequestAt: 0 };
+
+  if (activeSession.messageCount >= MAX_MESSAGES_PER_SESSION) {
+    return { allowed: false, status: 429, error: 'This chat session has reached its message limit.' };
+  }
+
+  if (now - activeSession.lastRequestAt < MIN_REQUEST_INTERVAL_MS) {
+    return { allowed: false, status: 429, error: 'Please wait a moment before sending another message.' };
+  }
+
+  activeSession.messageCount += 1;
+  activeSession.lastRequestAt = now;
+  sessionStore.set(sessionId, activeSession);
+  return { allowed: true, remaining: MAX_MESSAGES_PER_SESSION - activeSession.messageCount };
+}
+
+function isTrustedPreviewOrigin(value) {
+  try {
+    const hostname = new URL(value).hostname;
+    return hostname === 'james-blairs-projects.vercel.app' || hostname.endsWith('.james-blairs-projects.vercel.app');
+  } catch {
+    return false;
+  }
+}
+
+function isAllowedPageUrl(value, allowedOrigins) {
+  try {
+    const pageOrigin = new URL(value).origin;
+    return allowedOrigins.includes(pageOrigin) || isTrustedPreviewOrigin(value);
+  } catch {
+    return false;
+  }
+}
+
+function validConversationHistory(history) {
+  if (!Array.isArray(history)) return [];
+  return history
+    .slice(-10)
+    .filter((entry) => entry && ['user', 'assistant'].includes(entry.role) && typeof entry.content === 'string' && entry.content.length <= 1_000)
+    .map(({ role, content }) => ({ role, content }));
+}
 
 
 // Function to load and process James Blair context from llms.txt
@@ -69,7 +125,9 @@ async function callClaudeWithRetry(systemPrompt, messages, maxRetries = 3) {
           'anthropic-version': '2023-06-01'
         },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514', // Claude Sonnet 4
+          // Claude Sonnet 4 was retired in June 2026. Keep this explicit model
+          // ID aligned with Anthropic's current supported replacement.
+          model: 'claude-sonnet-4-6',
           max_tokens: 1000,
           temperature: 0.7,
           system: systemPrompt,
@@ -131,19 +189,23 @@ export default async function handler(req, res) {
   
   const origin = req.headers.origin;
   
-  // Allow Vercel preview deployments (only from your specific project)
-  const isYourVercelPreview = origin && origin.includes('james-blairs-projects.vercel.app');
+  // Allow preview deployments for this Vercel project only.
+  const isYourVercelPreview = origin && isTrustedPreviewOrigin(origin);
   const isAllowedOrigin = allowedOrigins.includes(origin) || isYourVercelPreview;
   
-  // Set CORS headers - only allow requests from your domain
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : 'null');
+  // Set CORS headers only for an allowed browser origin.
+  if (isAllowedOrigin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Vary', 'Origin');
   res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-RateLimit-Scope', 'best-effort-session');
 
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    return isAllowedOrigin ? res.status(204).end() : res.status(403).end();
   }
 
   // Only allow POST requests
@@ -151,28 +213,20 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Enhanced Origin and Referer validation
+  // Validate browser origin and referring page before spending API quota.
   const referer = req.headers.referer || req.headers.referrer;
-  const clientIP = req.headers['x-forwarded-for'] || req.connection?.remoteAddress || 'unknown';
   
   // Check Origin header (set by browsers for CORS requests)
   if (!isAllowedOrigin) {
-    console.warn(`Rejected request from unauthorized origin: ${origin || 'null'} (IP: ${clientIP})`);
     return res.status(403).json({ error: 'Forbidden: Invalid origin' });
   }
   
   // Check Referer header (indicates which page made the request)
-  const isValidReferer = referer && (
-    allowedOrigins.some(allowedOrigin => referer.startsWith(allowedOrigin)) ||
-    referer.includes('james-blairs-projects.vercel.app') // Allow only your Vercel previews
-  );
+  const isValidReferer = referer && isAllowedPageUrl(referer, allowedOrigins);
   
   if (!isValidReferer) {
-    console.warn(`Rejected request with invalid referer: ${referer || 'null'} from origin: ${origin} (IP: ${clientIP})`);
     return res.status(403).json({ error: 'Forbidden: Invalid referer' });
   }
-  
-  console.log(`Valid request from origin: ${origin}, referer: ${referer} (IP: ${clientIP})`);
 
   // Validate API key is configured
   if (!process.env.ANTHROPIC_API_KEY) {
@@ -181,39 +235,19 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { message, conversationHistory = [], sessionId } = req.body;
+    const { message, conversationHistory = [], sessionId } = req.body || {};
 
     // Basic input validation
     if (!message || typeof message !== 'string' || message.trim().length === 0) {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    if (message.length > 1000) {
-      return res.status(400).json({ error: 'Message too long (max 1000 characters)' });
+    if (message.length > 500) {
+      return res.status(400).json({ error: 'Message too long (max 500 characters)' });
     }
 
-    // Session-based rate limiting
-    const maxMessagesPerSession = 10;
-    if (sessionId) {
-      const sessionData = sessionStore.get(sessionId) || { messageCount: 0, createdAt: Date.now() };
-      
-      // Clean up old sessions (older than 24 hours)
-      if (Date.now() - sessionData.createdAt > 24 * 60 * 60 * 1000) {
-        sessionStore.delete(sessionId);
-        sessionData.messageCount = 0;
-        sessionData.createdAt = Date.now();
-      }
-      
-      // Check session limit
-      if (sessionData.messageCount >= maxMessagesPerSession) {
-        return res.status(429).json({ 
-          error: 'Session message limit reached. Please refresh the page to start a new session.' 
-        });
-      }
-      
-      // Increment message count
-      sessionData.messageCount++;
-      sessionStore.set(sessionId, sessionData);
+    if (!isValidSessionId(sessionId)) {
+      return res.status(400).json({ error: 'A valid chat session is required.' });
     }
 
 
@@ -225,7 +259,7 @@ export default async function handler(req, res) {
                         messageText.includes('what') ||
                         messageText.includes('who') ||
                         messageText.includes('how') ||
-                        conversationHistory.length === 0; // Allow first message
+                        validConversationHistory(conversationHistory).length === 0; // Allow first message
 
     if (!isAboutJames && conversationHistory.length > 0) {
       return res.status(400).json({ 
@@ -233,9 +267,15 @@ export default async function handler(req, res) {
       });
     }
 
+    const rateLimit = checkSessionLimit(sessionId);
+    if (!rateLimit.allowed) {
+      res.setHeader('Retry-After', '1');
+      return res.status(rateLimit.status).json({ error: rateLimit.error });
+    }
+
     // Build conversation messages for Claude
     const messages = [
-      ...conversationHistory.slice(-10), // Keep last 10 messages for context
+      ...validConversationHistory(conversationHistory),
       { role: 'user', content: message }
     ];
 
@@ -266,7 +306,8 @@ export default async function handler(req, res) {
     // Return the response
     return res.status(200).json({
       message: assistantMessage,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      remaining: rateLimit.remaining
     });
 
   } catch (error) {

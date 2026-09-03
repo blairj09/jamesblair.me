@@ -101,3 +101,11 @@ a:focus {
     white-space: nowrap;
     border: 0;
 }
+
+.screen-reader-announcement {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
