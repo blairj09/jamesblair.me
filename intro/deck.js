@@ -4,6 +4,8 @@
  * deck updates automatically; no HTML edits are needed for routine changes.
  */
 const INTRO_CONFIG = {
+  courseCode: 'STAT 121',
+  courseSubtitle: 'Introduction to Statistical Data Analysis',
   courseName: 'STAT 121: Introduction to Statistical Data Analysis',
   term: 'Fall 2026',
   meeting: 'Tuesdays & Thursdays · 5:30–6:45 PM',
@@ -73,7 +75,7 @@ function showSlide(index, { updateHash = true, focus = false } = {}) {
   counter.textContent = `${activeIndex + 1} / ${slides.length}`;
   progress.style.width = `${((activeIndex + 1) / slides.length) * 100}%`;
   previousButton.disabled = activeIndex === 0;
-  setTogetherMessage(slide === togetherSlide);
+  setTogetherMessage();
   updateNextButton();
   if (updateHash && window.location.hash !== `#${slide.id}`) {
     window.history.pushState(null, '', `#${encodeURIComponent(slide.id)}`);
@@ -81,20 +83,19 @@ function showSlide(index, { updateHash = true, focus = false } = {}) {
   if (focus) slide.querySelector('h1, h2')?.focus?.();
 }
 
-function setTogetherMessage(isActive) {
+function setTogetherMessage() {
   if (!togetherSlide || !daughterQuote || !togetherMessage) return;
 
   togetherSlide.classList.remove('is-revealed');
   daughterQuote.setAttribute('aria-hidden', 'false');
   togetherMessage.setAttribute('aria-hidden', 'true');
-  if (!isActive) togetherSlide.classList.remove('is-revealed');
 }
 
 function updateNextButton() {
   const isFinalSlide = activeIndex === slides.length - 1;
-  const awaitingFinalReveal = isFinalSlide && togetherSlide && !togetherSlide.classList.contains('is-revealed');
-  nextButton.disabled = isFinalSlide && !awaitingFinalReveal;
-  nextButtonLabel.textContent = awaitingFinalReveal ? 'Reveal' : 'Next';
+  const awaitingReveal = slides[activeIndex] === togetherSlide && !togetherSlide.classList.contains('is-revealed');
+  nextButton.disabled = isFinalSlide;
+  nextButtonLabel.textContent = awaitingReveal ? 'Reveal' : 'Next';
 }
 
 function revealTogetherMessage() {
@@ -105,8 +106,11 @@ function revealTogetherMessage() {
 }
 
 function move(direction) {
+  if (direction > 0 && slides[activeIndex] === togetherSlide && !togetherSlide.classList.contains('is-revealed')) {
+    revealTogetherMessage();
+    return;
+  }
   if (direction > 0 && activeIndex === slides.length - 1) {
-    if (togetherSlide && !togetherSlide.classList.contains('is-revealed')) revealTogetherMessage();
     return;
   }
   showSlide(activeIndex + direction);

@@ -6,7 +6,7 @@ Open `index.html` in any modern browser, or visit `/intro/` when the personal si
 
 Edit the `INTRO_CONFIG` object at the top of `deck.js`. It contains the course name, term, meeting information, room, office hours, and course-resources link. Those values are used throughout the slides.
 
-The eight slides are deliberately concise: welcome, path, current work, teaching philosophy, family, life beyond work, fun facts, and class norms. Edit their HTML in `index.html` if a course needs more specific material. The family, outdoor, and fun-facts slides use the photos in `../images/intro-*.jpg`.
+The nine slides are deliberately concise: welcome, path, current work, teaching philosophy, family, life beyond work, fun facts, class norms, and questions. Edit their HTML in `index.html` if a course needs more specific material. The family, outdoor, and fun-facts slides use the photos in `../images/intro-*.jpg`.
 
 ## Present
 

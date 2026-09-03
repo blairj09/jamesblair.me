@@ -17,26 +17,41 @@
 
     <section class="stage" aria-live="polite">
       <article class="slide slide--welcome is-active" id="welcome" data-title="Welcome" aria-labelledby="welcome-title">
-        <div class="orb orb--large" aria-hidden="true"></div>
+        <svg class="stats-art" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <g class="stats-art__grid">
+            <path d="M0 150H1600M0 300H1600M0 450H1600M0 600H1600M0 750H1600" />
+            <path d="M250 0V900M500 0V900M750 0V900M1000 0V900M1250 0V900M1500 0V900" />
+          </g>
+          <g class="stats-art__histogram">
+            <rect x="900" y="590" width="70" height="130" />
+            <rect x="990" y="490" width="70" height="230" />
+            <rect x="1080" y="370" width="70" height="350" />
+            <rect x="1170" y="450" width="70" height="270" />
+            <rect x="1260" y="560" width="70" height="160" />
+          </g>
+          <path class="stats-art__trend" d="M720 650C850 590 920 530 1010 470S1200 330 1430 245" />
+          <g class="stats-art__points">
+            <circle cx="780" cy="640" r="11" /><circle cx="875" cy="575" r="11" /><circle cx="955" cy="555" r="11" />
+            <circle cx="1040" cy="450" r="11" /><circle cx="1140" cy="425" r="11" /><circle cx="1240" cy="340" r="11" />
+            <circle cx="1340" cy="315" r="11" /><circle cx="1450" cy="225" r="11" />
+          </g>
+        </svg>
         <div class="slide__content welcome__content">
-          <p class="eyebrow">Welcome to <span data-config="courseName">Your Course</span></p>
-          <h1 id="welcome-title">Hi, I’m<br><em>James.</em></h1>
+          <h1 id="welcome-title" class="welcome-title">Welcome to<br><em><span data-config="courseCode">STAT 121</span>.</em></h1>
+          <p class="welcome-course-name" data-config="courseSubtitle">Introduction to Statistical Data Analysis</p>
           <div class="welcome__details" aria-label="Course details">
             <span data-config="meeting">Meeting details</span>
             <span aria-hidden="true">•</span>
             <span data-config="room">Room</span>
           </div>
         </div>
-        <figure class="portrait portrait--welcome"><img src="../images/profile.jpg" alt="James Blair smiling outdoors"></figure>
-        <p class="slide-number-art" aria-hidden="true">01</p>
       </article>
 
       <article class="slide slide--path" id="path" data-title="My path" aria-labelledby="path-title" hidden>
         <div class="slide__content split-layout">
           <div>
-            <p class="eyebrow">A path with detours</p>
-            <h2 id="path-title">It took a few turns to find statistics.</h2>
-            <p class="lede">Those turns taught me to stay curious, listen closely, and keep looking for the questions that matter.</p>
+            <h2 id="path-title">Hi, I’m James.</h2>
+            <p class="lede">It took a few turns to find statistics. Those turns taught me to stay curious, listen closely, and keep looking for the questions that matter.</p>
           </div>
           <ul class="timeline" aria-label="James's career path">
             <li><span class="timeline-bullet" aria-hidden="true"></span><strong>Pre-animation</strong><small>BYU</small></li>
@@ -130,15 +145,21 @@
         </div>
       </article>
 
+      <article class="slide slide--questions" id="questions" data-title="Questions" aria-labelledby="questions-title" hidden>
+        <div class="slide__content questions-layout">
+          <h2 id="questions-title">Questions?</h2>
+        </div>
+      </article>
+
     </section>
 
     <nav class="deck-nav" aria-label="Slide navigation">
       <button class="nav-button" type="button" data-direction="previous" aria-label="Previous slide">← <span>Back</span></button>
-      <div class="progress-wrap"><span class="slide-counter" aria-live="off">1 / 8</span><div class="progress" aria-hidden="true"><span></span></div></div>
+      <div class="progress-wrap"><span class="slide-counter" aria-live="off">1 / 9</span><div class="progress" aria-hidden="true"><span></span></div></div>
       <button class="nav-button nav-button--next" type="button" data-direction="next" aria-label="Next slide"><span>Next</span> →</button>
     </nav>
   </main>
 
-  <script src="deck.js"></script>
+  <script src="deck.js?v=20260903"></script>
 </body>
 </html>
