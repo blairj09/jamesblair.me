@@ -7,6 +7,13 @@
       "includeFiles": "llms.txt"
     }
   },
+  "redirects": [
+    {
+      "source": "/intro",
+      "destination": "/stat-121/intro/",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/",

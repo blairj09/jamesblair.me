@@ -31,14 +31,14 @@ const togetherSlide = document.querySelector('#together');
 const daughterQuote = document.querySelector('#daughter-quote');
 const togetherMessage = document.querySelector('#together-message');
 const familyPhotos = [
-  { src: '../images/intro-family-waterfall.jpg', alt: 'James, Brittany, and their five children together at a waterfall', ratio: '3 / 4' },
-  { src: '../images/intro-family-lake.jpg', alt: 'Four of James’s children playing in a lake at sunset', ratio: '3 / 4' },
-  { src: '../images/my-family.jpg', alt: 'James, Brittany, and their children together outdoors', ratio: '559 / 800' },
-  { src: '../images/intro-couple-redwoods.jpg', alt: 'James and Brittany smiling together on a forest hike', ratio: '4 / 3' }
+  { src: 'images/intro-family-waterfall.jpg', alt: 'James, Brittany, and their five children together at a waterfall', ratio: '3 / 4' },
+  { src: 'images/intro-family-lake.jpg', alt: 'Four of James’s children playing in a lake at sunset', ratio: '3 / 4' },
+  { src: 'images/my-family.jpg', alt: 'James, Brittany, and their children together outdoors', ratio: '559 / 800' },
+  { src: 'images/intro-couple-redwoods.jpg', alt: 'James and Brittany smiling together on a forest hike', ratio: '4 / 3' }
 ];
 const bikePhotos = [
-  { src: '../images/cycling.jpeg', alt: 'James cycling outdoors', ratio: '3 / 2' },
-  { src: '../images/intro-cycling-mountains.jpg', alt: 'James on a mountain bike ride with a mountain view behind him', ratio: '4 / 3' }
+  { src: 'images/cycling.jpeg', alt: 'James cycling outdoors', ratio: '3 / 2' },
+  { src: 'images/intro-cycling-mountains.jpg', alt: 'James on a mountain bike ride with a mountain view behind him', ratio: '4 / 3' }
 ];
 let activeIndex = 0;
 let pointerStartX = null;

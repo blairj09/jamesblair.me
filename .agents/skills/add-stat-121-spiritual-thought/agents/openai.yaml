@@ -1,0 +1,6 @@
+interface:
+  display_name: "Add STAT 121 Spiritual Thought"
+  short_description: "Publish a devotional with an AI watercolor"
+  default_prompt: "Use $add-stat-121-spiritual-thought to publish this STAT 121 devotional."
+policy:
+  allow_implicit_invocation: true

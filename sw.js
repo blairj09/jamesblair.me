@@ -1,7 +1,7 @@
 // Service Worker for jamesblair.me
 // Provides enhanced caching for AI models and static resources
 
-const CACHE_NAME = 'jamesblair-v1';
+const CACHE_NAME = 'jamesblair-v2';
 const STATIC_CACHE_URLS = [
     '/',
     '/index.html',
@@ -51,7 +51,7 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// Fetch event - serve from cache when possible
+// Fetch event - prefer the latest network response, with cached files as an offline fallback.
 self.addEventListener('fetch', (event) => {
     // Only handle GET requests
     if (event.request.method !== 'GET') {
@@ -63,51 +63,31 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Handle requests
     event.respondWith(
-        caches.match(event.request)
-            .then((cachedResponse) => {
-                // Return cached version if available
-                if (cachedResponse) {
-                    console.log('Serving from cache:', event.request.url);
-                    return cachedResponse;
+        fetch(event.request)
+            .then((response) => {
+                if (!response || response.status !== 200 || response.type !== 'basic') {
+                    return response;
                 }
 
-                // Otherwise fetch from network
-                return fetch(event.request)
-                    .then((response) => {
-                        // Don't cache non-successful responses
-                        if (!response || response.status !== 200 || response.type !== 'basic') {
-                            return response;
+                const responseClone = response.clone();
+                caches.open(CACHE_NAME)
+                    .then((cache) => {
+                        const url = event.request.url;
+                        if (url.includes('.js') || url.includes('.css') ||
+                            url.includes('.html') || url.includes('.svg') ||
+                            url.includes('.jpg') || url.includes('.jpeg') ||
+                            url.includes('.png') || url.includes('.txt')) {
+                            cache.put(event.request, responseClone);
                         }
-
-                        // Clone the response since it can only be consumed once
-                        const responseClone = response.clone();
-
-                        // Cache the response for future use
-                        caches.open(CACHE_NAME)
-                            .then((cache) => {
-                                // Only cache certain types of resources
-                                const url = event.request.url;
-                                if (url.includes('.js') || url.includes('.css') || 
-                                    url.includes('.html') || url.includes('.svg') ||
-                                    url.includes('.jpg') || url.includes('.jpeg') ||
-                                    url.includes('.png') || url.includes('.txt')) {
-                                    cache.put(event.request, responseClone);
-                                }
-                            })
-                            .catch((error) => {
-                                console.log('Failed to cache resource:', error);
-                            });
-
-                        return response;
                     })
                     .catch((error) => {
-                        console.log('Network request failed:', error);
-                        // You could return a fallback response here
-                        throw error;
+                        console.log('Failed to cache resource:', error);
                     });
+
+                return response;
             })
+            .catch(() => caches.match(event.request))
     );
 });
 
