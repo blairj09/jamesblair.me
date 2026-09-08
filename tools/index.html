@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tools | James Blair</title>
+    <meta name="description" content="A growing collection of small tools and teaching utilities made by James Blair.">
+    <link rel="canonical" href="https://jamesblair.me/tools/">
+    <meta property="og:title" content="Tools | James Blair">
+    <meta property="og:description" content="A growing collection of small tools and teaching utilities made by James Blair.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jamesblair.me/tools/">
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="tools.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav" aria-label="Main navigation">
+            <div class="nav-container">
+                <div class="logo">
+                    <a href="/" aria-label="James Blair - Home">James Blair</a>
+                </div>
+                <div class="nav-right">
+                    <ul id="nav-menu" class="nav-menu">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/tools/" aria-current="page">Tools</a></li>
+                    </ul>
+                    <label class="theme-toggle" for="theme-switch" aria-label="Toggle dark mode">
+                        <input type="checkbox" id="theme-switch" class="theme-switch-input">
+                        <span class="theme-switch-slider">
+                            <span class="theme-switch-handle"><span class="theme-icon">🌙</span></span>
+                        </span>
+                    </label>
+                    <button id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation menu" aria-controls="nav-menu" aria-expanded="false">
+                        <span class="hamburger"></span>
+                        <span class="hamburger"></span>
+                        <span class="hamburger"></span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="tools-intro" aria-labelledby="tools-title">
+            <div class="container">
+                <p class="eyebrow">Personal utility shelf</p>
+                <h1 id="tools-title">Tools</h1>
+                <p class="intro-copy">Small, useful things I’ve made for myself. This shelf will keep growing as I find problems worth solving.</p>
+            </div>
+        </section>
+
+        <section class="tools-directory" aria-labelledby="directory-title">
+            <div class="container">
+                <div class="directory-heading">
+                    <h2 id="directory-title">Available now</h2>
+                    <p>Pick a tile to open a tool.</p>
+                </div>
+
+                <div class="tools-grid">
+                    <a class="tool-tile" href="/tools/sticker-holder/">
+                        <div class="tile-topline">
+                            <span class="tile-number">01</span>
+                            <span class="tool-type">Maker tool</span>
+                        </div>
+                        <div>
+                            <h3>Hex Sticker Holder</h3>
+                            <p>Create a custom, 3D-printable holder for your collection of hex stickers.</p>
+                        </div>
+                        <span class="tile-link">Open tool <span aria-hidden="true">→</span></span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="tools-footer">
+        <div class="container">
+            <p>Made by James Blair.</p>
+        </div>
+    </footer>
+
+    <script src="tools.js"></script>
+</body>
+</html>

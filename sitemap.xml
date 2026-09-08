@@ -43,6 +43,18 @@
         <priority>0.7</priority>
     </url>
     <url>
+        <loc>https://jamesblair.me/tools/</loc>
+        <lastmod>2026-09-07</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://jamesblair.me/tools/sticker-holder/</loc>
+        <lastmod>2026-09-08</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
         <loc>https://jamesblair.me/stat-121/intro/</loc>
         <lastmod>2026-09-04</lastmod>
         <changefreq>monthly</changefreq>
