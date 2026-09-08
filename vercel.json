@@ -16,6 +16,18 @@
   ],
   "rewrites": [
     {
+      "source": "/tools/tool-tracer/",
+      "destination": "https://tool-tracer-xi.vercel.app/"
+    },
+    {
+      "source": "/tools/tool-tracer",
+      "destination": "https://tool-tracer-xi.vercel.app"
+    },
+    {
+      "source": "/tools/tool-tracer/:path*",
+      "destination": "https://tool-tracer-xi.vercel.app/:path*"
+    },
+    {
       "source": "/tools/sticker-holder/",
       "destination": "https://hex-sticker-holder.vercel.app/tools/sticker-holder/"
     },
