@@ -16,6 +16,10 @@
   ],
   "rewrites": [
     {
+      "source": "/tools/sticker-holder/",
+      "destination": "https://hex-sticker-holder.vercel.app/tools/sticker-holder/"
+    },
+    {
       "source": "/tools/sticker-holder",
       "destination": "https://hex-sticker-holder.vercel.app/tools/sticker-holder"
     },
