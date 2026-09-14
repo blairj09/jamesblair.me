@@ -98,18 +98,25 @@ function createThought(thought, isReader = false) {
   metadata.textContent = formatDate(thought.date) || 'Spiritual thought';
   content.append(metadata);
 
-  const reference = document.createElement('h3');
+  const title = document.createElement('h3');
   if (thought.sourceUrl && isReader) {
     const source = document.createElement('a');
     source.href = thought.sourceUrl;
     source.target = '_blank';
     source.rel = 'noreferrer';
-    source.textContent = thought.reference;
-    reference.append(source);
+    source.textContent = thought.title;
+    title.append(source);
   } else {
-    reference.textContent = thought.reference;
+    title.textContent = thought.title;
   }
-  content.append(reference);
+  content.append(title);
+
+  if (thought.author) {
+    const author = document.createElement('p');
+    author.className = 'thought-author';
+    author.textContent = thought.author;
+    content.append(author);
+  }
 
   if (thought.sourceUrl && isReader) {
     const sourceNote = document.createElement('p');
@@ -139,7 +146,7 @@ function createThought(thought, isReader = false) {
   if (!isReader) {
     article.tabIndex = 0;
     article.setAttribute('role', 'button');
-    article.setAttribute('aria-label', `Read ${thought.reference} full screen`);
+    article.setAttribute('aria-label', `Read ${thought.title} full screen`);
     article.addEventListener('click', () => openReader(thought, article));
     article.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') {
@@ -166,7 +173,7 @@ function closeReaderView() {
 function render() {
   const query = searchInput.value.trim().toLowerCase();
   const matchingThoughts = availableThoughts.filter((thought) =>
-    [thought.reference, thought.note, ...(thought.sections || [])]
+    [thought.title, thought.author, thought.sourceLabel, thought.note, ...(thought.sections || [])]
       .filter(Boolean)
       .join(' ')
       .toLowerCase()

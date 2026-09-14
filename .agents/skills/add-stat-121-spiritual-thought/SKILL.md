@@ -1,6 +1,6 @@
 ---
 name: add-stat-121-spiritual-thought
-description: "Publish a supplied STAT 121 devotional as a searchable spiritual thought with a matching AI-generated abstract watercolor image. Use when the user provides thought text and a source or scripture reference for the STAT 121 site."
+description: "Publish a supplied STAT 121 devotional as a searchable spiritual thought with title, optional author, source attribution, and a matching AI-generated abstract watercolor image. Use when the user provides thought text and a source or scripture reference for the STAT 121 site."
 ---
 
 # Add Stat 121 Spiritual Thought
@@ -9,9 +9,9 @@ Publish the user's supplied devotional at `/stat-121/spiritual-thoughts/` withou
 
 ## Inputs and scope
 
-Gather the date, thought text, reference or title, and source URL from the user’s request. Preserve the supplied wording and paragraphs; do not invent or expand religious content. If any of those essential details are missing, use the clearest available information and ask only when the missing detail would make the entry misleading.
+Gather the date, thought text, title, optional author, source label, and source URL from the user’s request. Preserve the supplied wording and paragraphs; do not invent or expand religious content. If the user supplies a title or author, use it. Otherwise, infer the missing title and author from the source page’s metadata or visible heading/byline. Infer a specific source label from the link when possible: use `General Conference` for Church General Conference talks, not the generic Church publisher name. Leave `author` out for scriptures and sources without a named speaker or author. If an essential detail cannot be established, use the clearest available information and ask only when the missing detail would make the entry misleading.
 
-Treat a user-provided source URL as attribution. Do not retrieve or reproduce more source material than the user supplied unless they ask for research.
+Treat a user-provided source URL as attribution. You may retrieve only the page metadata or visible title/byline needed to identify the title and author; do not retrieve or reproduce additional source material unless the user asks for research.
 
 ## Add the thought
 
@@ -24,8 +24,10 @@ Use these fields when relevant:
 ```js
 {
   date: 'YYYY-MM-DD',
-  reference: 'Author, “Title” or scripture reference',
+  title: 'Title or scripture reference',
+  author: 'Optional named speaker or author',
   sourceUrl: 'https://…',
+  sourceLabel: 'Specific source type, such as General Conference, Book of Mormon, or BYU devotional',
   image: 'images/YYYY-MM-DD-short-theme-watercolor.png',
   imageAlt: 'Concise description of the image',
   sections: [
@@ -39,11 +41,13 @@ Use these fields when relevant:
 
 Use ordered string `sections` to preserve the supplied thought exactly. Curly braces around any passage (`{like this}`) render it with quote formatting at that exact position. Do not add curly braces or choose a quote automatically, and do not add tags to thoughts.
 
+`title` is displayed as the card heading and the reader’s source link. `author`, when present, is displayed beneath the title and is included in search. Do not combine the author and title into one field.
+
 Only add text emphasis when the user marks it in their supplied text. Preserve `*single-asterisk markers*` in `thoughts.js`; the page renders them as italics. Preserve `**double-asterisk markers**`; the page renders them bold with a slight size increase. Do not add italics, bolding, or other emphasis on your own.
 
 Preserve user-supplied Markdown links (`[label](https://...)`) in `thoughts.js`; the page renders them as safe external links. Do not add links the user did not supply.
 
-When updating an existing thought, change only the requested fields. Retain its `image` and `imageAlt` unless the user explicitly asks to create, replace, or revise the image. Do not invoke image generation for a text-only update.
+When updating an existing thought, change only the requested fields. Retain its `image` and `imageAlt` unless the user explicitly asks to create, replace, or revise the image. Do not invoke image generation for a text-only update. For legacy entries, migrate a combined reference into separate `title` and optional `author` fields when the user requests title/author support.
 
 ## Create the image
 
@@ -53,6 +57,6 @@ Make the prompt specific to the supplied thought, while normally retaining a cal
 
 ## Verify
 
-Run JavaScript syntax checks for the changed thought data and page script, then run `npm run build` and `git diff --check`. Start or reuse a local static server and verify that the new card renders, opens its full-screen reader on click, shows the image and source link, and appears in search results. When checking the reader, use a projector-like wide viewport and confirm the thought fills the slide without unnecessary whitespace or scrolling.
+Run JavaScript syntax checks for the changed thought data and page script, then run `npm run build` and `git diff --check`. Start or reuse a local static server and verify that the new card renders, opens its full-screen reader on click, shows the image, title, author when present, and source link, and appears in search results. Search by author when the thought has one. When checking the reader, use a projector-like wide viewport and confirm the thought fills the slide without unnecessary whitespace or scrolling.
 
-Report the public route, the workspace image path, source attribution, and the image-generation prompt used.
+Report the public route, title and author used or inferred, workspace image path, source attribution, and image-generation prompt used.

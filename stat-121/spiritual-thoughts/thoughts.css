@@ -64,6 +64,7 @@ input:focus { outline: 3px solid #b8cdbb; outline-offset: 2px; }
 h3 { margin: 0; font-size: 1.7rem; }
 h3 a { color: inherit; text-decoration-color: #a2b5a2; text-decoration-thickness: 1px; text-underline-offset: .16em; }
 h3 a:hover { color: var(--leaf); }
+.thought-author { margin: .35rem 0 0; color: var(--muted); font-size: .95rem; font-weight: 600; }
 .thought-body a { color: inherit; text-decoration-color: #8faf94; text-decoration-thickness: 1px; text-underline-offset: .16em; }
 .thought-body a:hover { color: var(--leaf); }
 blockquote { margin: 1rem 0; padding: .15rem 0 .15rem 1rem; color: var(--ink); border-left: 2px solid #a2b5a2; font-family: "DM Serif Display", Georgia, serif; font-size: 1.25rem; line-height: 1.35; }
@@ -95,6 +96,7 @@ body:has(.thought-reader[open]) { overflow: hidden; }
 .reader-thought .thought-body p { margin-bottom: clamp(.45rem, 1vh, .8rem); }
 .source-note { margin: .4rem 0 0; color: var(--muted); font-size: .8rem; }
 .reader-thought .source-note { font-size: clamp(.85rem, .9vw, 1.25rem); }
+.reader-thought .thought-author { margin-top: clamp(.45rem, .7vh, .8rem); font-size: clamp(1rem, 1.05vw, 1.55rem); }
 
 @media (max-width: 640px) {
   .site-header { min-height: 64px; }

@@ -1,15 +1,27 @@
 /*
  * Add a new devotional by adding an object to the beginning of this list.
- * `reference` is required. `sections`, `note`, `image`, `sourceUrl`, and
- * `sourceLabel` are optional. Use ordered string sections to preserve
+ * `title` is required. `author`, `sections`, `note`, `image`, `sourceUrl`,
+ * and `sourceLabel` are optional. Use ordered string sections to preserve
  * paragraph order. Wrap a user-designated quote in {curly braces}; wrap
  * user-requested italic text in *single asterisks*.
  * Dates use YYYY-MM-DD so the newest thoughts sort correctly.
  */
 const spiritualThoughts = [
   {
+    date: '2026-09-15',
+    title: 'Alive in Christ',
+    author: 'Dallin H. Oaks',
+    sourceUrl: 'https://www.churchofjesuschrist.org/study/general-conference/2026/04/49oaks?lang=eng',
+    sourceLabel: 'General Conference',
+    image: 'images/2026-09-14-peacemaking-watercolor.png',
+    imageAlt: 'Abstract watercolor of a calm river valley illuminated by a gentle sunrise',
+    sections: [
+      'The Prophet Joseph Smith taught that we should “pour forth love” to all people. Speaking of our Savior, the Apostle John wrote, “We love him, because he first loved us”. We can follow the example of Jesus Christ, who is our role model, by choosing to love others—even if they show little or no love toward us. He declared, {Blessed are the peacemakers: for they shall be called the children of God}'
+    ]
+  },
+  {
     date: '2026-09-10',
-    reference: '2 Nephi 2:26',
+    title: '2 Nephi 2:26',
     sourceUrl: 'https://www.churchofjesuschrist.org/study/scriptures/bofm/2-ne/2?lang=eng#:~:text=26%20And%20the,God%20hath%20given.',
     sourceLabel: 'Book of Mormon',
     image: 'images/2026-09-10-agency-watercolor.png',
@@ -20,7 +32,8 @@ const spiritualThoughts = [
   },
   {
     date: '2026-09-08',
-    reference: 'Patrick Kearon, “Peace and Rest—Even Now”',
+    title: 'Peace and Rest—Even Now',
+    author: 'Patrick Kearon',
     sourceUrl: 'https://speeches.byu.edu/talks/patrick-kearon/peace-and-rest-even-now/',
     sourceLabel: 'BYU devotional',
     image: 'images/peace-and-rest-watercolor.png',
