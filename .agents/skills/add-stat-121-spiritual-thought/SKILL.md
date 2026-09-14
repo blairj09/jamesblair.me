@@ -53,7 +53,9 @@ When updating an existing thought, change only the requested fields. Retain its 
 
 Use the `imagegen` skill and its built-in generation tool to create one project-bound image. The visual direction should match the current collection: an abstract watercolor painting that reflects the thought’s mood and theme, with no text, watermark, people, or religious symbols unless the user specifically asks for them.
 
-Make the prompt specific to the supplied thought, while normally retaining a calm, contemplative, student-facing quality. Use a landscape or portrait composition that suits the thought; avoid literal illustrations of the devotional’s wording. Inspect the result before use. Copy the selected image into `stat-121/spiritual-thoughts/images/` with a descriptive, date-prefixed filename and reference it with a relative `images/` path in `thoughts.js`.
+Make the prompt specific to the supplied thought, while retaining a calm, contemplative, student-facing watercolor quality. Before prompting, review the existing image descriptions and deliberately choose a visual metaphor that differs from recent entries in at least two dimensions: subject, composition, palette, or paint treatment. Do not default to a luminous sunrise over distant mountains and water. Use that motif only when it is uniquely apt and clearly differentiated from the collection.
+
+Vary the collection through choices such as close-cropped botanical forms, woven or branching abstractions, architectural light and shadow, still-life arrangements, aerial patterns, paper-like collage layers, restrained ink-and-wash marks, or a distinctly cool, earthy, or jewel-toned palette. Use a landscape, portrait, or nearly square composition only when it suits the thought and creates a new visual rhythm in the collection. Avoid literal illustrations of the devotional’s wording. Inspect the result before use. Copy the selected image into `stat-121/spiritual-thoughts/images/` with a descriptive, date-prefixed filename and reference it with a relative `images/` path in `thoughts.js`.
 
 ## Verify
 
