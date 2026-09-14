@@ -36,8 +36,8 @@ const spiritualThoughts = [
     author: 'Patrick Kearon',
     sourceUrl: 'https://speeches.byu.edu/talks/patrick-kearon/peace-and-rest-even-now/',
     sourceLabel: 'BYU devotional',
-    image: 'images/peace-and-rest-watercolor.png?v=20260914-variety',
-    imageAlt: 'Abstract watercolor still life of an unstrung bow, folded linen, and a smooth stone',
+    image: 'images/peace-and-rest-watercolor.png?v=20260914-restored',
+    imageAlt: 'Abstract watercolor landscape of still water, misty mountains, and soft dawn light',
     sections: [
       '{Please, please slow down. Be still and wait for the Spirit of the Lord. Please slow down and hear His voice and know that He is God.}',
       'From the earliest history of the Restoration comes a principle one of the early Saints recalled learning from the Prophet Joseph Smith. Truman G. Madsen later summarized this principle: “If a man has a bow and keeps it constantly strung tight, it will soon lose its spring. The bow must be unstrung.”',
