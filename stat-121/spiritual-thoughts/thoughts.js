@@ -8,6 +8,18 @@
  */
 const spiritualThoughts = [
   {
+    date: '2026-09-17',
+    title: 'In Appreciation of Friction: Embracing the Awkward',
+    author: 'C. Shane Reese',
+    sourceUrl: 'https://speeches.byu.edu/talks/c-shane-reese/in-appreciation-of-friction-embracing-the-awkward/',
+    sourceLabel: 'BYU devotional',
+    image: 'images/2026-09-17-becoming-watercolor.png',
+    imageAlt: 'Abstract watercolor still life of a repaired earthenware vessel on a pottery worktable',
+    sections: [
+      'Nobody masters anything by staying within the safety of what they already know. {There must be productive struggle and frequent failure.} So don’t be embarrassed by the stumbles. Champion them. They are badges of becoming.'
+    ]
+  },
+  {
     date: '2026-09-15',
     title: 'Alive in Christ',
     author: 'Dallin H. Oaks',
