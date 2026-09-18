@@ -1,6 +1,6 @@
 ---
 name: add-stat-121-spiritual-thought
-description: "Publish a supplied STAT 121 devotional as a searchable spiritual thought with title, optional author, source attribution, and a matching AI-generated abstract watercolor image. Use when the user provides thought text and a source or scripture reference for the STAT 121 site."
+description: "Publish a supplied STAT 121 devotional as a searchable spiritual thought with title, optional author, source attribution, and three AI-generated abstract watercolor candidates for user selection. Use when the user provides thought text and a source or scripture reference for the STAT 121 site."
 ---
 
 # Add Stat 121 Spiritual Thought
@@ -49,16 +49,18 @@ Preserve user-supplied Markdown links (`[label](https://...)`) in `thoughts.js`;
 
 When updating an existing thought, change only the requested fields. Retain its `image` and `imageAlt` unless the user explicitly asks to create, replace, or revise the image. Do not invoke image generation for a text-only update. For legacy entries, migrate a combined reference into separate `title` and optional `author` fields when the user requests title/author support.
 
-## Create the image
+## Create and select an image
 
-Use the `imagegen` skill and its built-in generation tool to create one project-bound image. The visual direction should match the current collection: an abstract watercolor painting that reflects the thought’s mood and theme, with no text, watermark, people, or religious symbols unless the user specifically asks for them.
+Use the `imagegen` skill and its built-in generation tool to create three candidate images. The visual direction should match the current collection: an abstract watercolor painting that reflects the thought’s mood and theme, with no text, watermark, people, or religious symbols unless the user specifically asks for them.
 
-Make the prompt specific to the supplied thought, while retaining a calm, contemplative, student-facing watercolor quality. Before prompting, review the existing image descriptions and deliberately choose a visual metaphor that differs from recent entries in at least two dimensions: subject, composition, palette, or paint treatment. Do not default to a luminous sunrise over distant mountains and water. Use that motif only when it is uniquely apt and clearly differentiated from the collection.
+Make each prompt specific to the supplied thought, while retaining a calm, contemplative, student-facing watercolor quality. Before prompting, review the existing image descriptions and deliberately choose three visual metaphors that differ from recent entries in at least two dimensions: subject, composition, palette, or paint treatment. The three candidates must also differ materially from one another in at least two of those dimensions. Do not default to a luminous sunrise over distant mountains and water. Use that motif only when it is uniquely apt and clearly differentiated from the collection.
 
-Vary the collection through choices such as close-cropped botanical forms, woven or branching abstractions, architectural light and shadow, still-life arrangements, aerial patterns, paper-like collage layers, restrained ink-and-wash marks, or a distinctly cool, earthy, or jewel-toned palette. Use a landscape, portrait, or nearly square composition only when it suits the thought and creates a new visual rhythm in the collection. Avoid literal illustrations of the devotional’s wording. Inspect the result before use. Copy the selected image into `stat-121/spiritual-thoughts/images/` with a descriptive, date-prefixed filename and reference it with a relative `images/` path in `thoughts.js`.
+Vary the collection through choices such as close-cropped botanical forms, woven or branching abstractions, architectural light and shadow, still-life arrangements, aerial patterns, paper-like collage layers, restrained ink-and-wash marks, or a distinctly cool, earthy, or jewel-toned palette. Use a landscape, portrait, or nearly square composition only when it suits the thought and creates a new visual rhythm in the collection. Avoid literal illustrations of the devotional’s wording.
+
+Inspect and show all three candidates inline, clearly labeled 1–3 along with their prompts. Then stop and ask the user which candidate to use. Do not copy a candidate into `stat-121/spiritual-thoughts/images/`, reference it in `thoughts.js`, or complete verification until the user selects one. After selection, copy only the chosen image into `stat-121/spiritual-thoughts/images/` with a descriptive, date-prefixed filename and reference it with a relative `images/` path in `thoughts.js`.
 
 ## Verify
 
 Run JavaScript syntax checks for the changed thought data and page script, then run `npm run build` and `git diff --check`. Start or reuse a local static server and verify that the new card renders, opens its full-screen reader on click, shows the image, title, author when present, and source link, and appears in search results. Search by author when the thought has one. When checking the reader, use a projector-like wide viewport and confirm the thought fills the slide without unnecessary whitespace or scrolling.
 
-Report the public route, title and author used or inferred, workspace image path, source attribution, and image-generation prompt used.
+Report the public route, title and author used or inferred, selected workspace image path, source attribution, and all three image-generation prompts.

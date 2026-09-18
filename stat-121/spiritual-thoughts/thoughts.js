@@ -8,6 +8,17 @@
  */
 const spiritualThoughts = [
   {
+    date: '2026-09-22',
+    title: 'Isaiah 1:18',
+    sourceUrl: 'https://www.churchofjesuschrist.org/study/scriptures/ot/isa/1?lang=eng&id=p18#p18',
+    sourceLabel: 'Old Testament',
+    image: 'images/2026-09-22-scarlet-to-white-watercolor.png',
+    imageAlt: 'Abstract watercolor of crimson pigment diffusing across handmade white paper fibers',
+    sections: [
+      'Come now, and let us reason together, saith the Lord: {though your sins be as scarlet, they shall be as white as snow;} though they be red like crimson, they shall be as wool.'
+    ]
+  },
+  {
     date: '2026-09-17',
     title: 'In Appreciation of Friction: Embracing the Awkward',
     author: 'C. Shane Reese',
