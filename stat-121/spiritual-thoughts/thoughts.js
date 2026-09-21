@@ -8,6 +8,19 @@
  */
 const spiritualThoughts = [
   {
+    date: '2026-09-24',
+    title: 'To Those Enduring Trials with No End',
+    author: 'Jeffrey S. Bednar',
+    sourceUrl: 'https://speeches.byu.edu/talks/jeffrey-s-bednar/to-those-enduring-trials-with-no-end/',
+    sourceLabel: 'BYU devotional',
+    image: 'images/2026-09-24-enduring-faith-watercolor.png',
+    imageAlt: 'Abstract watercolor close-up of smooth river rocks beneath gentle flowing water',
+    sections: [
+      '...my dear students, as you encounter storms in life, always remember that trials with no mortal end do have an end. As you endure to that end, you are growing from little faith to greater faith and partnering with the Savior to build {an enduring soul that will never fail}. With your little faith and His magnifying power, “nothing shall be impossible” to you, even becoming like Him.',
+      'I leave that testimony with you in the name of Him whom we call {the beginning and *the end*}, the ultimate example of One who endured all things—even Jesus Christ, amen.'
+    ]
+  },
+  {
     date: '2026-09-22',
     title: 'Isaiah 1:18',
     sourceUrl: 'https://www.churchofjesuschrist.org/study/scriptures/ot/isa/1?lang=eng&id=p18#p18',
