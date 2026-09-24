@@ -9,6 +9,17 @@
 const spiritualThoughts = [
   {
     date: '2026-09-24',
+    title: '2 Nephi 2:25',
+    sourceUrl: 'https://www.churchofjesuschrist.org/study/scriptures/bofm/2-ne/2?lang=eng&id=p25#p25',
+    sourceLabel: 'Book of Mormon',
+    image: 'images/2026-09-24-dawning-joy-watercolor.png',
+    imageAlt: 'Watercolor sunrise shining through a canopy of green leaves',
+    sections: [
+      'Adam fell that men might be; and {men are, that they might have joy}.'
+    ]
+  },
+  {
+    date: '2026-09-29',
     title: 'To Those Enduring Trials with No End',
     author: 'Jeffrey S. Bednar',
     sourceUrl: 'https://speeches.byu.edu/talks/jeffrey-s-bednar/to-those-enduring-trials-with-no-end/',
