@@ -4,9 +4,36 @@
  * and `sourceLabel` are optional. Use ordered string sections to preserve
  * paragraph order. Wrap a user-designated quote in {curly braces}; wrap
  * user-requested italic text in *single asterisks*.
+ * For multiple sources, use `passages`: objects with `title`, `sourceUrl`,
+ * `sourceLabel`, and ordered string `sections`. Newlines preserve verse lines.
  * Dates use YYYY-MM-DD so the newest thoughts sort correctly.
  */
 const spiritualThoughts = [
+  {
+    date: '2026-10-01',
+    title: 'Alma 5:26 & Come, Listen to a Prophet’s Voice',
+    image: 'images/2026-10-01-joyful-music-watercolor.png',
+    imageAlt: 'Watercolor string instrument in warm amber with flowing gold and violet washes',
+    passages: [
+      {
+        title: 'Alma 5:26',
+        sourceUrl: 'https://www.churchofjesuschrist.org/study/scriptures/bofm/alma/5?lang=eng&id=p26#p26',
+        sourceLabel: 'Book of Mormon',
+        sections: [
+          'And now behold, I say unto you, my brethren, if ye have experienced a change of heart, and if ye have felt to {sing the song of redeeming love}, I would ask, can ye feel so now?'
+        ]
+      },
+      {
+        title: 'Come, Listen to a Prophet’s Voice',
+        revealOnClick: true,
+        sourceUrl: 'https://www.churchofjesuschrist.org/media/music/songs/come-listen-to-a-prophets-voice?lang=eng',
+        sourceLabel: 'Hymn',
+        sections: [
+          'Come, listen to a prophet’s voice,\nAnd hear the word of God,\nAnd in the way of truth rejoice,\n{And sing for joy aloud.}'
+        ]
+      }
+    ]
+  },
   {
     date: '2026-09-24',
     title: '2 Nephi 2:25',

@@ -70,6 +70,12 @@ h3 a:hover { color: var(--leaf); }
 blockquote { margin: 1rem 0; padding: .15rem 0 .15rem 1rem; color: var(--ink); border-left: 2px solid #a2b5a2; font-family: "DM Serif Display", Georgia, serif; font-size: 1.25rem; line-height: 1.35; }
 .note { margin: 1rem 0 0; color: var(--muted); }
 .thought-body { margin-top: 1rem; }
+.thought-body section + section { margin-top: 1.25rem; }
+.thought-body h4 { margin: 0 0 .35rem; font-size: 1em; font-weight: 600; }
+.thought-body section p { white-space: pre-line; }
+.passage-reveal { display: block; width: 44px; height: 44px; margin-top: .75rem; padding: 0; border: 0; border-radius: 50%; color: var(--muted); background: transparent; font: inherit; font-size: 1.4rem; cursor: pointer; }
+.passage-reveal:hover { color: var(--ink); background: var(--sand); }
+.passage-reveal:focus-visible { outline: 3px solid #8faf94; outline-offset: 3px; }
 .thought-body p { margin: 0 0 .9rem; color: var(--muted); }
 .thought-body p:last-child { margin-bottom: 0; }
 .user-bold { font-size: 1.075em; font-weight: 700; }

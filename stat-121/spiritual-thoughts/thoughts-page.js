@@ -141,6 +141,46 @@ function createThought(thought, isReader = false) {
     content.append(body);
   }
 
+  if (isReader && thought.passages?.length) {
+    const body = document.createElement('div');
+    body.className = 'thought-body';
+    for (const passage of thought.passages) {
+      const group = document.createElement('section');
+      const heading = document.createElement('h4');
+      const source = document.createElement('a');
+      source.href = passage.sourceUrl;
+      source.target = '_blank';
+      source.rel = 'noreferrer';
+      source.textContent = passage.title;
+      heading.append(source);
+      group.append(heading);
+      const attribution = document.createElement('p');
+      attribution.className = 'source-note';
+      attribution.textContent = passage.sourceLabel;
+      group.append(attribution);
+      for (const section of passage.sections) appendSection(group, section);
+      if (passage.revealOnClick) {
+        group.hidden = true;
+        const reveal = document.createElement('button');
+        reveal.type = 'button';
+        reveal.className = 'passage-reveal';
+        reveal.textContent = '↓';
+        reveal.setAttribute('aria-label', 'Reveal hymn');
+        reveal.title = 'Reveal hymn';
+        reveal.setAttribute('aria-expanded', 'false');
+        reveal.addEventListener('click', () => {
+          group.hidden = false;
+          reveal.remove();
+          group.tabIndex = -1;
+          group.focus({ preventScroll: true });
+        });
+        body.append(reveal);
+      }
+      body.append(group);
+    }
+    content.append(body);
+  }
+
   if (isReader) article.append(content);
 
   if (!isReader) {
@@ -173,7 +213,9 @@ function closeReaderView() {
 function render() {
   const query = searchInput.value.trim().toLowerCase();
   const matchingThoughts = availableThoughts.filter((thought) =>
-    [thought.title, thought.author, thought.sourceLabel, thought.note, ...(thought.sections || [])]
+    [thought.title, thought.author, thought.sourceLabel, thought.note, ...(thought.sections || []),
+      ...(thought.passages || []).flatMap((passage) =>
+        [passage.title, passage.sourceLabel, ...passage.sections])]
       .filter(Boolean)
       .join(' ')
       .toLowerCase()
