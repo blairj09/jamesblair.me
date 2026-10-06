@@ -15,8 +15,8 @@ const spiritualThoughts = [
     author: 'Tamara W. Runia',
     sourceUrl: 'https://www.churchofjesuschrist.org/study/general-conference/2026/10/13runia?lang=eng',
     sourceLabel: 'General Conference',
-    image: 'images/2026-10-06-stone-foundation-watercolor.png',
-    imageAlt: 'Watercolor of a closed yellow umbrella resting on a solid stone foundation in the rain',
+    image: 'images/2026-10-06-red-umbrella-foundation-watercolor.png',
+    imageAlt: 'Watercolor of an open red umbrella above a stacked stone foundation in lavender-gray rain',
     sections: [
       'So the gospel felt like a big umbrella I could hold over my head to keep the rain from falling on me. But I’ve learned from experience that we’re all going to get rained on. And sometimes we’re going to get pelted!',
       '{The gospel isn’t the umbrella; it’s the solid rock we’re standing on during the storm}—that “sure foundation … whereon if men build they cannot fall.”'
