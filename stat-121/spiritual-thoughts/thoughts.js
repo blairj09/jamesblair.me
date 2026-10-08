@@ -10,6 +10,18 @@
  */
 const spiritualThoughts = [
   {
+    date: '2026-10-08',
+    title: 'Isaiah 53:4–5',
+    sourceUrl: 'https://www.churchofjesuschrist.org/study/scriptures/ot/isa/53?lang=eng&id=p4-p5#p4',
+    sourceLabel: 'Old Testament',
+    image: 'images/2026-10-08-quiet-healing-watercolor.png',
+    imageAlt: 'Abstract watercolor of charcoal and forest-green fragments softening into pale celadon and pearl-white washes',
+    sections: [
+      '{Surely he hath borne our griefs, and carried our sorrows}: yet we did esteem him stricken, smitten of God, and afflicted.',
+      'But he was wounded for our transgressions, he was bruised for our iniquities: the chastisement of our peace was upon him; and with his stripes we are healed.'
+    ]
+  },
+  {
     date: '2026-10-06',
     title: 'The Sculpting of Our Souls',
     author: 'Tamara W. Runia',
