@@ -12,6 +12,9 @@
   "keywords": ["personal-website", "ai-chat", "claude-api", "data-science", "anthropic"],
   "author": "James Blair",
   "license": "MIT",
+  "dependencies": {
+    "@vercel/kv": "^1.0.0"
+  },
   "devDependencies": {
     "vercel": "^32.0.0"
   }
