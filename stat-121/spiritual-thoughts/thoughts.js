@@ -10,6 +10,18 @@
  */
 const spiritualThoughts = [
   {
+    date: '2026-10-13',
+    title: 'Why Everyone Should Be Religious',
+    author: 'Ross G. Douthat',
+    sourceUrl: 'https://speeches.byu.edu/talks/ross-g-douthat/why-everyone-should-be-religious/',
+    sourceLabel: 'BYU forum',
+    image: 'images/2026-10-13-earth-horizon-watercolor.png',
+    imageAlt: 'Watercolor of Earth’s turquoise curved horizon beneath lavender and rose-colored space',
+    sections: [
+      'Come what may, {we are meant to be here}. We are meant to exist. We are meant to find fulfillment and understand our place in the universe. We are meant to be part of a real story that has a real purpose and, God willing, a happy ending.'
+    ]
+  },
+  {
     date: '2026-10-08',
     title: 'Isaiah 53:4–5',
     sourceUrl: 'https://www.churchofjesuschrist.org/study/scriptures/ot/isa/53?lang=eng&id=p4-p5#p4',

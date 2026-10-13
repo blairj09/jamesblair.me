@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f7f3">
+  <meta name="description" content="Draw samples from null and alternative normal populations, watch sample means vary, and see how each becomes a t score.">
+  <title>From Samples to t Scores · STAT 121</title>
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="script.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="course-link" href="../"><span class="back-arrow" aria-hidden="true">←</span> STAT 121</a>
+    <span class="header-label">Interactive lab <span class="header-dot">·</span> Hypothesis testing</span>
+  </header>
+
+  <main class="page">
+    <section class="intro" aria-labelledby="page-title">
+      <div class="eyebrow"><span class="eyebrow-line"></span> THE SAMPLING LAB</div>
+      <h1 id="page-title">From samples<br>to <em>t scores.</em></h1>
+      <p>Each sample has its own mean and standard deviation. Draw a few, then many, to see how those means vary and where their t scores land under a null hypothesis.</p>
+      <div class="intro-steps" aria-label="The three steps in this lab">
+        <span><b>01</b> Choose populations</span><span class="step-arrow" aria-hidden="true">→</span>
+        <span><b>02</b> Draw samples</span><span class="step-arrow" aria-hidden="true">→</span>
+        <span><b>03</b> Compare t scores</span>
+      </div>
+    </section>
+
+    <div class="lab-layout">
+      <aside class="controls" aria-labelledby="setup-heading">
+        <div class="controls-heading"><span class="section-kicker">YOUR EXPERIMENT</span><h2 id="setup-heading">Set the stage</h2></div>
+
+        <fieldset class="control-group null-group">
+          <legend><span class="swatch null-swatch"></span> Null population <span class="legend-symbol">H<sub>0</sub></span></legend>
+          <p class="group-note">Assume individual observations are normal.</p>
+          <div class="field-pair">
+            <label>Mean <span>μ<sub>0</sub></span><input id="null-mu" type="number" value="50" step="1" required></label>
+            <label>SD <span>σ<sub>0</sub></span><input id="null-sigma" type="number" value="10" min="0.01" step="1" required></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="control-group alternative-group">
+          <legend><span class="swatch alt-swatch"></span> Alternative population <span class="legend-symbol">H<sub>1</sub></span></legend>
+          <p class="group-note">What if the real population differs?</p>
+          <div class="field-pair">
+            <label>Mean <span>μ<sub>1</sub></span><input id="alt-mu" type="number" value="55" step="1" required></label>
+            <label>SD <span>σ<sub>1</sub></span><input id="alt-sigma" type="number" value="10" min="0.01" step="1" required></label>
+          </div>
+        </fieldset>
+
+        <div class="control-group shared-group">
+          <label class="full-field">Observations per sample <span>n</span><input id="sample-size" type="number" value="16" min="2" max="1000" step="1" required></label>
+          <p class="field-help">Every sample uses the same n. Degrees of freedom: <strong id="df-value">15</strong>.</p>
+        </div>
+
+        <div class="draw-controls">
+          <div class="button-row"><button id="draw-null" class="button button-null" type="button">Draw 1 from H<sub>0</sub></button><button id="draw-alt" class="button button-alt" type="button">Draw 1 from H<sub>1</sub></button></div>
+          <label class="batch-label" for="batch-size">Or draw a batch of <input id="batch-size" type="number" value="100" min="2" max="1000" step="1"></label>
+          <div class="button-row"><button id="batch-null" class="button button-outline null-outline" type="button">From H<sub>0</sub></button><button id="batch-alt" class="button button-outline alt-outline" type="button">From H<sub>1</sub></button></div>
+          <button id="reset" class="reset-button" type="button">Clear all samples ↺</button>
+          <p id="control-message" class="control-message" role="status" aria-live="polite"></p>
+        </div>
+
+        <div class="display-controls">
+          <span class="section-kicker">SHOW ON THE t CHART</span>
+          <label class="check-row"><input id="show-theory" type="checkbox"><span>Theoretical t curve</span></label>
+          <label class="check-row"><input id="show-rejection" type="checkbox"><span>Two-sided rejection regions</span></label>
+          <label class="alpha-row" for="alpha">Significance level α <select id="alpha"><option value="0.10">0.10</option><option value="0.05" selected>0.05</option><option value="0.01">0.01</option></select></label>
+        </div>
+      </aside>
+
+      <div class="workbench">
+        <div class="summary-strip" aria-label="Simulation summary">
+          <div><span class="summary-label"><i class="mini-dot null-dot"></i> Null samples</span><strong id="null-count">0</strong></div>
+          <div><span class="summary-label"><i class="mini-dot alt-dot"></i> Alternative samples</span><strong id="alt-count">0</strong></div>
+          <div><span class="summary-label">Reference mean</span><strong id="reference-mean">50</strong></div>
+        </div>
+
+        <section class="chart-card" aria-labelledby="population-heading">
+          <div class="chart-header"><div><span class="chart-number">01 / THE SOURCE</span><h2 id="population-heading">Two possible populations</h2><p>The curves describe individual observations. The dots show the observations in the selected sample.</p></div><div class="legend"><span><i class="legend-line null-line"></i> Null</span><span><i class="legend-line alt-line"></i> Alternative</span></div></div>
+          <div class="canvas-wrap population-wrap"><canvas id="population-chart" role="img" aria-label="Normal population curves and observations from the selected sample"></canvas></div>
+          <div class="chart-footnote" id="population-note">Draw a sample to see its observations here.</div>
+        </section>
+
+        <div class="flow-arrow" aria-hidden="true"><span>Each sample produces one mean</span> ↓</div>
+
+        <section class="chart-card" aria-labelledby="means-heading">
+          <div class="chart-header"><div><span class="chart-number">02 / THE ESTIMATE</span><h2 id="means-heading">Sample means <span class="math">ȳ</span></h2><p>Every sample contributes one mean. As you draw more, their spread becomes visible.</p></div><div class="legend"><span><i class="legend-box null-box"></i> Null</span><span><i class="legend-box alt-box"></i> Alternative</span></div></div>
+          <div class="canvas-wrap"><canvas id="means-chart" role="img" aria-label="Histograms of sample means from each population"></canvas></div>
+          <div class="chart-footnote" id="means-note">The dashed line marks μ₀. Each color is scaled to its own number of samples.</div>
+        </section>
+
+        <div class="flow-arrow" aria-hidden="true"><span>Center at μ₀ and divide by the estimated SE</span> ↓</div>
+
+        <section class="chart-card t-card" aria-labelledby="t-heading">
+          <div class="chart-header"><div><span class="chart-number">03 / THE TEST STATISTIC</span><h2 id="t-heading">The t-score distribution</h2><p>Each sample becomes <span class="formula-inline">t = (ȳ − μ₀) / (s / √n)</span>. Both populations are tested against the same μ₀.</p></div><div class="legend"><span><i class="legend-box null-box"></i> Null</span><span><i class="legend-box alt-box"></i> Alternative</span><span id="theory-legend" hidden><i class="legend-line theory-line"></i> t curve</span></div></div>
+          <div class="canvas-wrap"><canvas id="t-chart" role="img" aria-label="Empirical t-score histograms compared with the theoretical null t distribution"></canvas></div>
+          <div class="chart-footnote" id="t-note">Turn on the theoretical curve to compare simulation with the exact null distribution.</div>
+        </section>
+
+        <section class="sample-card" aria-labelledby="sample-heading">
+          <div class="sample-card-top"><div><span class="chart-number">A CLOSER LOOK</span><h2 id="sample-heading">One sample, step by step</h2></div><span id="sample-badge" class="sample-badge">No sample selected</span></div>
+          <div id="sample-empty" class="sample-empty">Draw one sample to inspect its observations, mean, standard deviation, and t score.</div>
+          <div id="sample-detail" hidden>
+            <div class="calculation"><div><span>Sample mean</span><strong id="detail-ybar">—</strong><small>ȳ</small></div><span class="calc-arrow">→</span><div><span>Sample SD</span><strong id="detail-s">—</strong><small>s</small></div><span class="calc-arrow">→</span><div class="result-cell"><span>t score</span><strong id="detail-t">—</strong><small id="detail-df">df = 15</small></div></div>
+            <p id="detail-equation" class="detail-equation"></p>
+            <p id="detail-p" class="detail-p" hidden></p>
+            <details id="sample-observations" class="observations"><summary>View this sample’s observations</summary><div id="observation-list" class="observation-list"></div></details>
+            <div class="sample-history"><h3>Compare recent samples</h3><div id="history-list" class="history-list"></div></div>
+          </div>
+        </section>
+
+        <section class="teaching-note"><span class="note-icon" aria-hidden="true">i</span><p><strong>Why t instead of z?</strong> We estimate the standard error using each sample’s <em>s</em>. When the null population is normal, those null t scores follow a Student t distribution with n − 1 degrees of freedom. Samples from the alternative need not follow that central t curve.</p></section>
+      </div>
+    </div>
+  </main>
+  <footer class="site-footer">STAT 121 <span>·</span> James Blair <a href="../">All course resources ↗</a></footer>
+</body>
+</html>
