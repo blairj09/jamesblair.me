@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "description": "Personal website for James Blair with Claude AI chat integration",
   "scripts": {
+    "test:polls": "node --test tests/polls/api.test.mjs",
     "build:css": "cat css/base.css css/components.css css/layout.css css/chat.css css/responsive.css > style.css",
     "watch:css": "npm run build:css && echo 'CSS built successfully'",
     "serve": "python3 -m http.server 8000",

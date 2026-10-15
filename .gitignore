@@ -5,3 +5,8 @@ node_modules/
 CLAUDE.md
 .claude/
 .vercel
+
+# Local API credentials
+.env
+.env.*
+!.env.example

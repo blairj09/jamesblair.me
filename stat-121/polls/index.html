@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Scan, vote, and explore the class's responses with STAT 121 live polls.">
+  <meta name="referrer" content="no-referrer">
+  <title>Live Class Polls | STAT 121</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./polls.css">
+  <script src="./vendor/qrcode.js" defer></script>
+  <script src="./polls.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a href="/stat-121/">← STAT 121</a>
+    <span class="course-label">BYU Statistics</span>
+  </header>
+  <main>
+    <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+    <section id="landing">
+      <div class="intro">
+        <p class="eyebrow">Think. Vote. Discuss.</p>
+        <h1>What does the<br>class think?</h1>
+        <p class="subtitle">A quick question. Every voice. A new way to see the data.</p>
+      </div>
+      <div class="landing-grid">
+        <section class="panel join-panel">
+          <span class="section-label">For students</span>
+          <h2>Join a class poll</h2>
+          <p>Scan the QR code on the classroom screen, or paste the poll link below. No sign-in needed.</p>
+          <form id="join-form">
+            <label for="join-link">Poll link</label>
+            <input id="join-link" type="text" required placeholder="Paste your instructor’s poll link" autocomplete="off">
+            <button type="submit">Join poll <span aria-hidden="true">→</span></button>
+          </form>
+          <div class="mini-chart" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+          <p class="small">Responses are anonymous. One response per browser.</p>
+        </section>
+        <section class="panel">
+          <span class="section-label">For the instructor</span>
+          <h2>Ask the room</h2>
+          <form id="create-form">
+            <label for="question">Question</label>
+            <textarea id="question" rows="2" maxlength="240" required placeholder="Which sampling method would you use?"></textarea>
+            <fieldset id="answer-fields">
+              <legend>Answer choices</legend>
+            </fieldset>
+            <button id="add-answer" class="text-button" type="button">+ Add answer</button>
+            <label for="admin-key">Instructor key</label>
+            <input id="admin-key" type="password" required autocomplete="off" placeholder="Enter your instructor key">
+            <p class="small">Only you can create polls. Results stay hidden until you reveal them.</p>
+            <button id="create-button" type="submit">Create poll <span aria-hidden="true">→</span></button>
+          </form>
+        </section>
+      </div>
+      <section id="recent" class="recent" hidden>
+        <h2>Your recent polls</h2>
+        <p class="small">Instructor access is saved in this browser for seven days.</p>
+        <div id="recent-list"></div>
+      </section>
+    </section>
+    <section id="poll-view" hidden>
+      <div class="poll-heading">
+        <p class="eyebrow">STAT 121 · Class poll</p>
+        <div class="poll-meta"><span id="poll-status" class="badge"></span><span id="response-count"></span></div>
+        <h1 id="poll-question"></h1>
+      </div>
+      <div class="poll-grid">
+        <section id="vote-panel" class="panel" hidden>
+          <h2>Your perspective matters</h2>
+          <p id="vote-instruction">Choose one answer, then submit your vote.</p>
+          <form id="vote-form">
+            <fieldset id="vote-options"><legend class="sr-only">Choose an answer</legend></fieldset>
+            <button id="vote-button" type="submit">Submit vote</button>
+          </form>
+          <p id="vote-confirmation" class="confirmation" role="status" hidden></p>
+          <p class="small">Anonymous · One response per browser</p>
+        </section>
+        <section class="panel results-panel">
+          <div class="results-heading"><h2>Class responses</h2><span id="live-label" class="live-label">Live</span></div>
+          <div id="hidden-results" class="empty-results">
+            <div class="mini-chart" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+            <h3>Make your own call.</h3>
+            <p>Results will appear when your instructor reveals them.</p>
+          </div>
+          <div id="chart" hidden aria-label="Class poll results"></div>
+          <p id="connection" class="small" role="status">Connecting…</p>
+        </section>
+        <aside id="join-panel" class="panel qr-panel" hidden>
+          <span class="section-label">Join the conversation</span>
+          <h2>Scan to vote</h2>
+          <div id="qr-code" role="img" aria-label="QR code linking to the student voting page"></div>
+          <a id="student-link" class="student-link" target="_blank" rel="noopener"></a>
+          <button id="copy-link" class="secondary" type="button">Copy student link</button>
+          <p class="small">Open your phone’s camera.<br>No app or sign-in needed.</p>
+        </aside>
+      </div>
+      <section id="host-controls" class="host-controls panel" hidden aria-label="Instructor controls">
+        <div><span class="section-label">Instructor controls</span><p class="small">Share the student link or projector view with the class.</p></div>
+        <div class="control-buttons">
+          <button id="toggle-open" class="secondary" type="button">Close voting</button>
+          <button id="toggle-results" type="button">Reveal results</button>
+          <a id="present-link" class="button secondary" target="_blank" rel="noopener">Projector view ↗</a>
+          <a href="./" class="button secondary">New poll</a>
+        </div>
+      </section>
+      <div id="present-controls" class="present-controls" hidden><button id="fullscreen" class="secondary" type="button">Full screen</button></div>
+    </section>
+    <noscript><p class="panel">Please enable JavaScript to join or create a live class poll.</p></noscript>
+  </main>
+  <footer>STAT 121 <span aria-hidden="true">·</span> James Blair</footer>
+</body>
+</html>

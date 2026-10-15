@@ -10,6 +10,19 @@
  */
 const spiritualThoughts = [
   {
+    date: '2026-10-15',
+    title: 'Coming Closer to Jesus Christ',
+    author: 'Dallin H. Oaks',
+    sourceUrl: 'https://speeches.byu.edu/talks/dallin-h-oaks/coming-closer-to-jesus-christ/',
+    sourceLabel: 'BYU devotional',
+    image: 'images/2026-10-15-closer-to-christ-passage-watercolor.png',
+    imageAlt: 'Watercolor architectural passage in ultramarine and terracotta opening toward soft peach light',
+    sections: [
+      'One of the many reasons you will need the constant influence of the Holy Ghost is that you live in a season in which the adversary has become so effective at disguising truth that if you don’t have the Holy Ghost, {you will be deceived.}',
+      '...I want to help all our members overcome present or future doubts. Whatever those doubts, the way to overcome them is to get closer to our Savior Jesus Christ. Again and again, He has taught us that {He is the way}.'
+    ]
+  },
+  {
     date: '2026-10-13',
     title: 'Why Everyone Should Be Religious',
     author: 'Ross G. Douthat',
