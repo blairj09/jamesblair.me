@@ -28,6 +28,18 @@
       "destination": "https://tool-tracer-xi.vercel.app/:path*"
     },
     {
+      "source": "/tools/health-tracker/",
+      "destination": "https://healthtracker-tan.vercel.app/"
+    },
+    {
+      "source": "/tools/health-tracker",
+      "destination": "https://healthtracker-tan.vercel.app"
+    },
+    {
+      "source": "/tools/health-tracker/:path*",
+      "destination": "https://healthtracker-tan.vercel.app/:path*"
+    },
+    {
       "source": "/tools/sticker-holder/",
       "destination": "https://hex-sticker-holder.vercel.app/tools/sticker-holder/"
     },
