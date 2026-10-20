@@ -10,6 +10,17 @@
  */
 const spiritualThoughts = [
   {
+    date: '2026-10-20',
+    title: 'Philippians 4:4',
+    sourceUrl: 'https://www.churchofjesuschrist.org/study/scriptures/nt/philip/4?lang=eng&id=p4#p4',
+    sourceLabel: 'New Testament',
+    image: 'images/2026-10-20-rejoice-autumn-aspens-watercolor.png',
+    imageAlt: 'Watercolor mountain sunrise framed by white aspen trunks and golden autumn leaves',
+    sections: [
+      'Rejoice in the Lord alway: and again I say, Rejoice.'
+    ]
+  },
+  {
     date: '2026-10-15',
     title: 'Coming Closer to Jesus Christ',
     author: 'Dallin H. Oaks',
