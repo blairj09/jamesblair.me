@@ -3,15 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f7f7f3">
+  <meta name="theme-color" content="#e8ed62">
   <meta name="description" content="Draw samples from null and alternative normal populations, watch sample means vary, and see how each becomes a t score.">
   <title>From Samples to t Scores · STAT 121</title>
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
   <script type="module" src="script.js"></script>
     <script defer src="/analytics.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/classroom.css?v=bold-20261023">
 </head>
-<body>
+<body class="classroom t-test-app">
   <header class="site-header">
     <a class="course-link" href="../"><span class="back-arrow" aria-hidden="true">←</span> STAT 121</a>
     <span class="header-label">Interactive lab <span class="header-dot">·</span> Hypothesis testing</span>
@@ -19,7 +23,6 @@
 
   <main class="page">
     <section class="intro" aria-labelledby="page-title">
-      <div class="eyebrow"><span class="eyebrow-line"></span> THE SAMPLING LAB</div>
       <h1 id="page-title">From samples<br>to <em>t scores.</em></h1>
       <p>Each sample has its own mean and standard deviation. Draw a few, then many, to see how those means vary and where their t scores land under a null hypothesis.</p>
       <div class="intro-steps" aria-label="The three steps in this lab">

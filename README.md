@@ -46,3 +46,15 @@ the project's Analytics tab.
 ├── css/               # CSS source modules
 └── images/            # Optimized assets
 ```
+
+## Design and styling
+
+The site uses the Bold visual direction: Archivo, citron introductions, charcoal type,
+sharp edges, and real photography. See `DESIGN.md` for the shared design decisions.
+
+- `css/tokens.css`: shared palette and theme values.
+- `css/{base,components,layout,chat,responsive}.css`: public site styles; run `npm run build` after editing.
+- `css/classroom.css`: shared visual treatment for the STAT 121 apps, loaded after their own layout styles.
+- `theme.js` applies the initial theme before paint; `script.js` handles navigation, theme controls, and analytics.
+
+Design explorations in `mockups/` are local references and excluded from Vercel deployments.

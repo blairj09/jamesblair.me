@@ -1,0 +1,38 @@
+/* Bold: a single palette shared by the site and classroom resources. */
+:root {
+  color-scheme: light;
+  --paper: #f9f9f5;
+  --ink: #24251f;
+  --muted: #626459;
+  --surface: #ebebe5;
+  --card: #ffffff;
+  --line: #c7c8bd;
+  --citron: #e8ed62;
+  --citron-ink: #4f541d;
+  --accent: #a53620;
+  --focus: #8a3b22;
+  --primary-color: var(--ink);
+  --secondary-color: var(--accent);
+  --accent-color: var(--citron);
+  --text-dark: var(--ink);
+  --text-light: var(--muted);
+  --background-light: var(--surface);
+  --background-white: var(--paper);
+  --border-color: var(--line);
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --transition: color .18s ease, background-color .18s ease, border-color .18s ease;
+  --font: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #21221d;
+  --ink: #f3f3e9;
+  --muted: #babbac;
+  --surface: #2e3027;
+  --card: #292b23;
+  --line: #515446;
+  --accent: #eda489;
+  --focus: #e8ed62;
+}

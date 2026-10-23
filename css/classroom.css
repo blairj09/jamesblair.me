@@ -1,0 +1,92 @@
+@import url('/css/tokens.css');
+/* Shared visual language; app-specific layouts and chart colors remain local. */
+.classroom { font-family: var(--font); background: var(--paper); color: var(--ink); }
+.classroom h1,.classroom h2,.classroom h3 { font-family: var(--font); font-weight: 600; letter-spacing: -.035em; }
+.classroom button,.classroom input,.classroom select,.classroom textarea { font-family: var(--font); }
+.classroom ::selection { background: var(--citron); color: #24251f; }
+.classroom :focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
+.classroom .site-header { color: var(--ink); background: var(--paper); }
+.classroom .site-header a { color: var(--ink); }
+.classroom .course-label { color: var(--muted); text-transform: none; letter-spacing: 0; }
+.classroom .intro h1,.thoughts-app .hero h1 { font-family: var(--font); font-weight: 600; font-style: normal; letter-spacing: -.04em; }
+.classroom .intro h1 em { font-style: normal; }
+.classroom .panel,.classroom .chart-card,.classroom .controls,.classroom .sample-card,.classroom .teaching-note,.classroom .thought-card { border-radius: 2px; box-shadow: none; }
+/* Keep the two statistical series distinct and consistent with the canvas. */
+.t-test-app .intro { max-width: none; margin: 30px 0; padding: 38px 4%; background: var(--citron); color: #24251f; }
+.t-test-app .intro h1 { margin-top: 0; color: #24251f; }
+.t-test-app .intro h1 em { color: #4f541d; }
+.t-test-app .intro>p { color: #4f541d; }
+.t-test-app .intro-steps { color: #4f541d; }
+.t-test-app .intro-steps b { color: #24251f; }
+.t-test-app .controls h2,.t-test-app .chart-card h2,.t-test-app .sample-card h2 { font: 600 26px/1.15 var(--font); }
+.t-test-app .section-kicker,.t-test-app .chart-number { letter-spacing: .06em; }
+.t-test-app .controls,.t-test-app .chart-card,.t-test-app .sample-card { background: var(--card); }
+.t-test-app .button { border-radius: 2px; }
+.polls-app { --blue: #626a20; }
+.polls-app .intro { background: var(--citron); color: #24251f; padding: 38px 4%; }
+.polls-app .intro h1 { font-weight: 600; letter-spacing: -.04em; }
+.polls-app .intro .subtitle { color: #4f541d; }
+.polls-app .panel { border-color: var(--line); background: var(--card); }
+.polls-app button,.polls-app .button { background: #353a22; border-radius: 2px; }
+.polls-app .text-button { background: transparent; color: #4f541d; }
+.polls-app button:hover:not(:disabled),.polls-app .button:hover { background: #4f541d; }
+.polls-app .text-button:hover:not(:disabled) { background: var(--surface); }
+.polls-app input,.polls-app textarea { border-radius: 2px; }
+.polls-app .join-panel { background: var(--surface); }
+.polls-app .bar-track { background: var(--surface); border-radius: 2px; }
+.polls-app .bar-fill { background: #6b7428; border-radius: 2px; }
+.polls-app .mini-chart span { background: #9a9f55; }
+.polls-app .mini-chart span:nth-child(2) { background: #6b7428; }
+.thoughts-app { --sand: #ebebe5; --leaf: #626a20; }
+.thoughts-app .hero { max-width: none; margin-top: 30px; margin-bottom: 35px; padding: 45px 4%; color: #24251f; background: var(--citron); }
+.thoughts-app .hero h1 { font-size: clamp(42px,7vw,86px); }
+.thoughts-app .hero>p:last-child { color: #4f541d; }
+.thoughts-app .thought-card:hover { transform: none; box-shadow: none; border-color: #626a20; }
+.thoughts-app .thought-card h3 { font-size: 27px; }
+.thoughts-app .thought-card blockquote { font-family: var(--font); font-weight: 400; font-size: 1.15rem; border-left: 1px solid #9a9f55; }
+.thoughts-app .reader-close { font-family: var(--font); border-radius: 2px; background: var(--paper); backdrop-filter: none; }
+.thoughts-app .thought-reader { background: var(--paper); }
+.sampling-app .header { box-shadow: none; position: static; background: var(--paper); border-bottom: 1px solid var(--line); }
+.sampling-app .logo a { color: var(--ink); }
+.sampling-app .title-section { background: var(--citron); padding: 35px 4%; text-align: left; }
+.sampling-app .title-section h1 { color: #24251f; font-size: clamp(36px,5vw,64px); }
+.sampling-app .scenario-title,.sampling-app .scenario-hint { color: #4f541d; }
+.sampling-app .scenario-hint { background: transparent; border: 0; padding-left: 0; }
+.sampling-app .hint-icon { display: none; }
+.sampling-app .btn-primary { background: var(--citron); color: #24251f; border-color: #8f953d; }
+.sampling-app .btn-primary:hover { background: #d5db50; }
+.sampling-app .btn-secondary { color: var(--ink); border-color: var(--line); }
+.sampling-app .settings-panel,.sampling-app .canvas-container,.sampling-app .method-panel,.sampling-app .simulation-panel,.sampling-app .statistics-panel,.sampling-app .explanation-panel,.sampling-app .data-modal-content { box-shadow: none; border-radius: 2px; }
+.sampling-app .statistics-panel { animation: none; }
+.sampling-app .theme-switch-input { display: block; position: absolute; opacity: 0; width: 44px; height: 30px; cursor: pointer; }
+.sampling-app .theme-toggle:focus-within { outline: 3px solid var(--focus); outline-offset: 4px; }
+.sampling-app .theme-switch-slider,.sampling-app .theme-switch-handle { border-radius: 2px; }
+/* A projection-friendly version of the same palette for the introduction deck. */
+.intro-deck { --ink: #f3f3e9; --muted: #c7c8b7; --night: #24251f; --navy: #353a22; --blue: #e8ed62; --sky: #e1e5b2; --coral: #eda489; --line: #63664f; background: var(--night); }
+.intro-deck .slide { background: var(--night); }
+.intro-deck .slide--path,.intro-deck .slide--family,.intro-deck .slide--together { background: #353a22; }
+.intro-deck .slide--teach { background: var(--citron); color: #24251f; }
+.intro-deck .slide--teach .eyebrow,.intro-deck .teach-statement,.intro-deck .teach-statement span { color: #24251f; }
+.intro-deck .slide--questions { background: #4f541d; }
+.intro-deck .stats-art,.intro-deck .grid-art,.intro-deck .contact-grid { display: none; }
+.intro-deck h1,.intro-deck h2,.intro-deck .teach-statement { letter-spacing: -.04em; }
+.intro-deck .work-photo,.intro-deck .family-photo,.intro-deck .cycling-photo,.intro-deck .facts-photo { border-radius: 2px; box-shadow: none; }
+.intro-deck .nav-button { border-radius: 2px; }
+.intro-deck .contact-cards>* { background: #353a22; }
+.intro-deck .contact-cards a:hover { background: #4f541d; }
+@media(max-width: 540px) {
+  .classroom .site-header { gap: 15px; }
+  .classroom .course-label,.classroom .header-label { font-size: 10px; }
+  .thoughts-app .hero { padding: 30px 6%; }
+  .thoughts-app .hero h1 { font-size: 42px; }
+  .t-test-app .intro { padding: 28px 6%; }
+  .t-test-app .intro h1 { font-size: 42px; }
+  .sampling-app .nav-container { gap: 15px; flex-wrap: wrap; }
+}
+@media(prefers-reduced-motion: reduce) { .classroom *, .classroom *::before, .classroom *::after { animation: none !important; transition: none !important; } }
+
+.polls-app button.secondary { color: var(--ink); background: var(--surface); border-color: var(--line); }
+.polls-app button.secondary:hover:not(:disabled) { background: var(--line); }
+.intro-deck:has(.slide--teach.is-active) { --ink: #24251f; --muted: #4f541d; --blue: #626a20; --sky: #4f541d; --line: #a2a847; }
+.intro-deck:has(.slide--teach.is-active) .nav-button:hover:not(:disabled) { color: #e8ed62; }
+.intro-deck .teach-statement { max-width: 22ch; font-size: clamp(2.2rem, 4.8vw, 6.4rem); }
