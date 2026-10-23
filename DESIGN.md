@@ -5,7 +5,7 @@ The approved Bold mockup is the reference for this refresh. This is a personal p
 - Archivo, with large, closely spaced headings and readable body copy.
 - Citron (#e8ed62) carries the homepage and directory introductions. Charcoal text, off-white ground, olive secondary ink, and a small rust accent do the rest.
 - Sharp edges, thin rules, and rows of work instead of a grid of cards. Real photographs carry the personal story.
-- The homepage leads with “Less friction. Better work.” and the speaking photo. Work, biography, life, direct contact, and the optional AI guide follow.
+- The homepage leads with “Less friction. Better work.” and the speaking photo. Work, a project portfolio with real website previews, biography, life, direct contact, and the optional AI guide follow.
 - The AI guide is a native disclosure below direct contact. It keeps the existing API and session behavior.
 - The homepage, Tools, and STAT 121 directory share the same shell. Classroom pages inherit the typography and palette without changing app controls, course material, or chart series colors.
 - Dark mode retains citron and adapts neutral surfaces. Persist the explicit choice and otherwise follow the system. Classroom apps with no theme control keep their light teaching surface; the intro deck uses dark olive for projection.

@@ -49,3 +49,9 @@
   html { scroll-behavior: auto; } *,*::before,*::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 @media (forced-colors: active) { .square-link,.theme-toggle,.send-btn { border: 1px solid ButtonText; }.hero { border: 1px solid CanvasText; } }
+@media (max-width: 760px) {
+  .projects-section { padding-top: 55px; }
+  .projects-heading { align-items: start; flex-direction: column; gap: 18px; margin-bottom: 28px; }
+  .projects-heading h2 { font-size: 36px; }
+  .projects-grid { grid-template-columns: 1fr; gap: 40px; }
+}
