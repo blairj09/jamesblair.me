@@ -28,6 +28,14 @@ vercel dev          # Local development server
 
 Automatically deploys to [jamesblair.me](https://jamesblair.me) when pushed to main branch.
 
+## Analytics
+
+All static HTML pages load `/analytics.js`, which initializes Vercel Web Analytics.
+Include `<script defer src="/analytics.js"></script>` in any new page's head.
+The loader skips localhost. Web Analytics must be enabled for the Vercel project;
+deploy afterward to activate the `/_vercel/insights/` endpoints. View traffic in
+the project's Analytics tab.
+
 ## Project Structure
 
 ```
