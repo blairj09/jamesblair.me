@@ -53,5 +53,17 @@
   .projects-section { padding-top: 55px; }
   .projects-heading { align-items: start; flex-direction: column; gap: 18px; margin-bottom: 28px; }
   .projects-heading h2 { font-size: 36px; }
-  .projects-grid { grid-template-columns: 1fr; gap: 40px; }
+
 }
+
+@media (max-width: 760px) {
+  .project-slide { grid-template-columns: 1fr; gap: 22px; align-content: start; align-items: start; }
+  .project-details { padding: 0 5px 5px; }
+  .project-details > p { font-size: 14px; margin-top: 14px; }
+  .tool-preview { padding: 24px; }
+  .tool-preview strong { font-size: 36px; }
+  .tool-preview svg { width: 30px; height: 30px; }
+  .carousel-controls { align-items: start; }
+  .carousel-status { padding-top: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .project-carousel { scroll-behavior: auto; } }

@@ -50,3 +50,51 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!saved) applyTheme(event.matches ? 'dark' : 'light');
     });
 });
+
+// Manual carousel: no autoplay, and native scrolling remains available without JS.
+document.addEventListener('DOMContentLoaded', () => {
+    const track = document.getElementById('project-carousel');
+    if (!track) return;
+    const slides = [...track.querySelectorAll('.project-slide')];
+    const previous = document.getElementById('project-previous');
+    const next = document.getElementById('project-next');
+    const status = document.getElementById('project-position');
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    let active = 0;
+    let frame;
+
+    const position = (index) => slides[index].offsetLeft - slides[0].offsetLeft;
+    const update = () => {
+        const closest = slides.reduce((best, slide, index) =>
+            Math.abs(position(index) - track.scrollLeft) < Math.abs(position(best) - track.scrollLeft) ? index : best, 0);
+        active = closest;
+        previous.disabled = active === 0;
+        next.disabled = active === slides.length - 1;
+        const label = `${active + 1} / ${slides.length} — ${slides[active].querySelector('h3').textContent.trim()}`;
+        if (status.textContent !== label) status.textContent = label;
+        slides.forEach((slide, index) => { slide.inert = index !== active; });
+    };
+    const goTo = (index) => {
+        active = Math.max(0, Math.min(slides.length - 1, index));
+        track.scrollTo({ left: position(active), behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+    };
+    previous.addEventListener('click', () => goTo(active - 1));
+    next.addEventListener('click', () => goTo(active + 1));
+    track.addEventListener('keydown', (event) => {
+        if (event.target !== track) return;
+        const destinations = { ArrowLeft: active - 1, ArrowRight: active + 1, Home: 0, End: slides.length - 1 };
+        if (!(event.key in destinations)) return;
+        event.preventDefault();
+        goTo(destinations[event.key]);
+    });
+    track.addEventListener('scroll', () => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(update);
+    }, { passive: true });
+    new ResizeObserver(() => {
+        track.scrollTo({ left: position(active), behavior: 'instant' });
+        update();
+    }).observe(track);
+    document.querySelector('.carousel-controls').hidden = false;
+    update();
+});

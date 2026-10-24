@@ -94,7 +94,7 @@ svg { width: 22px; height: 22px; flex-shrink: 0; vertical-align: middle; }
 .projects-heading h2 { font-size: clamp(36px,4vw,54px); }
 .projects-heading p { margin-top: 20px; color: var(--muted); font-size: 14px; }
 .projects-heading > a { flex-shrink: 0; }
-.projects-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 38px; }
+
 .project { min-width: 0; }
 .project-preview { display: block; overflow: hidden; background: var(--surface); border: 1px solid var(--line); }
 .project-preview img { width: 100%; aspect-ratio: 16/9; height: auto; object-fit: cover; transition: transform .25s ease; }
@@ -104,6 +104,24 @@ svg { width: 22px; height: 22px; flex-shrink: 0; vertical-align: middle; }
 .project h3 a { display: flex; justify-content: space-between; gap: 15px; align-items: center; }
 .project > p { margin-top: 16px; max-width: 60ch; font-size: 14px; }
 .project-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; }
+
+/* A native scroll surface keeps touch, trackpad, and no-JS browsing intact. */
+.project-carousel { display: flex; gap: 28px; position: relative; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--line) var(--paper); padding-bottom: 12px; }
+.project-slide { flex: 0 0 100%; display: grid; grid-template-columns: 1.25fr 1fr; gap: 40px; align-items: center; scroll-snap-align: start; scroll-snap-stop: always; }
+.project-details { padding: 12px 6px; }
+.project-details .project-meta { margin-top: 0; }
+.project-details > p { margin-top: 20px; max-width: 52ch; font-size: 15px; }
+.project-slide .project-preview:focus-visible { outline-offset: -5px; }
+.tool-preview { aspect-ratio: 16/9; display: flex; flex-direction: column; justify-content: space-between; padding: 32px; background: var(--citron); color: #24251f; }
+.tool-preview:hover { text-decoration: none; background: #dfe45c; }
+.tool-preview svg { width: 42px; height: 42px; }
+.tool-preview strong { font-size: clamp(28px,4vw,52px); line-height: 1.05; font-weight: 600; letter-spacing: -.035em; }
+.tool-preview > span { font-size: 12px; }
+.carousel-controls { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding-top: 20px; }
+.carousel-status { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.carousel-buttons { display: flex; gap: 10px; flex-shrink: 0; }
+.carousel-buttons button { display: grid; place-items: center; width: 48px; height: 48px; background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.carousel-buttons button:hover:not(:disabled) { background: var(--surface); }
 /* The optional guide stays secondary to direct contact. */
 .guide-section { padding-bottom: 65px; }
 .guide-details { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
@@ -191,5 +209,17 @@ svg { width: 22px; height: 22px; flex-shrink: 0; vertical-align: middle; }
   .projects-section { padding-top: 55px; }
   .projects-heading { align-items: start; flex-direction: column; gap: 18px; margin-bottom: 28px; }
   .projects-heading h2 { font-size: 36px; }
-  .projects-grid { grid-template-columns: 1fr; gap: 40px; }
+
 }
+
+@media (max-width: 760px) {
+  .project-slide { grid-template-columns: 1fr; gap: 22px; align-content: start; align-items: start; }
+  .project-details { padding: 0 5px 5px; }
+  .project-details > p { font-size: 14px; margin-top: 14px; }
+  .tool-preview { padding: 24px; }
+  .tool-preview strong { font-size: 36px; }
+  .tool-preview svg { width: 30px; height: 30px; }
+  .carousel-controls { align-items: start; }
+  .carousel-status { padding-top: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .project-carousel { scroll-behavior: auto; } }
