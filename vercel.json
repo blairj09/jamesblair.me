@@ -12,6 +12,16 @@
       "source": "/intro",
       "destination": "/stat-121/intro/",
       "permanent": true
+    },
+    {
+      "source": "/tools",
+      "destination": "/projects/",
+      "permanent": true
+    },
+    {
+      "source": "/tools/",
+      "destination": "/projects/",
+      "permanent": true
     }
   ],
   "rewrites": [

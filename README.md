@@ -58,3 +58,5 @@ sharp edges, and real photography. See `DESIGN.md` for the shared design decisio
 - `theme.js` applies the initial theme before paint; `script.js` handles navigation, theme controls, and analytics.
 
 Design explorations in `mockups/` are local references and excluded from Vercel deployments.
+
+The combined project directory lives at `/projects/`. The old `/tools/` directory redirects there; `/tools/health-tracker/`, `/tools/tool-tracer/`, and `/tools/sticker-holder/` retain their existing Vercel rewrites.

@@ -52,3 +52,4 @@
 .project h3 { font-size: clamp(26px,2.6vw,34px); }
 .project h3 a { display: flex; justify-content: space-between; gap: 15px; align-items: center; }
 .project > p { margin-top: 16px; max-width: 60ch; font-size: 14px; }
+.project-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; }
