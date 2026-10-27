@@ -10,6 +10,18 @@
  */
 const spiritualThoughts = [
   {
+    date: '2026-10-27',
+    title: 'Trusting God With the Rest of Your Story',
+    author: 'Morgan Jones Pearson',
+    sourceUrl: 'https://speeches.byuh.edu/trusting-god-with-the-rest-of-your-story',
+    sourceLabel: 'BYU–Hawaii devotional',
+    image: 'images/2026-10-27-middle-of-infinity-watercolor.png',
+    imageAlt: 'Watercolor of a small blue planet suspended between vast rose and blue clouds of stardust',
+    sections: [
+      'I invite you to remember that as long as we are here on earth, {we are always in the middle of our story} but as we allow the Lord to co-author that story with us, the rest of the story will become more beautiful than we could’ve ever dreamed.'
+    ]
+  },
+  {
     date: '2026-10-20',
     title: 'Philippians 4:4',
     sourceUrl: 'https://www.churchofjesuschrist.org/study/scriptures/nt/philip/4?lang=eng&id=p4#p4',
