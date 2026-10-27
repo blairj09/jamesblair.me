@@ -71,7 +71,7 @@ James uses and enjoys a variety of modern tools that enhance his productivity an
 ## Project Portfolio
 
 - All projects: https://jamesblair.me/projects/
-- Websites: Landform Labs and Bear 4 Heisman
+- Websites: Landform Labs, Bear 4 Heisman, and Caffein8d
 - Tools: Health Tracker, ToolTrace, and Hex Sticker Holder
 - Teaching resources are separate: https://jamesblair.me/stat-121/
 
@@ -178,3 +178,9 @@ When providing information about James Blair:
 ## Disclaimer
 
 This context is maintained to enable AI tools to understand context about James. Tools using this context may respond in unexpected and unanticipated ways that are not reflective of James. For important matters, please contact James directly via email james@jamesblair.me.
+
+## Caffein8d
+
+**Caffein8d** is a caffeine tracker for developers that James builds and maintains. Users can log caffeine intake, explore estimated caffeine levels over time, and share live status through embeddable badges.
+
+- Website: https://caffein8d.dev/

@@ -16,4 +16,4 @@ Shared color tokens live in `css/tokens.css`. The five site CSS modules concaten
 
 Projects combines standalone websites and small tools in one directory at `/projects/`, with simple Website and Tool labels. The homepage features selected projects and links to the full collection. `/tools/` redirects to the directory; existing `/tools/<app>/` URLs remain unchanged.
 
-The homepage project carousel shows one of five projects at a time, with native horizontal scroll snapping, previous/next controls, a position announcement, and arrow/Home/End keyboard support. It never autoplays. Only the active slide is interactive after enhancement, and reduced-motion preferences disable smooth scrolling. Without JavaScript, the native scrolling gallery remains usable.
+The homepage project carousel shows one of six projects at a time, with native horizontal scroll snapping, previous/next controls, a position announcement, and arrow/Home/End keyboard support. It never autoplays. Only the active slide is interactive after enhancement, and reduced-motion preferences disable smooth scrolling. Without JavaScript, the native scrolling gallery remains usable.
