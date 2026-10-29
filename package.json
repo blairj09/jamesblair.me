@@ -4,6 +4,7 @@
   "description": "Personal website for James Blair with Claude AI chat integration",
   "scripts": {
     "test:polls": "node --test tests/polls/api.test.mjs",
+    "test:nanas-garden": "node --test tests/nanas-garden/api.test.mjs",
     "build:css": "cat css/base.css css/components.css css/layout.css css/chat.css css/responsive.css > style.css",
     "watch:css": "npm run build:css && echo 'CSS built successfully'",
     "serve": "python3 -m http.server 8000",

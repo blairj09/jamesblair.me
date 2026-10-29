@@ -93,6 +93,25 @@ body{background:var(--ground);color:var(--packet);font-family:var(--body);overfl
 .dot{width:12px;height:12px;border-radius:50%;flex:none}
 .sig{margin:0;font:400 19px/1.35 var(--hand);color:var(--ink)}
 .end-msg{margin:0;font:600 16px/1.5 var(--body);color:var(--ink-soft)}
+.board{display:flex;flex-direction:column;gap:10px;padding-block:12px 2px;border-top:2px dashed var(--packet-edge)}
+.board h2{margin:0;font:800 21px/1.1 var(--display);color:var(--ink)}
+.your-time{margin:0;font:700 15px/1.4 var(--body);color:var(--ink-soft)}
+.your-time b{font:800 19px/1 var(--display);color:var(--tomato);font-variant-numeric:tabular-nums}
+.claim{display:flex;flex-direction:column;gap:6px;margin:0}
+.claim label{font:800 11px/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.claim-row{display:flex;gap:8px}
+.claim input{flex:1;min-width:0;font:700 16px/1 var(--body);padding:11px 12px;border-radius:9px;border:2px solid var(--packet-edge);background:#fffdf7;color:var(--ink)}
+.claim input:focus-visible{outline:3px solid var(--sun);outline-offset:1px}
+.btn.small{flex:none;font-size:15px;padding:11px 14px}
+.btn:disabled{opacity:.6;cursor:default}
+.board-msg{margin:0;font:600 13px/1.4 var(--body);color:var(--ink-soft)}
+.board-msg:empty{display:none}
+.board-list{list-style:none;margin:0;padding:0;display:grid;gap:3px;font:700 15px/1.3 var(--body);font-variant-numeric:tabular-nums}
+.board-list li{display:grid;grid-template-columns:2.4ch minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:5px 8px;border-radius:7px}
+.board-list li:nth-child(odd){background:rgba(220,197,154,.22)}
+.board-list li.me{background:#fde2a6}
+.board-list .rk{font:800 14px/1 var(--display);color:var(--tomato)}
+.board-list .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media (prefers-reduced-motion: reduce){ .bar i,#toast,#note{transition:none} }
 </style>
 
@@ -218,6 +237,16 @@ body{background:var(--ground);color:var(--packet);font-family:var(--body);overfl
       <p class="end-msg">Your dad taught you to love a garden, and you've been growing good things ever since. Three kids, eleven grandkids, and a whole lot of tomatoes.</p>
       <div id="harvest" class="harvest"></div>
       <p class="sig">Love, Papa, your kids, and Ellie, Charlie, Fox, FJ, Oaks, Robbie, Luther, Thea, Paxton, Cole &amp; Jeter.<br>(Koda says woof.)</p>
+      <section class="board" aria-labelledby="board-title">
+        <h2 id="board-title">Fastest to the party</h2>
+        <p id="yourTime" class="your-time" hidden></p>
+        <form id="claimForm" class="claim" hidden novalidate>
+          <label for="playerName">Add your name to the board</label>
+          <div class="claim-row"><input id="playerName" name="playerName" maxlength="20" autocomplete="nickname" placeholder="Your name"><button class="btn small" type="submit">Save my time</button></div>
+        </form>
+        <p id="boardMsg" class="board-msg" role="status"></p>
+        <ol id="board" class="board-list"></ol>
+      </section>
       <div class="row">
         <button id="keep" class="btn">Keep celebrating</button>
         <button id="again" class="btn ghost">Play again</button>
@@ -476,7 +505,7 @@ function harvest(p, who){
   for (let i=0;i<n;i++) addP({type:'produce', x:p.x+p.w/2+rnd(-20,20), y:p.y+p.h/2, vx:rnd(-40,40), vy:rnd(-160,-110), g:260, life:1.1, max:1.1, size:5.5, color:p.color, crop:p.id});
   floatText(p.x+p.w/2, p.y-4, '+'+n+' '+p.name, '#fff7d6', 14);
   sfx.harvest(); updateHud();
-  if (S.basket>=GOAL && S.mode==='play'){ S.mode='ending'; S.goalT=1.6; toast('Your basket is full!', 2); }
+  if (S.basket>=GOAL && S.mode==='play'){ S.mode='ending'; S.goalT=1.6; toast('Your basket is full!', 2); finishRun(); }
 }
 function blessing(b){
   b.state='sing'; b.timer=1.3; S.stats.birds++; sfx.magic();
@@ -822,6 +851,7 @@ function showEnd(){
     [S.stats.hugs,'hugs given','#e2566e'],[S.stats.calmed,'little rascals calmed','#f0a020'],[S.stats.treats,'treats for Koda','#c99a5e'],[S.stats.birds,'bird visits','#4f8fd0']];
   for (const [n,label,c] of rows.filter(r=>r[0]>0)){ const d=document.createElement('div'); d.innerHTML='<span class="dot" style="background:'+c+'"></span><b>'+n+'</b><span></span>'; d.lastChild.textContent=label; h.append(d); }
   document.getElementById('end').hidden=false;
+  showBoard();
 }
 
 // ---------- main update ----------
@@ -1415,8 +1445,42 @@ function onTap(x,y){
 const muteBtn=document.getElementById('mute');
 function syncMute(){ document.getElementById('icoOn').hidden=AU.muted; document.getElementById('icoOff').hidden=!AU.muted; muteBtn.setAttribute('aria-label',AU.muted?'Turn sound on':'Mute sound'); if (AU.out) AU.out.gain.value=AU.muted?0:.55; }
 muteBtn.addEventListener('click',()=>{ AU.muted=!AU.muted; try{ localStorage.setItem('nana-muted',AU.muted?'1':'0'); }catch(e){} initAudio(); syncMute(); });
+// ---------- leaderboard: the server times each run from Start to the party ----------
+const LB='/api/nanas-garden', LB_ON=location.hash!=='#party';
+let run={id:null, ms:null, finishing:null};
+const fmtTime = ms => { const s=Math.round(ms/1000); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
+function lb(body){
+  const opts = body ? {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)} : {};
+  return fetch(LB, opts).then(async r=>{ const d=await r.json().catch(()=>({})); if (!r.ok) throw Object.assign(new Error(d.error||'error'),{data:d}); return d; });
+}
+function startRun(){ run={id:null, ms:null, finishing:null}; if (LB_ON) lb({action:'start'}).then(d=>{ run.id=d.id; }).catch(()=>{}); }
+function finishRun(){ if (!run.id || run.finishing) return; run.finishing=lb({action:'finish', id:run.id}).then(d=>{ run.ms=d.ms; }).catch(()=>{ run.id=null; }); }
+function renderBoard(top, mine){
+  const ol=document.getElementById('board'); ol.innerHTML='';
+  for (const r of top){ const li=document.createElement('li'); if (r.rank===mine) li.className='me';
+    li.innerHTML='<span class="rk"></span><span class="nm"></span><span class="tm"></span>';
+    li.children[0].textContent=r.rank; li.children[1].textContent=r.name; li.children[2].textContent=fmtTime(r.ms); ol.append(li); }
+}
+async function showBoard(){
+  const msg=document.getElementById('boardMsg'), you=document.getElementById('yourTime'), form=document.getElementById('claimForm'), section=document.querySelector('.board');
+  msg.textContent=''; you.hidden=true; form.hidden=true; document.getElementById('board').innerHTML=''; section.hidden=false;
+  if (run.finishing) await run.finishing;
+  if (run.ms){ you.innerHTML='You made it to the party in <b></b>.'; you.querySelector('b').textContent=fmtTime(run.ms); you.hidden=false; form.hidden=false;
+    form.querySelector('button').disabled=false; try{ document.getElementById('playerName').value=localStorage.getItem('nana-name')||''; }catch(e){} }
+  else if (!LB_ON) msg.textContent='The #party shortcut doesn\u2019t count toward the leaderboard.';
+  try{ const d=await lb(); renderBoard(d.top); if (!d.top.length && !run.ms) msg.textContent='No times yet. Play a full game to be the first!'; }
+  catch(e){ if (run.ms) msg.textContent='The leaderboard isn\u2019t available right now.'; else section.hidden=true; }
+}
+document.getElementById('claimForm').addEventListener('submit', async e=>{
+  e.preventDefault(); const form=e.target, input=document.getElementById('playerName'), msg=document.getElementById('boardMsg'), btn=form.querySelector('button');
+  const name=input.value.trim(); if (!name){ msg.textContent='Type your name to save your time.'; input.focus(); return; }
+  btn.disabled=true; msg.textContent='Saving\u2026';
+  try{ const d=await lb({action:'claim', id:run.id, name}); try{ localStorage.setItem('nana-name',name); }catch(_){}
+    form.hidden=true; run.id=null; msg.textContent=d.rank<=10 ? 'You\u2019re number '+d.rank+' on the board!' : 'Saved! You\u2019re number '+d.rank+' overall.'; renderBoard(d.top, d.rank); }
+  catch(err){ msg.textContent=(err.data&&err.data.error)||'Couldn\u2019t save your time. Please try again.'; btn.disabled=false; }
+});
 function startGame(){
-  document.getElementById('title').hidden=true; S.mode='play'; S.t=0; loadSamples(); startAmbience(); startMusic();
+  document.getElementById('title').hidden=true; S.mode='play'; S.t=0; loadSamples(); startAmbience(); startMusic(); startRun();
   if (location.hash==='#party'){ S.basket=GOAL; S.stats.crop.tomato=20; S.stats.crop.beans=18; S.stats.crop.flowers=10; S.stats.crop.squash=6; S.stats.crop.pepper=8; updateHud(); startParty(); }
 }
 document.getElementById('start').addEventListener('click',()=>{
@@ -1426,7 +1490,7 @@ document.getElementById('start').addEventListener('click',()=>{
   startGame();
 });
 document.getElementById('keep').addEventListener('click',()=>{ document.getElementById('end').hidden=true; });
-document.getElementById('again').addEventListener('click',()=>{ try{ if (bdaySrc) bdaySrc.stop(); }catch(e){} bdaySrc=null; fadeMusic(MUSIC_VOL,1); document.getElementById('end').hidden=true; toastEl.classList.remove('show'); reset(); V.reset(); S.mode='play'; });
+document.getElementById('again').addEventListener('click',()=>{ try{ if (bdaySrc) bdaySrc.stop(); }catch(e){} bdaySrc=null; fadeMusic(MUSIC_VOL,1); document.getElementById('end').hidden=true; toastEl.classList.remove('show'); reset(); V.reset(); S.mode='play'; startRun(); });
 reset(); syncMute();
 function boot(){
   if (!window.Phaser || boot.done) return; boot.done=true;
