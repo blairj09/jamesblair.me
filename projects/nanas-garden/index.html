@@ -1241,11 +1241,8 @@ const V = {
     this.dusk2=s.add.rectangle(W/2,(H-TOPPAD)/2,W,VH,0x786ebe).setDepth(3901).setBlendMode(Phaser.BlendModes.MULTIPLY).setAlpha(0);
     this.table=img(s,'table',TABLE.x,TABLE.y).setDepth(100+TABLE.y).setVisible(false);
     this.cakeI=img(s,'cake',TABLE.x+12,TABLE.y-22).setDepth(101+TABLE.y).setVisible(false);
-    // make the cake impossible to miss while it waits to be tapped
-    this.cakeGlow=img(s,'glow',TABLE.x+12,TABLE.y-34).setDepth(100+TABLE.y).setBlendMode(Phaser.BlendModes.ADD).setVisible(false);
-    this.cakeRing=s.add.graphics().setDepth(4700);
+    // a bouncing arrow points at the cake while it waits to be tapped
     this.cakeArrow=img(s,'tap_arrow',0,0).setDepth(4960).setVisible(false);
-    this.cakeLabel=makeText(s,13,{color:'#ffffff',stroke:'#7a3a12',strokeW:5}).setText('Tap the cake!').setDepth(4960).setVisible(false);
     this.flames=[img(s,'flame',TABLE.x+8.5,TABLE.y-52),img(s,'flame',TABLE.x+15.5,TABLE.y-52)].map(f=>f.setDepth(102+TABLE.y).setVisible(false));
     this.wires=s.add.graphics().setDepth(3950).setVisible(false); this.bulbs=[];
     const strands=[[[HOUSE_X,346],[232,336]],[[HOUSE_X,584],[232,594]],[[232,336],[232,594]]];
@@ -1267,7 +1264,7 @@ const V = {
     for (const [,v] of this.birdV) v.c.destroy(); this.birdV.clear();
     for (const p of this.pool){ p.setVisible(false); p.busy=false; } for (const t of this.tpool){ t.setVisible(false); t.busy=false; }
     this.plotV.forEach((v,p)=>{ v.stage=-1; });
-    for (const o of [this.table,this.cakeI,...this.flames,this.wires,this.bunA,this.bunB,this.cakeGlow,this.cakeArrow,this.cakeLabel]) o.setVisible(false); this.cakeRing.clear();
+    for (const o of [this.table,this.cakeI,...this.flames,this.wires,this.bunA,this.bunB,this.cakeArrow]) o.setVisible(false);
     this.bulbs.forEach(b=>{ b.gl.setVisible(false); b.b.setVisible(false); });
     this.dusk1.setAlpha(0); this.dusk2.setAlpha(0);
   },
@@ -1342,14 +1339,11 @@ const V = {
       if (f>.75 && Math.random()<.05) addP({type:'drop',x:nana.x+rnd(-6,6),y:nana.y-62,vx:rnd(-20,20),vy:-20,g:200,life:.5,max:.5,size:2}); }
     // party
     if (party){ const pa=clamp(party.t/2.5,0,1); this.dusk1.setAlpha(.42*pa); this.dusk2.setAlpha(.22*pa);
-      const wait=!!party.cake && !party.blown, bob=wait?Math.sin(t*4)*1.5:0, CS=1.5*(wait?1+Math.sin(t*5)*.07:1), cx=TABLE.x+12, ay=TABLE.y-22+bob, cy=ay-14*CS, u=uiScale(13)/13, hop=Math.abs(Math.sin(t*5))*8*u;
+      const wait=!!party.cake && !party.blown, bob=0, CS=1.5, cx=TABLE.x+12, ay=TABLE.y-22+bob, cy=ay-14*CS, u=uiScale(13)/13, hop=Math.abs(Math.sin(t*5))*8*u;
       this.table.setVisible(true); this.cakeI.setVisible(!!party.cake).setScale(CS/TS); this.cakeI.y=ay;
       this.flames.forEach((f,i)=>{ f.setVisible(wait); f.x=cx+(i?3.5:-3.5)*CS; f.y=ay-30*CS; f.scaleX=CS/TS; f.scaleY=CS*(1+Math.sin(t*20+i)*.12)/TS; });
       this.nanaP.tag.setVisible(false); this.gpP.tag.setVisible(false);
-      this.cakeGlow.setVisible(wait).setAlpha(.55+.35*Math.sin(t*5)).setScale((2.6+.3*Math.sin(t*5))/TS);
-      this.cakeRing.clear(); if (wait){ const ph=(t*1.4)%1; this.cakeRing.lineStyle(2.5,0xffd34d,1-ph).strokeEllipse(cx,cy+8,(34+ph*30)*2,(34+ph*30)*1.3); }
       this.cakeArrow.setVisible(wait).setPosition(cx, ay-46*CS/1.5-hop).setScale(1.3*u/TS);
-      this.cakeLabel.setVisible(wait).setPosition(cx, ay-46*CS/1.5-hop-44*u).setScale(u);
       this.wires.setVisible(true).setAlpha(pa); this.bulbs.forEach(o=>{ const tw=.6+.4*Math.sin(t*3+o.i*1.3); o.gl.setVisible(true).setAlpha(pa*tw); o.b.setVisible(true).setAlpha(pa); });
       this.bunA.setVisible(true).setAlpha(pa); this.bunB.setVisible(true).setAlpha(pa); this.bunA.rotation=Math.sin(t*1.3)*.008; this.bunB.rotation=Math.sin(t*1.5+1)*.01; }
     // bubbles, badges
