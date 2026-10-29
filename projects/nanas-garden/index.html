@@ -1098,6 +1098,7 @@ function bakeParty(scene){
     k.piece(k.rbox(-8,-20,16,11,4),'#ffffff',1.4,.4); k.flat(k.rbox(-8,-20,16,3,2),'#4aa3df',.3);
     g.font='800 9px Grandstander, sans-serif'; g.textAlign='center'; g.textBaseline='bottom'; g.fillStyle='#e2402e'; g.fillText('6',-3.5,-20); g.fillStyle='#f0a020'; g.fillText('2',3.5,-20);
   });
+  bake(scene,'tap_arrow',24,32,12,30,(g,k)=>{ k.piece([[-4.5,-28],[4.5,-28],[4.5,-14],[11,-14],[0,0],[-11,-14],[-4.5,-14]],'#f0b43a',2,.6); k.stitch([[-2.5,-25.5],[2.5,-25.5],[2.5,-12],[6,-12],[0,-4],[-6,-12],[-2.5,-12]],'rgba(255,248,228,.95)',1); });
   bake(scene,'flame',8,10,4,8,(g,k)=>{ g.fillStyle='#ffb02e'; g.beginPath(); g.ellipse(0,-3,1.9,3.2,0,0,TAU); g.fill(); g.fillStyle='#fff3b0'; g.beginPath(); g.ellipse(0,-2.4,.8,1.5,0,0,TAU); g.fill(); },1,3);
   bake(scene,'bulb',8,8,4,4,(g,k)=>{ g.fillStyle='#ffe9a8'; g.beginPath(); g.ellipse(0,0,2.7,3.3,0,0,TAU); g.fill(); },1,2);
   bake(scene,'bulbglow',24,24,12,12,(g,k)=>{ const gr=g.createRadialGradient(0,0,0,0,0,11); gr.addColorStop(0,'rgba(255,214,120,.75)'); gr.addColorStop(1,'rgba(255,214,120,0)'); g.fillStyle=gr; g.fillRect(-12,-12,24,24); },1,2);
@@ -1240,6 +1241,11 @@ const V = {
     this.dusk2=s.add.rectangle(W/2,(H-TOPPAD)/2,W,VH,0x786ebe).setDepth(3901).setBlendMode(Phaser.BlendModes.MULTIPLY).setAlpha(0);
     this.table=img(s,'table',TABLE.x,TABLE.y).setDepth(100+TABLE.y).setVisible(false);
     this.cakeI=img(s,'cake',TABLE.x+12,TABLE.y-22).setDepth(101+TABLE.y).setVisible(false);
+    // make the cake impossible to miss while it waits to be tapped
+    this.cakeGlow=img(s,'glow',TABLE.x+12,TABLE.y-34).setDepth(100+TABLE.y).setBlendMode(Phaser.BlendModes.ADD).setVisible(false);
+    this.cakeRing=s.add.graphics().setDepth(4700);
+    this.cakeArrow=img(s,'tap_arrow',0,0).setDepth(4960).setVisible(false);
+    this.cakeLabel=makeText(s,13,{color:'#ffffff',stroke:'#7a3a12',strokeW:5}).setText('Tap the cake!').setDepth(4960).setVisible(false);
     this.flames=[img(s,'flame',TABLE.x+8.5,TABLE.y-52),img(s,'flame',TABLE.x+15.5,TABLE.y-52)].map(f=>f.setDepth(102+TABLE.y).setVisible(false));
     this.wires=s.add.graphics().setDepth(3950).setVisible(false); this.bulbs=[];
     const strands=[[[HOUSE_X,346],[232,336]],[[HOUSE_X,584],[232,594]],[[232,336],[232,594]]];
@@ -1261,7 +1267,7 @@ const V = {
     for (const [,v] of this.birdV) v.c.destroy(); this.birdV.clear();
     for (const p of this.pool){ p.setVisible(false); p.busy=false; } for (const t of this.tpool){ t.setVisible(false); t.busy=false; }
     this.plotV.forEach((v,p)=>{ v.stage=-1; });
-    for (const o of [this.table,this.cakeI,...this.flames,this.wires,this.bunA,this.bunB]) o.setVisible(false);
+    for (const o of [this.table,this.cakeI,...this.flames,this.wires,this.bunA,this.bunB,this.cakeGlow,this.cakeArrow,this.cakeLabel]) o.setVisible(false); this.cakeRing.clear();
     this.bulbs.forEach(b=>{ b.gl.setVisible(false); b.b.setVisible(false); });
     this.dusk1.setAlpha(0); this.dusk2.setAlpha(0);
   },
@@ -1336,7 +1342,14 @@ const V = {
       if (f>.75 && Math.random()<.05) addP({type:'drop',x:nana.x+rnd(-6,6),y:nana.y-62,vx:rnd(-20,20),vy:-20,g:200,life:.5,max:.5,size:2}); }
     // party
     if (party){ const pa=clamp(party.t/2.5,0,1); this.dusk1.setAlpha(.42*pa); this.dusk2.setAlpha(.22*pa);
-      this.table.setVisible(true); this.cakeI.setVisible(!!party.cake); this.flames.forEach((f,i)=>{ f.setVisible(!!party.cake && !party.blown); f.scaleY=(1+Math.sin(t*20+i)*.12)/TS; });
+      const wait=!!party.cake && !party.blown, bob=wait?Math.sin(t*4)*1.5:0, CS=1.5*(wait?1+Math.sin(t*5)*.07:1), cx=TABLE.x+12, ay=TABLE.y-22+bob, cy=ay-14*CS, u=uiScale(13)/13, hop=Math.abs(Math.sin(t*5))*8*u;
+      this.table.setVisible(true); this.cakeI.setVisible(!!party.cake).setScale(CS/TS); this.cakeI.y=ay;
+      this.flames.forEach((f,i)=>{ f.setVisible(wait); f.x=cx+(i?3.5:-3.5)*CS; f.y=ay-30*CS; f.scaleX=CS/TS; f.scaleY=CS*(1+Math.sin(t*20+i)*.12)/TS; });
+      this.nanaP.tag.setVisible(false); this.gpP.tag.setVisible(false);
+      this.cakeGlow.setVisible(wait).setAlpha(.55+.35*Math.sin(t*5)).setScale((2.6+.3*Math.sin(t*5))/TS);
+      this.cakeRing.clear(); if (wait){ const ph=(t*1.4)%1; this.cakeRing.lineStyle(2.5,0xffd34d,1-ph).strokeEllipse(cx,cy+8,(34+ph*30)*2,(34+ph*30)*1.3); }
+      this.cakeArrow.setVisible(wait).setPosition(cx, ay-46*CS/1.5-hop).setScale(1.3*u/TS);
+      this.cakeLabel.setVisible(wait).setPosition(cx, ay-46*CS/1.5-hop-44*u).setScale(u);
       this.wires.setVisible(true).setAlpha(pa); this.bulbs.forEach(o=>{ const tw=.6+.4*Math.sin(t*3+o.i*1.3); o.gl.setVisible(true).setAlpha(pa*tw); o.b.setVisible(true).setAlpha(pa); });
       this.bunA.setVisible(true).setAlpha(pa); this.bunB.setVisible(true).setAlpha(pa); this.bunA.rotation=Math.sin(t*1.3)*.008; this.bunB.rotation=Math.sin(t*1.5+1)*.01; }
     // bubbles, badges
@@ -1384,7 +1397,7 @@ function onTap(x,y){
   initAudio(); V.ripple(x,y);
   const R=Math.max(30, 26/cssPerWorld);
   if (S.mode==='party'){
-    if (party.cake && !party.blown && x>TABLE.x-60 && x<TABLE.x+60 && y>TABLE.y-80 && y<TABLE.y+20) blowCandles();
+    if (party.cake && !party.blown && x>TABLE.x-70 && x<TABLE.x+95 && y>TABLE.y-130 && y<TABLE.y+30) blowCandles();
     else { confetti(reduced?6:24,x,y); sfx.pop(); }
     return;
   }
