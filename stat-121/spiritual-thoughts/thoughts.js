@@ -10,6 +10,17 @@
  */
 const spiritualThoughts = [
   {
+    date: '2026-10-29',
+    title: 'Alma 37:6',
+    sourceUrl: 'https://www.churchofjesuschrist.org/study/scriptures/bofm/alma/37?lang=eng&id=p6#p6',
+    sourceLabel: 'Book of Mormon',
+    image: 'images/2026-10-29-small-marks-watercolor.png',
+    imageAlt: 'Abstract watercolor of tiny plum, slate-blue, and copper marks gathering into a broad sweeping arc on ivory paper',
+    sections: [
+      'Now ye may suppose that this is foolishness in me; but behold I say unto you, that {by small and simple things are great things brought to pass}; and small means in many instances doth confound the wise.'
+    ]
+  },
+  {
     date: '2026-10-27',
     title: 'Trusting God With the Rest of Your Story',
     author: 'Morgan Jones Pearson',
