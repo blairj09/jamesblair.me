@@ -50,6 +50,9 @@ body{background:var(--ground);color:var(--packet);font-family:var(--body);overfl
 .bar{height:12px;border-radius:999px;background:var(--ground-2);box-shadow:inset 0 1px 2px #0006;overflow:hidden}
 .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sun),var(--tomato));border-radius:inherit;transition:width .45s ease}
 #count{font:800 20px/1 var(--display);font-variant-numeric:tabular-nums;color:var(--packet);white-space:nowrap}
+.clock{flex:none;display:flex;align-items:center;gap:5px;font:800 17px/1 var(--display);font-variant-numeric:tabular-nums;color:#cfe0c4;white-space:nowrap}
+.clock svg{flex:none}
+@media (max-width:420px){ #hud,.basket{gap:8px} .clock svg{display:none} }
 .iconbtn{flex:none;width:44px;height:44px;border-radius:12px;border:0;background:var(--ground-2);color:var(--packet);display:grid;place-items:center;cursor:pointer}
 .iconbtn:focus-visible,.btn:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
 #stage{position:relative;flex:1;min-height:0}
@@ -86,6 +89,7 @@ body{background:var(--ground);color:var(--packet);font-family:var(--body);overfl
 .btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
 .fine{margin:0;font:600 12px/1.4 var(--body);color:var(--ink-soft);text-align:center}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row .btn{flex:1 1 140px}
+.row.fit .btn{flex-basis:auto;white-space:nowrap}
 .harvest{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px;margin:0;padding:12px 0;border-block:2px dashed var(--packet-edge);
   font:700 14px/1.3 var(--body);font-variant-numeric:tabular-nums}
 .harvest div{display:flex;align-items:center;gap:8px;min-width:0}
@@ -111,6 +115,8 @@ body{background:var(--ground);color:var(--packet);font-family:var(--body);overfl
 .board-list li:nth-child(odd){background:rgba(220,197,154,.22)}
 .board-list li.me{background:#fde2a6}
 .board-list .rk{font:800 14px/1 var(--display);color:var(--tomato)}
+#boardPop{z-index:21}
+#boardPop .board{border-top:0;padding-top:0}
 .board-list .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media (prefers-reduced-motion: reduce){ .bar i,#toast,#note{transition:none} }
 </style>
@@ -126,6 +132,10 @@ body{background:var(--ground);color:var(--packet);font-family:var(--body);overfl
       </svg>
       <div class="meter"><div class="lbl">Nana's basket</div><div class="bar"><i id="barFill"></i></div></div>
       <b id="count">0 / 62</b>
+    </div>
+    <div class="clock" title="Time since you started" aria-label="Time">
+      <svg width="16" height="18" viewBox="0 0 16 18" aria-hidden="true"><circle cx="8" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 10.5V7M6 1.5h4M8 1.5v2.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span id="clock">0:00</span>
     </div>
     <button id="mute" class="iconbtn" aria-label="Mute sound" title="Sound">
       <svg id="icoOn" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>
@@ -223,7 +233,10 @@ body{background:var(--ground);color:var(--packet);font-family:var(--body);overfl
         <li><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="6" fill="#ffd34d"/><g stroke="#f6b62c" stroke-width="2.4" stroke-linecap="round"><path d="M14 2v4M14 22v4M2 14h4M22 14h4M5.5 5.5l2.8 2.8M19.7 19.7l2.8 2.8M5.5 22.5l2.8-2.8M19.7 8.3l2.8-2.8"/></g></svg>Nana is sensitive to the sun. Keep an eye on her sun gauge and cool off in the shade.</li>
         <li><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="8" r="5" fill="#e9d2a8"/><path d="M6 26 C6 17 22 17 22 26Z" fill="#1f2a4a"/></svg>Papa pops out sometimes. Tap him and he'll take a turn.</li>
       </ul>
-      <button id="start" class="btn">Start gardening</button>
+      <div class="row fit">
+        <button id="start" class="btn">Start gardening</button>
+        <button id="seeBoard" class="btn ghost">Leaderboard</button>
+      </div>
       <p class="fine">Turn your sound on for birds, barks and a birthday song.</p>
     </div>
   </div>
@@ -251,6 +264,20 @@ body{background:var(--ground);color:var(--packet);font-family:var(--body);overfl
         <button id="keep" class="btn">Keep celebrating</button>
         <button id="again" class="btn ghost">Play again</button>
       </div>
+    </div>
+  </div>
+</section>
+
+<section id="boardPop" class="overlay" hidden>
+  <div class="packet" role="dialog" aria-modal="true" aria-labelledby="pop-title">
+    <div class="pk">
+      <p class="eyebrow">Can you beat them?</p>
+      <section class="board">
+        <h2 id="pop-title">Fastest to the party</h2>
+        <p id="popMsg" class="board-msg" role="status"></p>
+        <ol id="popBoard" class="board-list"></ol>
+      </section>
+      <button id="popClose" class="btn ghost">Back</button>
     </div>
   </div>
 </section>
@@ -1447,16 +1474,24 @@ function syncMute(){ document.getElementById('icoOn').hidden=AU.muted; document.
 muteBtn.addEventListener('click',()=>{ AU.muted=!AU.muted; try{ localStorage.setItem('nana-muted',AU.muted?'1':'0'); }catch(e){} initAudio(); syncMute(); });
 // ---------- leaderboard: the server times each run from Start to the party ----------
 const LB='/api/nanas-garden', LB_ON=location.hash!=='#party';
-let run={id:null, ms:null, finishing:null};
+let run={id:null, ms:null, finishing:null, t0:0, end:0};
 const fmtTime = ms => { const s=Math.round(ms/1000); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
 function lb(body){
   const opts = body ? {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)} : {};
   return fetch(LB, opts).then(async r=>{ const d=await r.json().catch(()=>({})); if (!r.ok) throw Object.assign(new Error(d.error||'error'),{data:d}); return d; });
 }
-function startRun(){ run={id:null, ms:null, finishing:null}; if (LB_ON) lb({action:'start'}).then(d=>{ run.id=d.id; }).catch(()=>{}); }
-function finishRun(){ if (!run.id || run.finishing) return; run.finishing=lb({action:'finish', id:run.id}).then(d=>{ run.ms=d.ms; }).catch(()=>{ run.id=null; }); }
-function renderBoard(top, mine){
-  const ol=document.getElementById('board'); ol.innerHTML='';
+function startRun(){ run={id:null, ms:null, finishing:null, t0:Date.now(), end:0}; tickClock(); if (LB_ON) lb({action:'start'}).then(d=>{ run.id=d.id; }).catch(()=>{}); }
+function finishRun(){ run.end=run.end||Date.now(); tickClock(); if (!run.id || run.finishing) return; run.finishing=lb({action:'finish', id:run.id}).then(d=>{ run.ms=d.ms; tickClock(); }).catch(()=>{ run.id=null; }); }
+// The HUD clock is for show; the server's time is the one that counts, so it takes over once known.
+const clockEl=document.getElementById('clock');
+function tickClock(){
+  const ms = run.ms || (run.t0 ? (run.end||Date.now())-run.t0 : 0), s=Math.floor(ms/1000);
+  const txt = run.ms ? fmtTime(run.ms) : Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+  if (clockEl.textContent!==txt) clockEl.textContent=txt;
+}
+setInterval(()=>{ if (run.t0 && !run.end) tickClock(); }, 250);
+function renderBoard(top, mine, ol=document.getElementById('board')){
+  ol.innerHTML='';
   for (const r of top){ const li=document.createElement('li'); if (r.rank===mine) li.className='me';
     li.innerHTML='<span class="rk"></span><span class="nm"></span><span class="tm"></span>';
     li.children[0].textContent=r.rank; li.children[1].textContent=r.name; li.children[2].textContent=fmtTime(r.ms); ol.append(li); }
@@ -1479,9 +1514,20 @@ document.getElementById('claimForm').addEventListener('submit', async e=>{
     form.hidden=true; run.id=null; msg.textContent=d.rank<=10 ? 'You\u2019re number '+d.rank+' on the board!' : 'Saved! You\u2019re number '+d.rank+' overall.'; renderBoard(d.top, d.rank); }
   catch(err){ msg.textContent=(err.data&&err.data.error)||'Couldn\u2019t save your time. Please try again.'; btn.disabled=false; }
 });
+async function openBoardPop(){
+  const pop=document.getElementById('boardPop'), msg=document.getElementById('popMsg'), ol=document.getElementById('popBoard');
+  ol.innerHTML=''; msg.textContent='Loading\u2026'; pop.hidden=false; document.getElementById('popClose').focus();
+  try{ const d=await lb(); renderBoard(d.top, null, ol); msg.textContent=d.top.length ? '' : 'No times yet. Play a full game to be the first!'; }
+  catch(e){ msg.textContent='The leaderboard isn\u2019t available right now.'; }
+}
+function closeBoardPop(){ document.getElementById('boardPop').hidden=true; document.getElementById('seeBoard').focus(); }
+document.getElementById('seeBoard').addEventListener('click', openBoardPop);
+document.getElementById('popClose').addEventListener('click', closeBoardPop);
+document.getElementById('boardPop').addEventListener('click', e=>{ if (e.target.id==='boardPop') closeBoardPop(); });
+document.addEventListener('keydown', e=>{ if (e.key==='Escape' && !document.getElementById('boardPop').hidden) closeBoardPop(); });
 function startGame(){
   document.getElementById('title').hidden=true; S.mode='play'; S.t=0; loadSamples(); startAmbience(); startMusic(); startRun();
-  if (location.hash==='#party'){ S.basket=GOAL; S.stats.crop.tomato=20; S.stats.crop.beans=18; S.stats.crop.flowers=10; S.stats.crop.squash=6; S.stats.crop.pepper=8; updateHud(); startParty(); }
+  if (location.hash==='#party'){ S.basket=GOAL; S.stats.crop.tomato=20; S.stats.crop.beans=18; S.stats.crop.flowers=10; S.stats.crop.squash=6; S.stats.crop.pepper=8; updateHud(); finishRun(); startParty(); }
 }
 document.getElementById('start').addEventListener('click',()=>{
   initAudio();
