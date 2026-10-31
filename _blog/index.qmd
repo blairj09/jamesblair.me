@@ -1,0 +1,31 @@
+---
+title: "Thoughts"
+pagetitle: "Thoughts | James Blair"
+description: "Notes and essays on building useful things, product work, teaching, family, and life in Utah."
+page-layout: full
+title-block-style: none
+listing:
+  id: thoughts
+  contents: "*/index.qmd"
+  sort: "date desc"
+  template: _partials/listing.ejs
+  date-format: "MMMM D, YYYY"
+  sort-ui: false
+  filter-ui: false
+  feed:
+    title: "James Blair — Thoughts"
+---
+
+```{=html}
+<section class="hero directory-hero">
+<h1>Thoughts.<br><span>Out loud.</span></h1>
+<p>Notes and essays on building useful things, product work, teaching, family, and life in Utah.</p>
+</section>
+<div class="directory-heading">
+<h2>Latest.</h2>
+<a class="text-link" href="@site/blog/index.xml">RSS feed <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg></a>
+</div>
+```
+
+::: {#thoughts}
+:::

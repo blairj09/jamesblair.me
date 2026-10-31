@@ -74,6 +74,7 @@ James uses and enjoys a variety of modern tools that enhance his productivity an
 - Websites: Landform Labs, Bear 4 Heisman, and Caffein8d
 - Tools: Health Tracker, ToolTrace, and Hex Sticker Holder
 - Teaching resources are separate: https://jamesblair.me/stat-121/
+- Thoughts (James's blog): https://jamesblair.me/blog/ (RSS: https://jamesblair.me/blog/index.xml)
 
 ## Current Projects & Interests
 

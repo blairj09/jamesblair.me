@@ -8,7 +8,9 @@
     "build:css": "cat css/base.css css/components.css css/layout.css css/chat.css css/responsive.css > style.css",
     "watch:css": "npm run build:css && echo 'CSS built successfully'",
     "serve": "python3 -m http.server 8000",
-    "build": "npm run build:css",
+    "build:blog": "bash scripts/build-blog.sh",
+    "preview:blog": "quarto preview _blog --profile preview",
+    "build": "npm run build:css && npm run build:blog",
     "deploy": "vercel --prod"
   },
   "keywords": ["personal-website", "ai-chat", "claude-api", "data-science", "anthropic"],

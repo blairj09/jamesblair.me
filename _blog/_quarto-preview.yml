@@ -1,0 +1,3 @@
+# Used for Vercel preview deploys (quarto render --profile preview) so drafts are visible there.
+website:
+  draft-mode: visible
