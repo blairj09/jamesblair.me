@@ -1,0 +1,75 @@
+/*-- scss:defaults --*/
+// Light values from css/tokens.css; dark mode comes from the CSS variables below.
+$font-family-sans-serif: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+$body-bg: #f9f9f5;
+$body-color: #24251f;
+$link-color: #a53620;
+$primary: #24251f;
+$border-color: #c7c8bd;
+$code-color: #a53620;
+$font-size-root: 16px;
+$headings-font-weight: 500;
+$line-height-base: 1.65;
+$border-radius: 0;
+$border-radius-sm: 0;
+$border-radius-lg: 0;
+
+/*-- scss:rules --*/
+// Bootstrap sets colors as literals; point them back at the site tokens so the
+// site's dark mode (data-theme on <html>) applies to posts too.
+body { background: var(--paper); color: var(--ink); font: 16px/1.65 var(--font); }
+a { color: inherit; }
+h1, h2, h3, h4 { color: inherit; letter-spacing: -.035em; line-height: 1.08; font-weight: 500; }
+
+// Quarto's grid: give the site shell the full width and center the article.
+#quarto-content { width: min(1280px, 90%); margin-inline: auto; }
+#quarto-content.page-layout-full { display: block; }
+#quarto-content.page-layout-full main.content { padding-top: 0; }
+.site-header ul { margin: 0; padding: 0; }
+.site-header a, .site-footer a { color: inherit; text-decoration: none; }
+.site-header a:hover, .site-footer a:hover { text-decoration: underline; }
+.site-header .nav-menu a[aria-current="page"] { text-decoration: underline; text-decoration-thickness: 2px; }
+.site-header .wordmark { font-weight: 700; }
+.site-footer { margin-top: 80px; }
+.site-footer.container { max-width: none; width: min(1280px, 90%); padding-inline: 0; }
+.site-footer p { margin: 0; }
+
+// Thoughts index (the only full-width page) uses its own hero instead of the title block.
+.page-layout-full #title-block-header { display: none; }
+.directory-hero { margin-top: 8px; }
+.directory-hero h1 { margin: 0; }
+.directory-hero p { margin-bottom: 0; }
+.directory-heading { margin-top: 56px; }
+.directory-heading h2 { margin: 0; border: 0; padding: 0; }
+.thoughts-list .work-row { color: var(--ink); text-decoration: none; }
+.thoughts-list .work-row:hover { color: var(--accent); }
+.thoughts-list .work-row p { margin-bottom: 0; }
+.quarto-listing-container-custom { margin-top: 0; }
+
+// Posts
+#title-block-header { margin: 40px 0 48px; }
+#title-block-header h1.title { font-size: clamp(40px, 5.6vw, 76px); font-weight: 600; letter-spacing: -.04em; margin-bottom: 20px; }
+#title-block-header .description { font-size: 19px; color: var(--muted); max-width: 60ch; }
+#title-block-header .quarto-title-meta { display: flex; gap: 6px; font-size: 12px; color: var(--muted); margin-top: 18px; }
+#title-block-header .quarto-title-meta-heading { display: none; }
+#title-block-header .quarto-title-meta p { margin: 0; }
+#title-block-header .quarto-categories { display: flex; gap: 8px; margin-top: 16px; }
+#title-block-header .quarto-category { font-size: 11px; border: 1px solid var(--line); padding: 2px 10px; color: var(--muted); background: none; }
+main.content { font-size: 18px; }
+main.content p, main.content li { max-width: 68ch; }
+main.content > p, main.content > ul, main.content > ol { margin-bottom: 1.2em; }
+main.content h2 { font-size: 34px; margin: 2em 0 .6em; border: 0; }
+main.content h3 { font-size: 24px; margin: 1.6em 0 .5em; }
+main.content p a, main.content li a { color: var(--accent); text-decoration: underline; }
+main.content blockquote { border-left: 3px solid var(--citron); padding-left: 20px; margin: 1.6em 0; color: var(--muted); }
+main.content img { height: auto; }
+main.content figcaption { font-size: 12px; color: var(--muted); }
+div.sourceCode, pre { background: var(--surface) !important; border: 0; border-radius: 0; }
+code { color: var(--accent); background: var(--surface); }
+pre code { color: var(--ink); background: none; }
+.callout { border-radius: 0; }
+.draft-banner, .quarto-draft { background: var(--citron); color: #24251f; }
+// Syntax colors are tuned for a light background, so code stays light in dark mode.
+[data-theme="dark"] div.sourceCode, [data-theme="dark"] div.sourceCode pre { background: #ebebe5 !important; }
+[data-theme="dark"] div.sourceCode code { color: #24251f; }
+:not(pre) > code { color: var(--accent) !important; background: var(--surface) !important; padding: .1em .35em; }
