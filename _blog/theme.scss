@@ -73,3 +73,5 @@ pre code { color: var(--ink); background: none; }
 [data-theme="dark"] div.sourceCode, [data-theme="dark"] div.sourceCode pre { background: #ebebe5 !important; }
 [data-theme="dark"] div.sourceCode code { color: #24251f; }
 :not(pre) > code { color: var(--accent) !important; background: var(--surface) !important; padding: .1em .35em; }
+// The site's base styles size every svg as a 22px icon; let charts keep their own size.
+.cell-output-display svg, .observablehq svg { width: auto; height: auto; max-width: 100%; }
