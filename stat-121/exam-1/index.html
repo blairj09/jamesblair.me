@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#e8ed62">
+  <meta name="description" content="How the class did on STAT 121 Exam 1: both exam versions and the kept (highest) grade.">
+  <meta name="robots" content="noindex">
+  <title>Exam 1 results · STAT 121</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="exam.css">
+  <script src="exam.js" defer></script>
+  <script defer src="/analytics.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/classroom.css?v=bold-20261023">
+</head>
+<body class="classroom exam-app">
+  <header class="site-header">
+    <a class="course-link" href="../"><span class="back-arrow" aria-hidden="true">←</span> STAT 121</a>
+    <span class="header-label">Exam results <span class="header-dot">·</span> Exam 1</span>
+  </header>
+
+  <main class="page">
+    <section class="intro" aria-labelledby="page-title">
+      <h1 id="page-title">Exam 1,<br>by the numbers.</h1>
+      <p>Your highest score counts. Here is how the class did on each version of the exam, and what the kept grades look like. All scores are out of <span data-fill="possible">42</span> points.</p>
+    </section>
+
+    <div class="stat-strip" aria-label="Kept grade at a glance">
+      <div><span>Median kept grade</span><strong data-fill="kept.median" data-decimal>—</strong></div>
+      <div><span>Mean kept grade</span><strong data-fill="kept.mean" data-decimal>—</strong></div>
+      <div><span>Students</span><strong data-fill="students">—</strong></div>
+      <div><span>Took both versions</span><strong data-fill="both.n">—</strong></div>
+    </div>
+
+    <p id="load-error" class="load-error" role="status" hidden>The results couldn’t load. Refresh the page to try again.</p>
+
+    <section class="block" aria-labelledby="versions-title">
+      <div class="block-heading">
+        <span class="kicker">01</span>
+        <h2 id="versions-title">The two versions</h2>
+        <p>Each bar is the share of students who took that version with a score in that 2-point range. Both charts use the same scale. The dashed line is the median.</p>
+      </div>
+      <div class="chart-grid">
+        <figure class="chart-card">
+          <figcaption><span class="swatch swatch-a"></span>Airbnb &amp; Telco <small><span data-fill="versions.airbnb_telco.n">—</span> students</small></figcaption>
+          <div class="chart" id="hist-a" role="img" aria-label="Histogram of Airbnb and Telco scores"></div>
+        </figure>
+        <figure class="chart-card">
+          <figcaption><span class="swatch swatch-b"></span>Covid &amp; Billionaires <small><span data-fill="versions.covid_billionaires.n">—</span> students</small></figcaption>
+          <div class="chart" id="hist-b" role="img" aria-label="Histogram of Covid and Billionaires scores"></div>
+        </figure>
+      </div>
+      <aside class="note"><strong>Careful comparing these two.</strong> Most students who took Covid &amp; Billionaires had already taken Airbnb &amp; Telco and wanted a higher score, so the two groups aren’t alike. A fairer comparison is the same students on both versions, below.</aside>
+    </section>
+
+    <section class="block" aria-labelledby="both-title">
+      <div class="block-heading">
+        <span class="kicker">02</span>
+        <h2 id="both-title">Students who took both</h2>
+        <p><b data-fill="both.higher_second">—</b> of the <b data-fill="both.n">—</b> students who took both versions scored higher on Covid &amp; Billionaires. The median change was <b data-fill="both.median_gain" data-sign>—</b> points.</p>
+      </div>
+      <figure class="chart-card">
+        <figcaption>Change in score, Covid &amp; Billionaires minus Airbnb &amp; Telco</figcaption>
+        <div class="chart" id="bands" role="img" aria-label="Bar chart of how many students scored lower, the same, or higher on their second version"></div>
+      </figure>
+    </section>
+
+    <section class="block" aria-labelledby="kept-title">
+      <div class="block-heading">
+        <span class="kicker">03</span>
+        <h2 id="kept-title">Kept (highest) grades</h2>
+        <p>Each student’s highest score across the versions they took. The bar at 0 is the <b data-fill="kept.zeros">—</b> students with no exam score recorded yet.</p>
+      </div>
+      <figure class="chart-card">
+        <figcaption><span class="swatch swatch-k"></span>Kept grade <small><span data-fill="kept.n">—</span> students</small></figcaption>
+        <div class="chart" id="hist-kept" role="img" aria-label="Histogram of kept exam grades"></div>
+      </figure>
+    </section>
+
+    <section class="block" aria-labelledby="table-title">
+      <div class="block-heading">
+        <span class="kicker">04</span>
+        <h2 id="table-title">Summary statistics</h2>
+        <p>The mean and standard deviation, plus the five-number summary, for each group.</p>
+      </div>
+      <div class="table-card">
+        <table>
+          <thead><tr><th scope="col">Group</th><th scope="col">n</th><th scope="col">Mean</th><th scope="col">SD</th><th scope="col">Min</th><th scope="col">Q1</th><th scope="col">Median</th><th scope="col">Q3</th><th scope="col">Max</th></tr></thead>
+          <tbody id="summary-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div class="tooltip" id="tooltip" role="tooltip" hidden></div>
+  <footer class="site-footer">STAT 121 <span>·</span> James Blair <a href="../">All course resources ↗</a></footer>
+</body>
+</html>

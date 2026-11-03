@@ -1,0 +1,446 @@
+{
+  "possible": 42,
+  "students": 145,
+  "versions": {
+    "airbnb_telco": {
+      "label": "Airbnb & Telco",
+      "n": 128,
+      "median": 35.9,
+      "bins": [
+        {
+          "from": 0,
+          "to": 2,
+          "count": 1
+        },
+        {
+          "from": 2,
+          "to": 4,
+          "count": 0
+        },
+        {
+          "from": 4,
+          "to": 6,
+          "count": 0
+        },
+        {
+          "from": 6,
+          "to": 8,
+          "count": 0
+        },
+        {
+          "from": 8,
+          "to": 10,
+          "count": 0
+        },
+        {
+          "from": 10,
+          "to": 12,
+          "count": 0
+        },
+        {
+          "from": 12,
+          "to": 14,
+          "count": 0
+        },
+        {
+          "from": 14,
+          "to": 16,
+          "count": 2
+        },
+        {
+          "from": 16,
+          "to": 18,
+          "count": 1
+        },
+        {
+          "from": 18,
+          "to": 20,
+          "count": 4
+        },
+        {
+          "from": 20,
+          "to": 22,
+          "count": 3
+        },
+        {
+          "from": 22,
+          "to": 24,
+          "count": 1
+        },
+        {
+          "from": 24,
+          "to": 26,
+          "count": 3
+        },
+        {
+          "from": 26,
+          "to": 28,
+          "count": 5
+        },
+        {
+          "from": 28,
+          "to": 30,
+          "count": 8
+        },
+        {
+          "from": 30,
+          "to": 32,
+          "count": 9
+        },
+        {
+          "from": 32,
+          "to": 34,
+          "count": 10
+        },
+        {
+          "from": 34,
+          "to": 36,
+          "count": 17
+        },
+        {
+          "from": 36,
+          "to": 38,
+          "count": 16
+        },
+        {
+          "from": 38,
+          "to": 40,
+          "count": 18
+        },
+        {
+          "from": 40,
+          "to": 42,
+          "count": 30
+        }
+      ]
+    },
+    "covid_billionaires": {
+      "label": "Covid & Billionaires",
+      "n": 70,
+      "median": 34.0,
+      "bins": [
+        {
+          "from": 0,
+          "to": 2,
+          "count": 0
+        },
+        {
+          "from": 2,
+          "to": 4,
+          "count": 0
+        },
+        {
+          "from": 4,
+          "to": 6,
+          "count": 1
+        },
+        {
+          "from": 6,
+          "to": 8,
+          "count": 0
+        },
+        {
+          "from": 8,
+          "to": 10,
+          "count": 1
+        },
+        {
+          "from": 10,
+          "to": 12,
+          "count": 0
+        },
+        {
+          "from": 12,
+          "to": 14,
+          "count": 0
+        },
+        {
+          "from": 14,
+          "to": 16,
+          "count": 1
+        },
+        {
+          "from": 16,
+          "to": 18,
+          "count": 2
+        },
+        {
+          "from": 18,
+          "to": 20,
+          "count": 2
+        },
+        {
+          "from": 20,
+          "to": 22,
+          "count": 1
+        },
+        {
+          "from": 22,
+          "to": 24,
+          "count": 0
+        },
+        {
+          "from": 24,
+          "to": 26,
+          "count": 3
+        },
+        {
+          "from": 26,
+          "to": 28,
+          "count": 2
+        },
+        {
+          "from": 28,
+          "to": 30,
+          "count": 8
+        },
+        {
+          "from": 30,
+          "to": 32,
+          "count": 7
+        },
+        {
+          "from": 32,
+          "to": 34,
+          "count": 5
+        },
+        {
+          "from": 34,
+          "to": 36,
+          "count": 10
+        },
+        {
+          "from": 36,
+          "to": 38,
+          "count": 11
+        },
+        {
+          "from": 38,
+          "to": 40,
+          "count": 12
+        },
+        {
+          "from": 40,
+          "to": 42,
+          "count": 4
+        }
+      ]
+    }
+  },
+  "kept": {
+    "n": 145,
+    "median": 37.0,
+    "mean": 34.3,
+    "zeros": 5,
+    "bins": [
+      {
+        "from": 0,
+        "to": 2,
+        "count": 5
+      },
+      {
+        "from": 2,
+        "to": 4,
+        "count": 0
+      },
+      {
+        "from": 4,
+        "to": 6,
+        "count": 1
+      },
+      {
+        "from": 6,
+        "to": 8,
+        "count": 0
+      },
+      {
+        "from": 8,
+        "to": 10,
+        "count": 1
+      },
+      {
+        "from": 10,
+        "to": 12,
+        "count": 0
+      },
+      {
+        "from": 12,
+        "to": 14,
+        "count": 0
+      },
+      {
+        "from": 14,
+        "to": 16,
+        "count": 0
+      },
+      {
+        "from": 16,
+        "to": 18,
+        "count": 1
+      },
+      {
+        "from": 18,
+        "to": 20,
+        "count": 2
+      },
+      {
+        "from": 20,
+        "to": 22,
+        "count": 2
+      },
+      {
+        "from": 22,
+        "to": 24,
+        "count": 0
+      },
+      {
+        "from": 24,
+        "to": 26,
+        "count": 1
+      },
+      {
+        "from": 26,
+        "to": 28,
+        "count": 4
+      },
+      {
+        "from": 28,
+        "to": 30,
+        "count": 8
+      },
+      {
+        "from": 30,
+        "to": 32,
+        "count": 8
+      },
+      {
+        "from": 32,
+        "to": 34,
+        "count": 11
+      },
+      {
+        "from": 34,
+        "to": 36,
+        "count": 19
+      },
+      {
+        "from": 36,
+        "to": 38,
+        "count": 20
+      },
+      {
+        "from": 38,
+        "to": 40,
+        "count": 28
+      },
+      {
+        "from": 40,
+        "to": 42,
+        "count": 34
+      }
+    ]
+  },
+  "both": {
+    "n": 58,
+    "higher_second": 36,
+    "median_gain": 2.6,
+    "bands": [
+      {
+        "label": "10 or more lower",
+        "count": 0
+      },
+      {
+        "label": "5 to 10 lower",
+        "count": 5
+      },
+      {
+        "label": "0 to 5 lower",
+        "count": 15
+      },
+      {
+        "label": "No change",
+        "count": 2
+      },
+      {
+        "label": "0 to 5 higher",
+        "count": 20
+      },
+      {
+        "label": "5 to 10 higher",
+        "count": 6
+      },
+      {
+        "label": "10 or more higher",
+        "count": 10
+      }
+    ]
+  },
+  "summary": [
+    {
+      "group": "Airbnb & Telco: everyone",
+      "n": 128,
+      "mean": 34.2,
+      "sd": 7.1,
+      "min": 1.0,
+      "q1": 30.8,
+      "median": 35.9,
+      "q3": 39.5,
+      "max": 42.0
+    },
+    {
+      "group": "Covid & Billionaires: everyone",
+      "n": 70,
+      "mean": 32.1,
+      "sd": 7.6,
+      "min": 4.0,
+      "q1": 29.2,
+      "median": 34.0,
+      "q3": 37.4,
+      "max": 41.0
+    },
+    {
+      "group": "Airbnb & Telco: took both",
+      "n": 58,
+      "mean": 29.4,
+      "sd": 7.5,
+      "min": 1.0,
+      "q1": 25.9,
+      "median": 31.0,
+      "q3": 35.1,
+      "max": 40.5
+    },
+    {
+      "group": "Covid & Billionaires: took both",
+      "n": 58,
+      "mean": 33.0,
+      "sd": 6.0,
+      "min": 15.0,
+      "q1": 29.6,
+      "median": 34.0,
+      "q3": 37.7,
+      "max": 41.0
+    },
+    {
+      "group": "Kept grade: all students",
+      "n": 145,
+      "mean": 34.3,
+      "sd": 8.9,
+      "min": 0.0,
+      "q1": 32.5,
+      "median": 37.0,
+      "q3": 39.8,
+      "max": 42.0
+    },
+    {
+      "group": "Kept grade: excluding 0s",
+      "n": 140,
+      "mean": 35.5,
+      "sd": 6.2,
+      "min": 4.0,
+      "q1": 33.0,
+      "median": 37.0,
+      "q3": 39.8,
+      "max": 42.0
+    }
+  ]
+}
