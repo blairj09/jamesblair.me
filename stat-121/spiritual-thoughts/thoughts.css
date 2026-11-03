@@ -117,3 +117,14 @@ body:has(.thought-reader[open]) { overflow: hidden; }
   .reader-thought blockquote { font-size: clamp(1rem, 4vw, 1.3rem); }
   .reader-thought .thought-body { font-size: clamp(.78rem, 3.1vw, .92rem); }
 }
+
+.reader-thought.reader-video { display: flex; align-items: center; padding-top: 4rem; }
+.reader-video .reader-copy { max-width: 1200px; margin: auto; max-height: 100%; overflow-y: auto; }
+.reader-video h3 { font-size: clamp(1.5rem, 3vw, 3rem); }
+.thought-video { display: block; width: 100%; aspect-ratio: 16 / 9; max-height: 65vh; flex-shrink: 0; margin: 1rem 0 .5rem; border: 0; }
+
+.video-transcript { flex-shrink: 0; margin-top: .75rem; }
+.video-transcript summary { cursor: pointer; color: var(--leaf); font-weight: 600; }
+.video-transcript summary:focus-visible { outline: 3px solid #8faf94; outline-offset: 3px; }
+.reader-video .video-transcript .thought-body { font-size: clamp(1rem, 1.3vw, 1.4rem); line-height: 1.6; }
+.reader-video .reader-copy { justify-content: flex-start; }

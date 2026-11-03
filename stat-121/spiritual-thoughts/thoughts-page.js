@@ -84,7 +84,7 @@ function createThought(thought, isReader = false) {
   const content = isReader ? document.createElement('div') : article;
   if (isReader) content.className = 'reader-copy';
 
-  if (thought.image) {
+  if (thought.image && !(isReader && thought.video)) {
     const image = document.createElement('img');
     image.className = 'thought-image';
     image.src = `${document.documentElement.dataset.thoughtsAssetBase || ''}${thought.image}`;
@@ -132,13 +132,39 @@ function createThought(thought, isReader = false) {
     content.append(note);
   }
 
+  if (thought.video) {
+    if (isReader) {
+      article.classList.add('reader-video');
+      const frame = document.createElement('iframe');
+      const url = new URL(`https://www.youtube-nocookie.com/embed/${thought.video.id}`);
+      url.searchParams.set('start', thought.video.start);
+      url.searchParams.set('end', thought.video.end);
+      url.searchParams.set('rel', '0');
+      frame.src = url.href;
+      frame.title = `${thought.title} — selected clip`;
+      frame.className = 'thought-video';
+      frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      frame.allowFullscreen = true;
+      content.append(frame);
+    }
+  }
+
   if (isReader && thought.sections?.length) {
     const body = document.createElement('div');
     body.className = 'thought-body';
     for (const section of thought.sections) {
       appendSection(body, section);
     }
-    content.append(body);
+    if (thought.video) {
+      const details = document.createElement('details');
+      details.className = 'video-transcript';
+      const summary = document.createElement('summary');
+      summary.textContent = 'Read the selected passage';
+      details.append(summary, body);
+      content.append(details);
+    } else {
+      content.append(body);
+    }
   }
 
   if (isReader && thought.passages?.length) {
@@ -208,6 +234,7 @@ function openReader(thought, card) {
 
 function closeReaderView() {
   reader.close();
+  readerContent.replaceChildren();
 }
 
 function render() {
@@ -245,5 +272,8 @@ closeReader.addEventListener('click', closeReaderView);
 reader.addEventListener('click', (event) => {
   if (event.target === reader) closeReaderView();
 });
-reader.addEventListener('close', () => opener?.focus());
+reader.addEventListener('close', () => {
+  readerContent.replaceChildren();
+  opener?.focus();
+});
 render();

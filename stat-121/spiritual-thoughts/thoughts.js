@@ -6,9 +6,33 @@
  * user-requested italic text in *single asterisks*.
  * For multiple sources, use `passages`: objects with `title`, `sourceUrl`,
  * `sourceLabel`, and ordered string `sections`. Newlines preserve verse lines.
+ * For a YouTube clip, use `video`: an `id` plus `start` and `end` in seconds.
  * Dates use YYYY-MM-DD so the newest thoughts sort correctly.
  */
 const spiritualThoughts = [
+  {
+    date: '2026-11-03',
+    image: 'images/2026-11-03-forward-together-watercolor.png',
+    imageAlt: 'Gold and terracotta watercolor ribbons flowing forward together across ivory paper',
+    title: '“Remember Lot’s Wife”',
+    author: 'Jeffrey R. Holland',
+    sourceUrl: 'https://speeches.byu.edu/talks/jeffrey-r-holland/remember-lots-wife/',
+    sourceLabel: 'BYU devotional',
+    sections: [
+          "I remember one fall day—I think it was in the first semester after our marriage in 1963—we were walking together up the hill past the Maeser Building on the sidewalk that led between the President’s Home and the Brimhall Building. Somewhere on that path we stopped and wondered what we had gotten ourselves into. Life that day seemed so overwhelming, and the undergraduate plus graduate years that we still anticipated before us seemed monumental, nearly insurmountable. Our love for each other and our commitment to the gospel were strong, but most of all the other temporal things around us seemed particularly ominous.",
+          "On a spot that I could probably still mark for you today, I turned to Pat and said something like this: “Honey, should we give up? I can get a good job and carve out a good living for us. I can do some things. I’ll be okay without a degree. Should we stop trying to tackle what right now seems so difficult to face?”",
+          "In my best reenactment of Lot’s wife, I said, in effect, “Let’s go back. Let’s go home. The future holds nothing for us.”",
+          "Then my beloved little bride did what she has done for 45 years since then. She grabbed me by the lapels and said, “We are not going back. We are not going home. The future holds *everything* for us.”",
+          "She stood there in the sunlight that day and gave me a real talk. I don’t recall that she quoted Paul, but there was certainly plenty in her voice that said she was committed to setting aside all that was past in order to “press toward the mark” and seize the prize of God that lay yet ahead. It was a living demonstration of faith. It was “the substance of things hoped for, the evidence of things not seen” ([Hebrews 11:1](https://www.churchofjesuschrist.org/scriptures/nt/heb/11.1?lang=eng)). So we laughed, kept walking, and finished up sharing a root beer—one glass, two straws—at the then newly constructed Wilkinson Center.",
+          "Twenty years later I would, on occasion, look out of the window of the President’s Home across the street from the Brimhall Building and picture there on the sidewalk two newlywed BYU students, down on their money and down even more on their confidence. And as I would gaze out that window, usually at night, I would occasionally see not Pat and Jeff Holland but you and you and you, walking that same sidewalk. I would see you sometimes as couples, sometimes as a group of friends, sometimes as just a lone student. I knew something of what you were feeling. Some of you were having thoughts such as these: Is there any future for me? What does a new year or a new semester or a new major or a new romance hold for me? Will I be safe? Will life be sound? Can I trust in the Lord and in the future? Or would it be better to look back, to go back, to go home?",
+          "To all such of every generation, I call out, “Remember Lot’s wife.” Faith is for the future. Faith builds on the past but never longs to stay there. Faith trusts that God has great things in store for each of us and that Christ truly is the “high priest of good things to come” (Hebrews 9:11)."
+    ],
+    video: {
+      id: 'obNlH5VZ_qg',
+      start: 1607,
+      end: 1985
+    }
+  },
   {
     date: '2026-10-29',
     title: 'Alma 37:6',
