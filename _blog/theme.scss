@@ -75,3 +75,8 @@ pre code { color: var(--ink); background: none; }
 :not(pre) > code { color: var(--accent) !important; background: var(--surface) !important; padding: .1em .35em; }
 // The site's base styles size every svg as a 22px icon; let charts keep their own size.
 .cell-output-display svg, .observablehq svg { width: auto; height: auto; max-width: 100%; }
+// Observable Inputs: match the site's type and accent color.
+form[class^="oi-"] { font-family: var(--font); font-size: 14px; color: var(--ink); --theme-foreground-focus: var(--accent); }
+form[class^="oi-"] input[type="radio"], form[class^="oi-"] input[type="range"] { accent-color: var(--accent); }
+// Hidden code (echo: false) still gets a copy button from Quarto; hide it.
+.code-copy-outer-scaffold:has(> .sourceCode.hidden) > .code-copy-button { display: none; }
