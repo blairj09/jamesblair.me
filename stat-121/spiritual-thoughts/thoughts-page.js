@@ -89,8 +89,24 @@ function createThought(thought, isReader = false) {
     image.className = 'thought-image';
     image.src = `${document.documentElement.dataset.thoughtsAssetBase || ''}${thought.image}`;
     image.alt = thought.imageAlt || '';
+    if (!isReader && thought.imagePosition) image.style.objectPosition = thought.imagePosition;
     image.loading = 'lazy';
-    article.append(image);
+    if (isReader && thought.revealImage) {
+      const reveal = document.createElement('button');
+      reveal.type = 'button';
+      reveal.className = 'thought-image-reveal';
+      reveal.setAttribute('aria-label', 'Reveal second photo');
+      reveal.title = 'Click to reveal second photo';
+      reveal.append(image);
+      reveal.addEventListener('click', () => {
+        image.src = `${document.documentElement.dataset.thoughtsAssetBase || ''}${thought.revealImage}`;
+        image.alt = thought.revealImageAlt || '';
+        reveal.replaceWith(image);
+      }, { once: true });
+      article.append(reveal);
+    } else {
+      article.append(image);
+    }
   }
 
   const metadata = document.createElement('p');

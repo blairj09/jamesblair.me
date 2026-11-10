@@ -16,8 +16,11 @@ const spiritualThoughts = [
     author: 'Jeffrey R. Holland',
     sourceUrl: 'https://speeches.byu.edu/talks/jeffrey-r-holland/inconvenient-messiah/',
     sourceLabel: 'BYU devotional',
-    image: 'images/2026-11-10-take-heart-race-podium.jpeg',
-    imageAlt: 'Cyclists celebrating on a race podium, with the first-place finisher holding a child',
+    image: 'images/2026-11-10-take-heart-race.jpeg',
+    imageAlt: 'Cyclist riding uphill on a taped race course beneath a clear blue sky',
+    imagePosition: '80% 60%',
+    revealImage: 'images/2026-11-10-take-heart-race-podium.jpeg',
+    revealImageAlt: 'Cyclists celebrating on a race podium, with the first-place finisher holding a child',
     sections: [
       'If for a while the harder you try, the harder it gets, {take heart}. So it has been with the best people who ever lived.'
     ]
