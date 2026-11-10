@@ -11,6 +11,18 @@
  */
 const spiritualThoughts = [
   {
+    date: '2026-11-10',
+    title: 'The Inconvenient Messiah',
+    author: 'Jeffrey R. Holland',
+    sourceUrl: 'https://speeches.byu.edu/talks/jeffrey-r-holland/inconvenient-messiah/',
+    sourceLabel: 'BYU devotional',
+    image: 'images/2026-11-10-take-heart-race-podium.jpeg',
+    imageAlt: 'Cyclists celebrating on a race podium, with the first-place finisher holding a child',
+    sections: [
+      'If for a while the harder you try, the harder it gets, {take heart}. So it has been with the best people who ever lived.'
+    ]
+  },
+  {
     date: '2026-11-03',
     image: 'images/2026-11-03-forward-together-watercolor.png',
     imageAlt: 'Gold and terracotta watercolor ribbons flowing forward together across ivory paper',
