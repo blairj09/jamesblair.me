@@ -10,3 +10,8 @@ CLAUDE.md
 .env
 .env.*
 !.env.example
+
+# Blog: Quarto renders _blog/ into /blog/ at build time. Keep _blog/_freeze/.
+/blog/
+/_blog/_site/
+/_blog/.quarto/
