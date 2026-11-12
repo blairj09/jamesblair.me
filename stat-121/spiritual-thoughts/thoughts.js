@@ -11,6 +11,18 @@
  */
 const spiritualThoughts = [
   {
+    date: '2026-11-12',
+    image: 'images/2026-11-12-covenants-gravity.png',
+    imageAlt: 'Luminous gold gravitational arcs connect distant stars and planets across a deep indigo cosmos',
+    title: 'The Infinite Power of God in Our Covenants',
+    author: 'Jeremiah J. Morgan',
+    sourceUrl: 'https://www.churchofjesuschrist.org/study/general-conference/2026/10/25morgan?lang=eng&id=p_rEP6h#p_rEP6h',
+    sourceLabel: 'October 2026 General Conference',
+    sections: [
+      'Covenants with God are filled with incalculable power. They do not bless just the maker of the covenant but are generational in their impact. We are all the intended beneficiaries of countless covenants! Like the great binding power of gravity that stretches across the universe, **covenants with God stretch over all time and all space.**'
+    ]
+  },
+  {
     date: '2026-11-10',
     title: 'The Inconvenient Messiah',
     author: 'Jeffrey R. Holland',
