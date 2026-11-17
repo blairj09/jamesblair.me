@@ -11,6 +11,19 @@
  */
 const spiritualThoughts = [
   {
+    date: '2026-11-17',
+    title: 'Choices for Eternity',
+    author: 'President Russell M. Nelson',
+    sourceUrl: 'https://www.churchofjesuschrist.org/study/broadcasts/worldwide-devotional-for-young-adults/2022/05/12nelson?lang=eng',
+    sourceLabel: 'Worldwide Devotional for Young Adults',
+    image: 'images/2026-11-17-celadon-pebble-watercolor.png',
+    imageAlt: 'Smooth celadon pebble resting among pale sage watercolor washes on warm paper',
+    sections: [
+      'I believe that if the Lord were speaking to you directly tonight, the first thing He would make sure you understand is your true identity. My dear friends, {you are literally spirit children of God.} You have sung this truth since you learned the words to “I Am a Child of God.” But is that eternal truth imprinted upon your heart? Has this truth rescued you when confronted with temptation?',
+      'I fear that you may have heard this truth so often that it sounds more like a slogan than divine truth. And yet, the way you think about who you really are affects almost every decision you will ever make.'
+    ]
+  },
+  {
     date: '2026-11-12',
     image: 'images/2026-11-12-covenants-generations.png',
     imageAlt: 'Golden threads of light connect children, adults, and elders across softly painted layers of time',
