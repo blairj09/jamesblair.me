@@ -1,0 +1,33 @@
+# Quarto project for jamesblair.me/blog/ ("Thoughts" in the nav).
+# Renders into _site/, which the build copies to /blog/. See README.md in this folder.
+project:
+  type: website
+  output-dir: _site
+  post-render: _fix-site-links.ts
+
+website:
+  title: "James Blair"
+  site-url: https://jamesblair.me/blog/
+  description: "Thoughts from James Blair on building useful things, product work, teaching, family, and life in Utah."
+  open-graph: true
+  draft-mode: gone
+  search: false
+
+execute:
+  # Code runs when you render locally; the results are saved in _freeze/ so the
+  # Vercel build never needs R or Python.
+  freeze: auto
+
+format:
+  html:
+    theme: [default, theme.scss]
+    include-in-header: _partials/head.html
+    include-before-body: _partials/header.html
+    include-after-body: _partials/footer.html
+    date-format: "MMMM D, YYYY"
+    title-block-style: plain
+    pagetitle: "$title$ | James Blair"
+    author-meta: "James Blair"
+    code-copy: true
+    highlight-style: github
+    lang: en

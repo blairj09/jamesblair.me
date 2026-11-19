@@ -1,0 +1,56 @@
+---
+title: "A starter post"
+description: "A draft that shows what a post can hold. Replace it with your first real one, or delete it."
+date: 2026-10-31
+categories: [meta]
+draft: true
+---
+
+This is a draft, so it only shows up when you preview locally and on Vercel preview deploys. It never reaches the live site. Copy this folder to start a new post, then delete it once your first real post is up.
+
+## Plain prose
+
+Most posts can be nothing more than Markdown. Write paragraphs, add [links](https://quarto.org), and use *emphasis* or **bold** like you would anywhere else.
+
+> Pull quotes come out like this.
+
+## Code you just want to show
+
+```r
+library(dplyr)
+
+rides |>
+  group_by(month) |>
+  summarise(miles = sum(distance))
+```
+
+## An interactive chart
+
+Observable cells run in the reader's browser, so they need no R or Python at build time. Pick a measure, drag the slider to highlight bigger months, and hover a bar for its exact value.
+
+```{ojs}
+//| echo: false
+rides = [
+  {month: "May", miles: 310, climbing: 14200, rides: 18},
+  {month: "Jun", miles: 420, climbing: 21500, rides: 22},
+  {month: "Jul", miles: 515, climbing: 26800, rides: 25},
+  {month: "Aug", miles: 470, climbing: 23900, rides: 23},
+  {month: "Sep", miles: 380, climbing: 17600, rides: 19},
+  {month: "Oct", miles: 290, climbing: 12100, rides: 15}
+]
+labels = ({miles: "Miles", climbing: "Feet climbed", rides: "Rides"})
+viewof measure = Inputs.radio(new Map([["Miles", "miles"], ["Climbing", "climbing"], ["Rides", "rides"]]), {label: "Show", value: "miles"})
+viewof threshold = Inputs.range(d3.extent(rides, d => d[measure]), {label: "Highlight at least", step: 1, value: d3.median(rides, d => d[measure])})
+Plot.plot({
+  marginLeft: 60,
+  y: {label: labels[measure], grid: true},
+  x: {label: null, domain: rides.map(d => d.month)},
+  marks: [
+    Plot.barY(rides, {x: "month", y: measure, fill: d => d[measure] >= threshold ? "#a53620" : "#c7c8bd", tip: {format: {fill: false}}}),
+    Plot.ruleY([threshold], {stroke: "currentColor", strokeDasharray: "4 4"}),
+    Plot.ruleY([0])
+  ]
+})
+```
+
+R and Python chunks (`{r}` and `{python}`) also work. They run when you render on your own machine, and the results are saved in `_freeze/` so the site build never has to run them.
