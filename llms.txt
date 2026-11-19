@@ -71,6 +71,7 @@ James uses and enjoys a variety of modern tools that enhance his productivity an
 ## Project Portfolio
 
 - All projects: https://jamesblair.me/projects/
+- Apps: Lactic (https://lactic.fit), an open-source training platform for cyclists
 - Websites: Landform Labs, Bear 4 Heisman, and Caffein8d
 - Tools: Health Tracker, ToolTrace, and Hex Sticker Holder
 - Teaching resources are separate: https://jamesblair.me/stat-121/
@@ -83,6 +84,13 @@ James uses and enjoys a variety of modern tools that enhance his productivity an
 - Speaking at major tech conferences about data science and AI
 - Teaching technical workshops on data science and AI
 - Contributing to open source data science ecosystem
+
+## Lactic
+
+**Lactic** is James's free, open-source (MIT) structured training platform for cyclists, currently in beta. It runs on Mac, Windows, and Linux, with an iPhone app in beta. It builds a plan around a rider's goal and available hours, runs ERG workouts on smart trainers, scores daily recovery from sleep, HRV, and resting heart rate, and offers an optional AI coach (built in, or through Claude Desktop and other MCP apps). Ride data stays on the rider's computer.
+
+- Website: https://lactic.fit
+- GitHub: https://github.com/blairj09/lactic
 
 ## Landform Labs
 
