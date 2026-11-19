@@ -11,6 +11,19 @@
  */
 const spiritualThoughts = [
   {
+    date: '2026-11-19',
+    title: 'The Deepest Transaction',
+    author: 'Steve Young',
+    sourceUrl: 'https://www.byui.edu/speeches/devotionals/steve-young/the-deepest-transaction-november-17-2026',
+    sourceLabel: 'BYU–Idaho devotional',
+    image: 'images/2026-11-19-ripples-settling-watercolor.png',
+    imageAlt: 'Crowded blue watercolor ripples soften into two overlapping pink rings',
+    sections: [
+      "I know what some of you might be thinking. My roommate is struggling. I'm worried about my future. What will I do to provide for my family, find a soulmate, make a difference in life? How will life work out? You want me to just stop worrying?",
+      "No, I'm not asking you to stop caring. Caring is love and love is the whole point. What I'm asking is this. {Can you separate the caring from the magical thinking?} Can you love someone fiercely without believing your anxiety is what keeps them afloat? Can you face a hard season fully engaged without the hidden belief that your worry earns God's help? That is the shift from fear to trust."
+    ]
+  },
+  {
     date: '2026-11-17',
     title: 'Choices for Eternity',
     author: 'President Russell M. Nelson',
