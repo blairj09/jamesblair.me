@@ -153,11 +153,11 @@ function createThought(thought, isReader = false) {
       article.classList.add('reader-video');
       const frame = document.createElement('iframe');
       const url = new URL(`https://www.youtube-nocookie.com/embed/${thought.video.id}`);
-      url.searchParams.set('start', thought.video.start);
-      url.searchParams.set('end', thought.video.end);
+      if (thought.video.start != null) url.searchParams.set('start', thought.video.start);
+      if (thought.video.end != null) url.searchParams.set('end', thought.video.end);
       url.searchParams.set('rel', '0');
       frame.src = url.href;
-      frame.title = `${thought.title} — selected clip`;
+      frame.title = thought.title;
       frame.className = 'thought-video';
       frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
       frame.allowFullscreen = true;

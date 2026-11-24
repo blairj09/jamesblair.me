@@ -6,10 +6,17 @@
  * user-requested italic text in *single asterisks*.
  * For multiple sources, use `passages`: objects with `title`, `sourceUrl`,
  * `sourceLabel`, and ordered string `sections`. Newlines preserve verse lines.
- * For a YouTube clip, use `video`: an `id` plus `start` and `end` in seconds.
+ * For a YouTube video, use `video`: an `id` with optional `start` and `end` in seconds.
  * Dates use YYYY-MM-DD so the newest thoughts sort correctly.
  */
 const spiritualThoughts = [
+  {
+    date: '2026-11-24',
+    title: 'Becoming Peacemakers This Christmas',
+    sourceUrl: 'https://www.youtube.com/watch?v=RuibXRG_pfc',
+    sourceLabel: 'YouTube',
+    video: { id: 'RuibXRG_pfc' }
+  },
   {
     date: '2026-11-19',
     title: 'The Deepest Transaction',
