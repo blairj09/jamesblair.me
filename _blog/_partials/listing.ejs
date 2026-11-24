@@ -1,0 +1,12 @@
+```{=html}
+<div class="work-list thoughts-list">
+<% for (const item of items) { %>
+<a class="work-row" href="<%- item.path %>" <%= metadataAttrs(item) %>><span><%= item.date %><% if (item.categories && item.categories.length) { %> · <%= item.categories.join(', ') %><% } %></span>
+<div>
+<h3 class="listing-title"><%= item.title %></h3>
+<% if (item.description) { %><p class="listing-description"><%= item.description %></p><% } %>
+</div>
+<svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg></a>
+<% } %>
+</div>
+```
