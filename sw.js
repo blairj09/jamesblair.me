@@ -1,7 +1,7 @@
 // Service Worker for jamesblair.me
 // Provides enhanced caching for AI models and static resources
 
-const CACHE_NAME = 'jamesblair-bold-v3';
+const CACHE_NAME = 'jamesblair-bold-v4';
 const STATIC_CACHE_URLS = [
     '/',
     '/index.html',
