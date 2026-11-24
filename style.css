@@ -66,13 +66,15 @@ svg { width: 22px; height: 22px; flex-shrink: 0; vertical-align: middle; }
 .work-list { margin-top: 20px; }
 .about-section { display: grid; grid-template-columns: 1fr 1fr; gap: 10%; padding: 100px 0; }
 .about-heading h2,.life-copy h2 { font-size: clamp(36px,4vw,54px); }
-.about-heading img { width: 150px; height: 150px; margin-top: 32px; }
+.about-heading img { width: min(100%, 320px); aspect-ratio: 4 / 5; margin-top: 36px; }
 .about-copy { padding-top: 5px; }
 .about-copy p { margin-bottom: 22px; font-size: 15px; max-width: 60ch; }
 .life-section { display: grid; grid-template-columns: 1fr 1.15fr; gap: 9%; align-items: center; padding: 50px 0 70px; border-top: 1px solid var(--line); }
 .life-copy h2 { margin-bottom: 26px; }
 .life-copy p { font-size: 14px; margin-bottom: 20px; max-width: 55ch; }
-.life-section img { width: 100%; aspect-ratio: 1.35; }
+.life-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.life-section img { width: 100%; aspect-ratio: 3 / 4; }
+.life-section img.life-photo-cycling { object-position: 42% center; }
 .life-section figcaption { color: var(--muted); margin-top: 10px; font-size: 11px; }
 .contact-section { display: flex; align-items: end; justify-content: space-between; gap: 40px; padding: 65px 0 80px; border-top: 1px solid var(--line); }
 .contact-section h2 { font-size: clamp(40px,4.5vw,64px); }
@@ -194,8 +196,8 @@ svg { width: 22px; height: 22px; flex-shrink: 0; vertical-align: middle; }
   .feature-copy h2 { font-size: 37px; margin-top: 28px; }.feature-copy > p:not(.section-label) { font-size: 14px; }
   .speaking-feature img { height: 420px; min-height: 0; width: 100%; object-position: 50% 66%; }.speaking-feature figcaption { font-size: 10px; }
   .work-row { grid-template-columns: minmax(0,1fr) 22px; gap: 12px; }.work-row > span { grid-column: 1/-1; font-size: 11px; }.work-row h3 { font-size: 24px; }.work-row p { font-size: 13px; }
-  .about-section { grid-template-columns: 1fr; gap: 30px; }.about-heading { display: flex; justify-content: space-between; align-items: start; gap: 20px; }.about-heading h2 { font-size: 34px; }.about-heading img { width: 85px; height: 85px; margin-top: 0; }.about-copy p { font-size: 14px; }
-  .life-section { grid-template-columns: 1fr; gap: 30px; padding: 40px 0; }.life-copy p { font-size: 14px; }.life-section img { aspect-ratio: 1.5; }.life-copy h2 br { display: none; }
+  .about-section { grid-template-columns: 1fr; gap: 30px; }.about-heading { display: flex; justify-content: space-between; align-items: start; gap: 20px; }.about-heading h2 { font-size: 34px; }.about-heading img { width: 120px; flex-shrink: 0; margin-top: 0; }.about-copy p { font-size: 14px; }
+  .life-section { grid-template-columns: 1fr; gap: 30px; padding: 40px 0; }.life-copy p { font-size: 14px; }.life-photos { gap: 10px; }.life-copy h2 br { display: none; }
   .contact-section { flex-direction: column; align-items: start; gap: 28px; }.contact-section h2 { font-size: clamp(34px,9vw,44px); }.contact-section p { font-size: 13px; }.contact-link { font-size: 26px; }
   .guide-section { padding-bottom: 45px; }.guide-details summary strong { font-size: 14px; }.guide-note { font-size: 12px; }.chat-messages { padding: 18px; }.chat-input-container { padding: 10px; gap: 5px; }.send-btn { padding: 10px 14px; }.send-btn svg { display: none; }
   .footer { flex-direction: column; align-items: start; gap: 12px; }.footer nav { gap: 22px; }.directory-hero h1 { font-size: clamp(32px,8.9vw,50px); }.directory-hero p { margin-top: 24px; }

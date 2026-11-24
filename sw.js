@@ -14,6 +14,7 @@ const STATIC_CACHE_URLS = [
     '/llms.txt',
     '/favicon.svg',
     '/images/profile.jpg',
+    '/images/headshot.jpg',
     '/images/speaking.jpg',
     '/images/my-family.jpg',
     '/images/cycling.jpeg'
