@@ -15,6 +15,8 @@ const spiritualThoughts = [
     title: 'Becoming Peacemakers This Christmas',
     sourceUrl: 'https://www.youtube.com/watch?v=RuibXRG_pfc',
     sourceLabel: 'YouTube',
+    image: 'images/2026-11-24-evergreen-bethlehem-watercolor.jpg',
+    imageAlt: 'A gold star shines over terracotta forms beneath a deep green watercolor sky',
     video: { id: 'RuibXRG_pfc' }
   },
   {
